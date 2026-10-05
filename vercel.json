@@ -1,6 +1,29 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null,
-  "installCommand": "npm install",
-  "buildCommand": "npm run build"
+  "services": {
+    "app": {
+      "root": ".",
+      "framework": "tanstack-start-lovable",
+      "installCommand": "npm install",
+      "buildCommand": "npm run build"
+    },
+    "admin": {
+      "root": "admin",
+      "framework": "vite",
+      "installCommand": "npm install",
+      "buildCommand": "npm run build",
+      "outputDirectory": "dist"
+    }
+  },
+  "redirects": [{ "source": "/admin", "destination": "/admin/", "permanent": false }],
+  "rewrites": [
+    {
+      "source": "/admin/(.*)",
+      "destination": { "service": "admin" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "app" }
+    }
+  ]
 }

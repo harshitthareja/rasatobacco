@@ -24,7 +24,10 @@ export function Login() {
     setError(null);
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: window.location.origin, queryParams: { prompt: "select_account" } },
+      options: {
+        redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
+        queryParams: { prompt: "select_account" },
+      },
     });
     if (err) setError(err.message);
   };
