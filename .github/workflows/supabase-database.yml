@@ -1,7 +1,7 @@
 name: Supabase database setup
 
-# Brings the website's Supabase database up to date (idempotent) and prints a
-# health check plus recent edge-function errors. Uses the Supabase Management
+# Brings the website's Supabase database up to date (idempotent), prints a
+# health check, and keeps the auth redirect allow-list covering the site. Uses the Supabase Management
 # API with the SUPABASE_ACCESS_TOKEN repository secret.
 #   mode=check  → read-only report
 #   mode=setup  → apply supabase/setup/ensure_schema.sql, then report
@@ -15,6 +15,10 @@ on:
         default: setup
         type: choice
         options: [setup, check]
+      site_url:
+        description: "Optional: set the auth Site URL (default redirect after sign-in)"
+        required: false
+        default: ""
 
 jobs:
   database:
@@ -63,28 +67,9 @@ jobs:
             current=$(curl -sS "${auth[@]}" "$api" | jq -r '.uri_allow_list // ""')
             wanted="https://rasatobacco.vercel.app/**,https://*-harshit-tharejas-projects.vercel.app/**,http://localhost:8080/**,http://localhost:5174/**"
             list=$(printf '%s,%s' "$current" "$wanted" | tr ',' '\n' | sed '/^$/d' | sort -u | paste -sd, -)
-            echo "Setting site_url and redirect allow-list…"
-            jq -n --arg site "https://rasatobacco.vercel.app" --arg list "$list" \
-              '{site_url: $site, uri_allow_list: $list}' \
+            echo "Updating redirect allow-list (Site URL left as is unless given)…"
+            jq -n --arg list "$list" --arg site "${{ inputs.site_url }}" \
+              '{uri_allow_list: $list} + (if $site != "" then {site_url: $site} else {} end)' \
               | curl -sS -X PATCH "${auth[@]}" -H "Content-Type: application/json" -d @- "$api" \
               | jq '{site_url, uri_allow_list}'
           fi
-
-      - name: Recent edge function errors
-        continue-on-error: true
-        run: |
-          end=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          start=$(date -u -d '-24 hours' +%Y-%m-%dT%H:%M:%SZ)
-          logs() {
-            curl -sS -G "https://api.supabase.com/v1/projects/$PROJECT_REF/analytics/endpoints/logs" \
-              -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
-              --data-urlencode "sql=$1" \
-              --data-urlencode "iso_timestamp_start=$start" \
-              --data-urlencode "iso_timestamp_end=$end" | jq '.result // .' | head -200
-          }
-          echo "--- function console errors ---"
-          logs "select timestamp, event_message from function_logs where regexp_contains(lower(event_message), 'error') order by timestamp desc limit 40"
-          echo "--- function requests with status >= 400 ---"
-          logs "select timestamp, event_message from function_edge_logs cross join unnest(metadata) as m cross join unnest(m.response) as response where response.status_code >= 400 order by timestamp desc limit 40"
-          echo "--- database API (PostgREST) errors ---"
-          logs "select timestamp, event_message from edge_logs cross join unnest(metadata) as m cross join unnest(m.response) as response where response.status_code >= 400 and regexp_contains(event_message, 'rest/v1') order by timestamp desc limit 40"
