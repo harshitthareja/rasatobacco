@@ -11,18 +11,22 @@ caller's role server-side, so this bundle holds no secrets.
 cd admin
 cp .env.example .env   # fill in the same VITE_SUPABASE_* values as the website
 npm install
-npm run dev            # http://localhost:5174
+npm run dev            # http://localhost:5174/admin/
 ```
 
 ## Deploy
 
-Build with `npm run build` and host `admin/dist` as a static site on its own
-domain, e.g. `admin.rasatobacco.com` on Vercel, Netlify or Cloudflare Pages.
-Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in the host's
-environment.
+The repo deploys to Vercel as one project with two services (see `/vercel.json`):
 
-If you use Google sign-in, add the admin URL to Supabase → Authentication →
-URL Configuration → Redirect URLs.
+- `app`: the storefront, serving every path except `/admin`.
+- `admin`: this console, served at `/admin/` on the same domain.
+
+Both services only talk to Supabase, never to each other. Set `VITE_SUPABASE_URL`
+and `VITE_SUPABASE_PUBLISHABLE_KEY` once in the Vercel project; both services
+read them. Test locally with `vercel dev` from the repo root.
+
+If you use Google sign-in, add `https://<your-domain>/admin/` to Supabase →
+Authentication → URL Configuration → Redirect URLs.
 
 ## Granting admin access
 
