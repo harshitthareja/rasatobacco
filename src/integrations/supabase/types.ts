@@ -377,6 +377,8 @@ export type Database = {
       }
       product_prices: {
         Row: {
+          sale_ends_at: string | null
+          sale_price_cents: number | null
           currency: string
           is_purchasable: boolean
           price_cents: number | null
@@ -385,6 +387,8 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          sale_ends_at?: string | null
+          sale_price_cents?: number | null
           currency?: string
           is_purchasable?: boolean
           price_cents?: number | null
@@ -393,6 +397,8 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          sale_ends_at?: string | null
+          sale_price_cents?: number | null
           currency?: string
           is_purchasable?: boolean
           price_cents?: number | null

@@ -10,12 +10,26 @@ type ProductRow = {
   currency: string;
   stock_quantity: number;
   is_purchasable: boolean;
+  sale_price_cents: number | null;
+  sale_ends_at: string | null;
 };
 
-type Edit = { price: string; stock: string; purchasable: boolean };
+type Edit = { price: string; sale: string; saleEnds: string; stock: string; purchasable: boolean };
+
+// <input type="datetime-local"> works in local time without a zone.
+const toLocalInput = (iso: string | null) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+};
+
+const saleActive = (r: ProductRow) =>
+  r.sale_price_cents != null && !!r.sale_ends_at && new Date(r.sale_ends_at).getTime() > Date.now();
 
 const toEdit = (r: ProductRow): Edit => ({
   price: r.price_cents != null ? String(r.price_cents / 100) : "",
+  sale: r.sale_price_cents != null ? String(r.sale_price_cents / 100) : "",
+  saleEnds: toLocalInput(r.sale_ends_at),
   stock: String(r.stock_quantity ?? 0),
   purchasable: r.is_purchasable,
 });
@@ -33,12 +47,18 @@ export function Products() {
     const e = edits[r.sku];
     if (!e) return false;
     const o = toEdit(r);
-    return e.price !== o.price || e.stock !== o.stock || e.purchasable !== o.purchasable;
+    return (Object.keys(o) as (keyof Edit)[]).some((k) => e[k] !== o[k]);
   };
 
   const save = async (r: ProductRow) => {
     const e = edit(r);
     const rupees = parseFloat(e.price);
+    const saleRupees = parseFloat(e.sale);
+    const hasSale = e.sale !== "" && Number.isFinite(saleRupees);
+    if (hasSale && !e.saleEnds) {
+      setSaveError(`${r.sku}: set when the sale ends`);
+      return;
+    }
     setSaving(r.sku);
     setSaveError(null);
     try {
@@ -47,6 +67,8 @@ export function Products() {
         r.sku,
         {
           price_cents: e.price !== "" && Number.isFinite(rupees) ? Math.round(rupees * 100) : null,
+          sale_price_cents: hasSale ? Math.round(saleRupees * 100) : null,
+          sale_ends_at: hasSale ? new Date(e.saleEnds).toISOString() : null,
           stock_quantity: Math.max(0, parseInt(e.stock, 10) || 0),
           is_purchasable: e.purchasable,
           updated_at: new Date().toISOString(),
@@ -69,12 +91,15 @@ export function Products() {
     <div>
       {saveError && <ErrorNote>{saveError}</ErrorNote>}
       <p className="text-xs text-foreground/50 mb-4">
-        A product can be bought only when it has a price, stock above zero and “Buyable” is on.
+        A product can be bought only when it has a price, stock above zero and “Buyable” is on. A
+        sale price applies until its end time, then the regular price returns automatically.
       </p>
       <div className="border border-border divide-y divide-border overflow-x-auto">
-        <div className="min-w-[640px] px-5 py-3 grid grid-cols-[1fr_120px_100px_90px_90px] gap-3 text-[0.6rem] tracking-luxe uppercase text-foreground/40">
+        <div className="min-w-[900px] px-5 py-3 grid grid-cols-[1fr_100px_100px_190px_80px_70px_80px] gap-3 text-[0.6rem] tracking-luxe uppercase text-foreground/40">
           <span>Product</span>
           <span>Price (₹)</span>
+          <span>Sale (₹)</span>
+          <span>Sale ends</span>
           <span>Stock</span>
           <span>Buyable</span>
           <span />
@@ -84,11 +109,14 @@ export function Products() {
           return (
             <div
               key={r.sku}
-              className="min-w-[640px] px-5 py-3 grid grid-cols-[1fr_120px_100px_90px_90px] gap-3 items-center"
+              className="min-w-[900px] px-5 py-3 grid grid-cols-[1fr_100px_100px_190px_80px_70px_80px] gap-3 items-center"
             >
               <div className="min-w-0">
                 <p className="text-sm truncate">{skuLabel(r.sku)}</p>
-                <p className="text-[0.6rem] text-foreground/35 font-mono truncate">{r.sku}</p>
+                <p className="text-[0.6rem] text-foreground/35 font-mono truncate">
+                  {r.sku}
+                  {saleActive(r) && <span className="ml-2 text-gold">ON SALE</span>}
+                </p>
               </div>
               <input
                 type="number"
@@ -98,6 +126,21 @@ export function Products() {
                 value={e.price}
                 onChange={(ev) => patch(r, { price: ev.target.value })}
                 className="bg-transparent border border-border text-sm px-2 py-1.5 outline-none focus:border-gold"
+              />
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="None"
+                value={e.sale}
+                onChange={(ev) => patch(r, { sale: ev.target.value })}
+                className="bg-transparent border border-border text-sm px-2 py-1.5 outline-none focus:border-gold"
+              />
+              <input
+                type="datetime-local"
+                value={e.saleEnds}
+                onChange={(ev) => patch(r, { saleEnds: ev.target.value })}
+                className="bg-transparent border border-border text-xs px-2 py-1.5 outline-none focus:border-gold"
               />
               <input
                 type="number"

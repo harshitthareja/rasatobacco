@@ -8,6 +8,8 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/__tests__/setup.ts"],
     globals: true,
+    // supabase/functions tests are Deno tests (deno test).
+    exclude: ["**/node_modules/**", "supabase/**", "admin/**"],
   },
   resolve: {
     alias: {

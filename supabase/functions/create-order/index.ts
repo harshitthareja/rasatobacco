@@ -41,7 +41,7 @@ serve(async (req) => {
 
     const { data: prices, error: priceErr } = await db
       .from('product_prices')
-      .select('sku, price_cents, is_purchasable, stock_quantity')
+      .select('sku, price_cents, sale_price_cents, sale_ends_at, is_purchasable, stock_quantity')
       .in('sku', cartItems.map((c) => c.sku))
     if (priceErr) throw priceErr
     const priceMap = new Map((prices ?? []).map((p) => [p.sku, p]))
@@ -56,8 +56,11 @@ serve(async (req) => {
       if (p.stock_quantity < item.quantity) {
         return json({ error: `Not enough stock for ${skuMeta[item.sku]?.productName ?? item.sku}` }, 409)
       }
-      lineItems.push({ sku: item.sku, quantity: item.quantity, unit_price_cents: p.price_cents })
-      subtotal += p.price_cents * item.quantity
+      const onSale =
+        p.sale_price_cents != null && p.sale_ends_at != null && new Date(p.sale_ends_at).getTime() > Date.now()
+      const unit = onSale ? p.sale_price_cents : p.price_cents
+      lineItems.push({ sku: item.sku, quantity: item.quantity, unit_price_cents: unit })
+      subtotal += unit * item.quantity
     }
 
     const { data: settings } = await db
