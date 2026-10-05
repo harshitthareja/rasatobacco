@@ -275,6 +275,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          payment_method: string
           payment_status: string
           razorpay_order_id: string | null
           razorpay_payment_id: string | null
@@ -308,6 +309,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          payment_method?: string
           payment_status?: string
           razorpay_order_id?: string | null
           razorpay_payment_id?: string | null
@@ -341,6 +343,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          payment_method?: string
           payment_status?: string
           razorpay_order_id?: string | null
           razorpay_payment_id?: string | null

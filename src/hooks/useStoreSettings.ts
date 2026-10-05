@@ -6,13 +6,19 @@ export type ShippingSettings = {
   free_shipping_threshold_cents: number | null;
 };
 
-/** Mirrors the shipping charge create-order computes server-side. */
+/**
+ * Mirrors the delivery charge create-order computes server-side: the flat fee
+ * applies unless the subtotal is above the free-delivery threshold.
+ */
 export function shippingChargeFor(subtotalCents: number, settings: ShippingSettings | null) {
-  if (!settings) return 0;
+  if (!settings || subtotalCents <= 0) return 0;
   const threshold = settings.free_shipping_threshold_cents;
-  if (threshold != null && subtotalCents >= threshold) return 0;
+  if (threshold != null && subtotalCents > threshold) return 0;
   return settings.shipping_flat_cents;
 }
+
+/** Online payment stays off until Razorpay approves the account. */
+export const ONLINE_PAYMENTS_ENABLED = import.meta.env.VITE_ENABLE_RAZORPAY === "true";
 
 export function useShippingSettings() {
   const [settings, setSettings] = useState<ShippingSettings | null>(null);

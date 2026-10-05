@@ -7,6 +7,7 @@ import { useProductPrices } from "@/hooks/useProductPrices";
 import { parseSku } from "@/data/catalog";
 import { formatPrice } from "@/lib/money";
 import { AuthModal } from "@/components/AuthModal";
+import { shippingChargeFor, useShippingSettings } from "@/hooks/useStoreSettings";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -19,6 +20,7 @@ function CartPage() {
   const { user, loading: authLoading } = useAuth();
   const { items, loading: cartLoading, setQuantity, removeItem } = useCart();
   const { prices, loading: pricesLoading } = useProductPrices();
+  const { settings: shippingSettings } = useShippingSettings();
   const [authOpen, setAuthOpen] = useState(!authLoading && !user);
 
   const loading = authLoading || cartLoading || pricesLoading;
@@ -32,11 +34,14 @@ function CartPage() {
     })
     .filter((r): r is NonNullable<typeof r> => r !== null);
 
-  const subtotalCents = resolved.reduce(
-    (sum, r) => sum + (r.price?.price_cents ?? 0) * r.quantity,
-    0,
-  );
-  const hasUnpriced = resolved.some((r) => r.price?.price_cents == null);
+  // Only items that can actually be ordered count — the same rule checkout
+  // and the server use, so the cart total always matches what's charged.
+  const subtotalCents = resolved
+    .filter((r) => r.price?.price_cents != null && r.price.is_purchasable)
+    .reduce((sum, r) => sum + (r.price!.price_cents as number) * r.quantity, 0);
+  const shippingCents = shippingChargeFor(subtotalCents, shippingSettings);
+  const totalCents = subtotalCents + shippingCents;
+  const hasUnpriced = resolved.some((r) => r.price?.price_cents == null || !r.price.is_purchasable);
 
   if (!authLoading && !user) {
     return (
@@ -165,20 +170,35 @@ function CartPage() {
               <p className="text-[0.65rem] tracking-luxe uppercase text-foreground/50 mb-4">
                 Order Summary
               </p>
-              <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-foreground/70">Subtotal</span>
-                <span className="font-serif text-lg text-gold">
-                  {formatPrice(subtotalCents, "INR")}
-                </span>
+              <div className="space-y-2 text-sm mb-6">
+                <div className="flex items-center justify-between">
+                  <span className="text-foreground/70">Subtotal</span>
+                  <span className="text-foreground/80">{formatPrice(subtotalCents, "INR")}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-foreground/70">Delivery</span>
+                  <span className="text-foreground/80">
+                    {shippingCents === 0 ? "Free" : formatPrice(shippingCents, "INR")}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t border-border/30 pt-3">
+                  <span className="text-foreground/70">Total</span>
+                  <span className="font-serif text-lg text-gold">
+                    {formatPrice(totalCents, "INR")}
+                  </span>
+                </div>
+                {shippingSettings?.free_shipping_threshold_cents != null && shippingCents > 0 && (
+                  <p className="text-[0.65rem] text-foreground/45">
+                    Free delivery on orders above{" "}
+                    {formatPrice(shippingSettings.free_shipping_threshold_cents, "INR")}.
+                  </p>
+                )}
               </div>
-              <p className="text-[0.65rem] text-foreground/45 mb-6">
-                Shipping and taxes calculated at checkout.
-              </p>
 
               {hasUnpriced && (
                 <p className="text-[0.65rem] text-destructive/80 mb-4 leading-relaxed">
-                  One or more items in your cart don't have a price set yet and won't be included in
-                  your order until they do.
+                  One or more items in your cart aren't available to order yet and won't be included
+                  in your order.
                 </p>
               )}
 

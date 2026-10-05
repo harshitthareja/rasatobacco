@@ -1,12 +1,15 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { cors, getUser, json, serviceClient } from '../_shared/http.ts'
-import { createRazorpayOrder, RazorpayError, razorpayKeyId } from '../_shared/razorpay.ts'
+import { createRazorpayOrder, finalizeOrder, RazorpayError, razorpayKeyId } from '../_shared/razorpay.ts'
 
 type SkuMeta = { productName?: string; collectionName?: string; format?: string }
 
-// Creates a pending order from the caller's cart and a matching Razorpay
-// order. Nothing is charged, decremented or cleared here — that happens only
-// once verify-payment (or the webhook) confirms a correctly signed payment.
+// Creates an order from the caller's cart.
+//  - payment_method 'cod': the order is confirmed immediately (stock reserved,
+//    cart emptied); cash is collected by the courier on delivery.
+//  - payment_method 'razorpay': a pending order plus a Razorpay order. Stock
+//    and cart are only touched once verify-payment (or the webhook) confirms
+//    a correctly signed payment.
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
@@ -19,6 +22,7 @@ serve(async (req) => {
     const body = await req.json().catch(() => ({}))
     const shipping = body.shipping ?? {}
     const skuMeta: Record<string, SkuMeta> = body.skuMeta ?? {}
+    const paymentMethod = body.payment_method === 'razorpay' ? 'razorpay' : 'cod'
 
     const required = ['name', 'phone', 'email', 'addressLine1', 'city', 'state', 'postalCode']
     const missing = required.filter((k) => !String(shipping[k] ?? '').trim())
@@ -69,8 +73,9 @@ serve(async (req) => {
       .eq('id', 1)
       .maybeSingle()
     const threshold = settings?.free_shipping_threshold_cents
+    // Free delivery only when the subtotal is above the threshold.
     const shippingCharge =
-      threshold != null && subtotal >= threshold ? 0 : (settings?.shipping_flat_cents ?? 0)
+      threshold != null && subtotal > threshold ? 0 : (settings?.shipping_flat_cents ?? 0)
     const total = subtotal + shippingCharge
     if (total < 100) return json({ error: 'Order total must be at least ₹1' }, 400)
 
@@ -87,8 +92,9 @@ serve(async (req) => {
       .from('orders')
       .insert({
         user_id: user.id,
-        status: 'pending',
+        status: paymentMethod === 'cod' ? 'confirmed' : 'pending',
         payment_status: 'pending',
+        payment_method: paymentMethod,
         subtotal_cents: subtotal,
         shipping_charge_cents: shippingCharge,
         total_cents: total,
@@ -125,6 +131,11 @@ serve(async (req) => {
     )
     if (itemsErr) throw itemsErr
 
+    if (paymentMethod === 'cod') {
+      await finalizeOrder(db, order.id, user.id)
+      return json({ ok: true, order_id: order.id, payment_method: 'cod', amount: total, currency: 'INR' })
+    }
+
     let rzpOrder
     try {
       // Amounts are stored in paise already (the *_cents columns).
@@ -143,6 +154,7 @@ serve(async (req) => {
     return json({
       ok: true,
       order_id: order.id,
+      payment_method: 'razorpay',
       razorpay_order_id: rzpOrder.id,
       amount: rzpOrder.amount,
       currency: rzpOrder.currency,

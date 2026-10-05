@@ -7,6 +7,7 @@ type Stats = {
   orders: number;
   paid_orders: number;
   revenue_cents: number;
+  cod_due_cents: number;
   to_ship: number;
   in_transit: number;
   delivered: number;
@@ -36,7 +37,8 @@ export function Overview({ go }: { go: (id: string) => void }) {
   const cards: { label: string; value: string | number; accent?: boolean; onClick?: () => void }[] =
     [
       { label: "Revenue (paid)", value: formatPrice(stats.revenue_cents), accent: true },
-      { label: "Paid Orders", value: stats.paid_orders, onClick: () => goOrders("") },
+      { label: "COD to Collect", value: formatPrice(stats.cod_due_cents ?? 0) },
+      { label: "Orders", value: stats.paid_orders, onClick: () => goOrders("") },
       {
         label: "Ready to Ship",
         value: stats.to_ship,

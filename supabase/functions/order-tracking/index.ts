@@ -18,7 +18,7 @@ serve(async (req) => {
     const db = serviceClient()
     const { data: order } = await db
       .from('orders')
-      .select('id, user_id, status, shipment_tracking_number, shipment_status, shipment_events, shipment_synced_at')
+      .select('id, user_id, status, payment_method, shipment_tracking_number, shipment_status, shipment_events, shipment_synced_at')
       .eq('id', order_id)
       .maybeSingle()
     if (!order || order.user_id !== user.id) return json({ error: 'Order not found' }, 404)

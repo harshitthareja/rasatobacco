@@ -4,7 +4,12 @@ import { deriveStatuses, flexi, sortTracking } from './flexi.ts'
 /** Pulls the latest Flexi tracking for an order and stores it on the row. */
 export async function syncTracking(
   db: SupabaseClient,
-  order: { id: string; status: string; shipment_tracking_number: string | null },
+  order: {
+    id: string
+    status: string
+    shipment_tracking_number: string | null
+    payment_method?: string | null
+  },
 ) {
   if (!order.shipment_tracking_number) return null
   const res = await flexi.track(order.shipment_tracking_number)
@@ -25,6 +30,11 @@ export async function syncTracking(
       (rank[derived.orderStatus] ?? 0) > (rank[order.status] ?? 0)
     ) {
       updates.status = derived.orderStatus
+      // Cash on delivery is collected by the courier at hand-over.
+      if (derived.orderStatus === 'delivered' && order.payment_method === 'cod') {
+        updates.payment_status = 'paid'
+        updates.payment_verified_at = new Date().toISOString()
+      }
     }
   }
   await db.from('orders').update(updates).eq('id', order.id)

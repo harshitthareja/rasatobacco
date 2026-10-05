@@ -87,11 +87,11 @@ export function StoreSettings() {
     <form onSubmit={save} className="max-w-2xl space-y-8">
       <section className="space-y-3">
         <h2 className="text-[0.62rem] tracking-luxe uppercase text-gold">
-          Shipping fee (charged at checkout)
+          Delivery fee (charged at checkout)
         </h2>
         <div className="grid sm:grid-cols-2 gap-3">
           <Input
-            label="Flat shipping fee (₹)"
+            label="Delivery fee (₹)"
             type="number"
             min="0"
             step="0.01"
@@ -99,7 +99,7 @@ export function StoreSettings() {
             onChange={set("shipping_flat")}
           />
           <Input
-            label="Free shipping from (₹, blank = never)"
+            label="Free delivery above (₹, blank = never)"
             type="number"
             min="0"
             step="0.01"

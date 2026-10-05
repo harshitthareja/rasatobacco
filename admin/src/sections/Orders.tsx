@@ -34,7 +34,7 @@ export function Orders() {
     sessionStorage.removeItem("rasa-admin-order-status");
     return preset ?? "";
   });
-  const [payment, setPayment] = useState("paid");
+  const [payment, setPayment] = useState("active");
   const [searchDraft, setSearchDraft] = useState("");
   const [search, setSearch] = useState("");
   const { rows, count, page, setPage, loading, error, reload } = usePaged<Order>("orders", {
@@ -121,11 +121,13 @@ export function Orders() {
         </div>
         <div className="w-40">
           <Select label="Payment" value={payment} onChange={(e) => setPayment(e.target.value)}>
-            <option value="">All</option>
+            <option value="active">To fulfil (paid + COD)</option>
+            <option value="cod">Cash on delivery</option>
             <option value="paid">Paid</option>
             <option value="pending">Unpaid</option>
             <option value="failed">Failed</option>
             <option value="refunded">Refunded</option>
+            <option value="">All checkouts</option>
           </Select>
         </div>
         <form
@@ -281,6 +283,7 @@ function OrderCard({
           )}
           <span className="font-serif text-lg">{shortId(order.id)}</span>
         </button>
+        {order.payment_method === "cod" && <Badge tone="gold">COD</Badge>}
         <Badge tone={PAYMENT_TONE[order.payment_status] ?? "muted"}>{order.payment_status}</Badge>
         <Badge tone={ORDER_STATUS_TONE[order.status] ?? "muted"}>{order.status}</Badge>
         {order.shipment_status && (
@@ -366,8 +369,18 @@ function OrderCard({
                 Payment
               </h3>
               <dl className="grid grid-cols-[130px_1fr] gap-y-1 text-foreground/70">
+                <dt className="text-foreground/45">Method</dt>
+                <dd>{order.payment_method === "cod" ? "Cash on delivery" : "Razorpay (online)"}</dd>
                 <dt className="text-foreground/45">Status</dt>
-                <dd>{order.payment_status}</dd>
+                <dd>
+                  {order.payment_status}
+                  {order.payment_method === "cod" && order.payment_status !== "paid" && (
+                    <span className="text-foreground/45">
+                      {" "}
+                      · collect {formatPrice(orderTotal(order), order.currency)}
+                    </span>
+                  )}
+                </dd>
                 <dt className="text-foreground/45">Razorpay order</dt>
                 <dd className="font-mono text-xs break-all">{order.razorpay_order_id ?? "—"}</dd>
                 <dt className="text-foreground/45">Payment id</dt>
@@ -468,7 +481,7 @@ function ShipmentPanel({
     <div className="border border-border bg-surface/30 p-5 space-y-4 h-fit">
       <h3 className="text-[0.6rem] tracking-luxe uppercase text-gold">Shipment · Flexi</h3>
 
-      {order.payment_status !== "paid" ? (
+      {order.payment_status !== "paid" && order.payment_method !== "cod" ? (
         <p className="text-sm text-foreground/55">
           Shipments can be booked once the order is paid.
         </p>

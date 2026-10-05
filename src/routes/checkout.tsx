@@ -8,7 +8,11 @@ import { parseSku } from "@/data/catalog";
 import { formatPrice } from "@/lib/money";
 import { invokeFunction } from "@/lib/functions";
 import { openRazorpayCheckout } from "@/lib/razorpay";
-import { shippingChargeFor, useShippingSettings } from "@/hooks/useStoreSettings";
+import {
+  ONLINE_PAYMENTS_ENABLED,
+  shippingChargeFor,
+  useShippingSettings,
+} from "@/hooks/useStoreSettings";
 import { AuthModal } from "@/components/AuthModal";
 
 export const Route = createFileRoute("/checkout")({
@@ -31,19 +35,22 @@ type ShippingForm = {
   notes: string;
 };
 
+type PaymentMethod = "cod" | "razorpay";
+
 type CreateOrderResponse = {
   order_id: string;
-  razorpay_order_id: string;
+  payment_method: PaymentMethod;
   amount: number;
   currency: string;
-  key_id: string;
+  razorpay_order_id?: string;
+  key_id?: string;
 };
 
 type Stage = "idle" | "creating" | "paying" | "verifying";
 
 const STAGE_LABEL: Record<Stage, string> = {
   idle: "",
-  creating: "Preparing Payment…",
+  creating: "Placing Order…",
   paying: "Awaiting Payment…",
   verifying: "Confirming Payment…",
 };
@@ -74,6 +81,7 @@ function CheckoutPage() {
   });
   const [errors, setErrors] = useState<Partial<Record<keyof ShippingForm, string>>>({});
   const [stage, setStage] = useState<Stage>("idle");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
   const placing = stage !== "idle";
   const [placeError, setPlaceError] = useState<string | null>(null);
   const [authOpen, setAuthOpen] = useState(!authLoading && !user);
@@ -158,15 +166,23 @@ function CheckoutPage() {
         };
       }
 
-      // 1. Server creates the order + Razorpay order from the cart and
-      //    authoritative prices — the client never sends an amount.
+      // 1. Server creates the order from the cart and authoritative prices —
+      //    the client never sends an amount.
+      const method: PaymentMethod = ONLINE_PAYMENTS_ENABLED ? paymentMethod : "cod";
       const { data: order, error: orderError } = await invokeFunction<CreateOrderResponse>(
         "create-order",
-        { shipping: form, skuMeta },
+        { shipping: form, skuMeta, payment_method: method },
       );
       if (orderError || !order) {
-        setPlaceError(orderError ?? "Could not start payment. Please try again.");
+        setPlaceError(orderError ?? "Could not place your order. Please try again.");
         setStage("idle");
+        return;
+      }
+
+      // Cash on delivery: the order is already confirmed server-side.
+      if (order.payment_method === "cod" || !order.razorpay_order_id) {
+        await clear();
+        navigate({ to: "/order-confirmation/$orderId", params: { orderId: order.order_id } });
         return;
       }
 
@@ -356,13 +372,39 @@ function CheckoutPage() {
                 />
               </div>
 
+              <div>
+                <p className="block text-[0.65rem] tracking-luxe uppercase text-gold/80 mb-3">
+                  Payment
+                </p>
+                <div className="space-y-2">
+                  <PaymentOption
+                    checked={!ONLINE_PAYMENTS_ENABLED || paymentMethod === "cod"}
+                    onSelect={() => setPaymentMethod("cod")}
+                    title="Cash on Delivery"
+                    detail={`Pay ${formatPrice(totalCents, "INR")} in cash when your order arrives.`}
+                  />
+                  {ONLINE_PAYMENTS_ENABLED && (
+                    <PaymentOption
+                      checked={paymentMethod === "razorpay"}
+                      onSelect={() => setPaymentMethod("razorpay")}
+                      title="Pay Online"
+                      detail="UPI, cards, net banking and wallets via Razorpay."
+                    />
+                  )}
+                </div>
+              </div>
+
               <div className="pt-3">
                 <button
                   type="submit"
                   disabled={placing || purchasableItems.length === 0}
                   className="group inline-flex items-center justify-center gap-3 px-10 py-4 bg-gold text-primary-foreground text-xs tracking-luxe uppercase hover:bg-gold-soft transition-colors duration-500 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {placing ? STAGE_LABEL[stage] : `Pay ${formatPrice(totalCents, "INR")}`}
+                  {placing
+                    ? STAGE_LABEL[stage]
+                    : ONLINE_PAYMENTS_ENABLED && paymentMethod === "razorpay"
+                      ? `Pay ${formatPrice(totalCents, "INR")}`
+                      : `Place Order · ${formatPrice(totalCents, "INR")}`}
                   {placing ? (
                     <span className="h-3.5 w-3.5 rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground animate-spin" />
                   ) : (
@@ -374,9 +416,8 @@ function CheckoutPage() {
                 <p className="text-xs font-serif italic text-destructive">{placeError}</p>
               )}
               <p className="text-xs text-foreground/60">
-                Payments are processed securely by Razorpay — UPI, cards, net banking and wallets.
-                By paying you confirm you are 18+ and the recipient is legally permitted to receive
-                these products at the delivery address.
+                By placing this order you confirm you are 18+ and the recipient is legally permitted
+                to receive these products at the delivery address.
               </p>
             </form>
 
@@ -408,7 +449,7 @@ function CheckoutPage() {
                   <span className="text-foreground/80">{formatPrice(subtotalCents, "INR")}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-foreground/70">Shipping</span>
+                  <span className="text-foreground/70">Delivery</span>
                   <span className="text-foreground/80">
                     {shippingCents === 0 ? "Free" : formatPrice(shippingCents, "INR")}
                   </span>
@@ -422,7 +463,7 @@ function CheckoutPage() {
               </div>
               {shippingSettings?.free_shipping_threshold_cents != null && shippingCents > 0 && (
                 <p className="mt-2 text-[0.65rem] text-foreground/45">
-                  Free shipping on orders over{" "}
+                  Free delivery on orders above{" "}
                   {formatPrice(shippingSettings.free_shipping_threshold_cents, "INR")}.
                 </p>
               )}
@@ -431,6 +472,38 @@ function CheckoutPage() {
         )}
       </div>
     </main>
+  );
+}
+
+function PaymentOption({
+  checked,
+  onSelect,
+  title,
+  detail,
+}: {
+  checked: boolean;
+  onSelect: () => void;
+  title: string;
+  detail: string;
+}) {
+  return (
+    <label
+      className={`flex items-start gap-3 border px-4 py-3 cursor-pointer transition-colors ${
+        checked ? "border-gold/60 bg-gold/5" : "border-border/40 hover:border-gold/40"
+      }`}
+    >
+      <input
+        type="radio"
+        name="payment"
+        checked={checked}
+        onChange={onSelect}
+        className="mt-1 accent-[var(--gold)]"
+      />
+      <span>
+        <span className="block text-sm">{title}</span>
+        <span className="block text-xs text-foreground/55">{detail}</span>
+      </span>
+    </label>
   );
 }
 
