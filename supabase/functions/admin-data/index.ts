@@ -1,22 +1,12 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const cors = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-admin-key',
-}
-
-const ADMIN_KEY = 'rasa_admin_2024'
+import { cors, requireAdmin, serviceClient } from '../_shared/http.ts'
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
 
-  const adminKey = req.headers.get('x-admin-key')
-  if (adminKey !== ADMIN_KEY) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401, headers: { ...cors, 'Content-Type': 'application/json' }
-    })
-  }
+  const db = serviceClient()
+  const auth = await requireAdmin(req, db)
+  if ('response' in auth) return auth.response
 
   try {
     const url = new URL(req.url)
@@ -24,10 +14,6 @@ serve(async (req) => {
     const page = parseInt(url.searchParams.get('page') ?? '1')
     const limit = 20
     const offset = (page - 1) * limit
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const db = createClient(supabaseUrl, supabaseKey)
 
     if (section === 'overview') {
       const [eq, pr, ns, lm, users, ord] = await Promise.all([
@@ -38,11 +24,15 @@ serve(async (req) => {
         db.from('users').select('id', { count: 'exact', head: true }),
         db.from('orders').select('id', { count: 'exact', head: true }),
       ])
-      const { data: revenueRows } = await db
+      const { data: paidRows } = await db
         .from('orders')
-        .select('subtotal_cents')
-        .not('status', 'eq', 'cancelled')
-      const revenueCents = (revenueRows ?? []).reduce((sum, r) => sum + (r.subtotal_cents ?? 0), 0)
+        .select('status, total_cents, subtotal_cents, shipment_tracking_number')
+        .eq('payment_status', 'paid')
+      const paid = paidRows ?? []
+      const revenueCents = paid.reduce((sum, r) => sum + (r.total_cents ?? r.subtotal_cents ?? 0), 0)
+      const toShip = paid.filter((r) => r.status === 'confirmed' && !r.shipment_tracking_number).length
+      const inTransit = paid.filter((r) => r.status === 'processing' || r.status === 'shipped').length
+      const delivered = paid.filter((r) => r.status === 'delivered').length
       return new Response(JSON.stringify({
         enquiries: eq.count ?? 0,
         partners: pr.count ?? 0,
@@ -50,18 +40,32 @@ serve(async (req) => {
         loyalty_members: lm.count ?? 0,
         users: users.count ?? 0,
         orders: ord.count ?? 0,
+        paid_orders: paid.length,
         revenue_cents: revenueCents,
+        to_ship: toShip,
+        in_transit: inTransit,
+        delivered,
       }), { headers: { ...cors, 'Content-Type': 'application/json' } })
     }
 
     if (section === 'orders') {
       const status = url.searchParams.get('status')
+      const payment = url.searchParams.get('payment')
+      const search = (url.searchParams.get('q') ?? '').trim().replace(/[,()]/g, ' ')
       let q = db
         .from('orders')
         .select('*, order_items(*)', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1)
-      if (status) q = q.eq('status', status)
+      if (status === 'to_ship') q = q.eq('status', 'confirmed').eq('payment_status', 'paid')
+      else if (status) q = q.eq('status', status)
+      if (payment) q = q.eq('payment_status', payment)
+      if (search) {
+        const term = `%${search}%`
+        q = q.or(
+          `shipping_name.ilike.${term},shipping_email.ilike.${term},shipping_phone.ilike.${term},shipment_tracking_number.ilike.${term},razorpay_payment_id.ilike.${term}`,
+        )
+      }
       const { data, count } = await q
       return new Response(JSON.stringify({ data, count }), { headers: { ...cors, 'Content-Type': 'application/json' } })
     }
@@ -121,6 +125,11 @@ serve(async (req) => {
     if (section === 'users') {
       const { data, count } = await db.from('users').select('*', { count: 'exact' }).order('created_at', { ascending: false }).range(offset, offset + limit - 1)
       return new Response(JSON.stringify({ data, count }), { headers: { ...cors, 'Content-Type': 'application/json' } })
+    }
+
+    if (section === 'settings') {
+      const { data } = await db.from('store_settings').select('*').eq('id', 1).maybeSingle()
+      return new Response(JSON.stringify({ data }), { headers: { ...cors, 'Content-Type': 'application/json' } })
     }
 
     return new Response(JSON.stringify({ error: 'Invalid section' }), { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } })

@@ -4,7 +4,7 @@ import rasaLogo from "@/assets/rasa-logo.png";
 import { AgeRestrictionPolicyModal } from "@/components/AgeRestrictionPolicyModal";
 
 const AGE_KEY = "rasa_age_verified";
-const BYPASS = ["/age-restricted", "/login", "/test-email", "/admin"];
+const BYPASS = ["/age-restricted", "/login", "/test-email"];
 
 const readVerified = () => {
   try {

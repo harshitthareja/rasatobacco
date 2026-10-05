@@ -88,9 +88,21 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
 
       <div className="flex items-baseline gap-3">
         {hasPrice ? (
-          <span className={`font-serif text-gold ${compact ? "text-xl" : "text-3xl"}`}>
-            {formatPrice(price!.price_cents, price!.currency)}
-          </span>
+          <>
+            <span className={`font-serif text-gold ${compact ? "text-xl" : "text-3xl"}`}>
+              {formatPrice(price!.price_cents, price!.currency)}
+            </span>
+            {price!.on_sale && (
+              <>
+                <span className="text-sm text-foreground/45 line-through">
+                  {formatPrice(price!.regular_price_cents, price!.currency)}
+                </span>
+                <span className="text-[0.6rem] tracking-luxe uppercase px-2 py-0.5 border border-gold/50 text-gold">
+                  {Math.round((1 - price!.price_cents! / price!.regular_price_cents!) * 100)}% off
+                </span>
+              </>
+            )}
+          </>
         ) : (
           <span className="text-[0.65rem] tracking-luxe uppercase text-foreground/45">
             Price coming soon

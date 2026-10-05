@@ -1,48 +1,33 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const cors = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { cors, getUser, json, serviceClient } from '../_shared/http.ts'
+import { createRazorpayOrder, RazorpayError, razorpayKeyId } from '../_shared/razorpay.ts'
 
 type SkuMeta = { productName?: string; collectionName?: string; format?: string }
 
+// Creates a pending order from the caller's cart and a matching Razorpay
+// order. Nothing is charged, decremented or cleared here — that happens only
+// once verify-payment (or the webhook) confirms a correctly signed payment.
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
+  if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
 
   try {
-    const authHeader = req.headers.get('Authorization') ?? ''
-    const token = authHeader.replace('Bearer ', '')
-    if (!token) {
-      return new Response(JSON.stringify({ error: 'Sign in required' }), {
-        status: 401, headers: { ...cors, 'Content-Type': 'application/json' }
-      })
-    }
+    const user = await getUser(req)
+    if (!user) return json({ error: 'Sign in required' }, 401)
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? Deno.env.get('SUPABASE_PUBLISHABLE_KEY')!
-    const db = createClient(supabaseUrl, serviceKey)
-    const authClient = createClient(supabaseUrl, anonKey)
-
-    const { data: { user }, error: userErr } = await authClient.auth.getUser(token)
-    if (userErr || !user) {
-      return new Response(JSON.stringify({ error: 'Invalid session' }), {
-        status: 401, headers: { ...cors, 'Content-Type': 'application/json' }
-      })
-    }
-
-    const body = await req.json()
+    const db = serviceClient()
+    const body = await req.json().catch(() => ({}))
     const shipping = body.shipping ?? {}
     const skuMeta: Record<string, SkuMeta> = body.skuMeta ?? {}
 
     const required = ['name', 'phone', 'email', 'addressLine1', 'city', 'state', 'postalCode']
-    const missing = required.filter((k) => !shipping[k])
-    if (missing.length) {
-      return new Response(JSON.stringify({ error: `Missing shipping fields: ${missing.join(', ')}` }), {
-        status: 400, headers: { ...cors, 'Content-Type': 'application/json' }
-      })
+    const missing = required.filter((k) => !String(shipping[k] ?? '').trim())
+    if (missing.length) return json({ error: `Missing shipping fields: ${missing.join(', ')}` }, 400)
+    if (!/^\d{10}$/.test(String(shipping.phone).replace(/\D/g, '').slice(-10))) {
+      return json({ error: 'Enter a valid 10-digit phone number' }, 400)
+    }
+    if (!/^\d{6}$/.test(String(shipping.postalCode).trim())) {
+      return json({ error: 'Enter a valid 6-digit PIN code' }, 400)
     }
 
     // The cart is the trusted source of what's being bought — never trust
@@ -51,98 +36,120 @@ serve(async (req) => {
       .from('cart_items')
       .select('sku, quantity')
       .eq('user_id', user.id)
-
     if (cartErr) throw cartErr
-    if (!cartItems || cartItems.length === 0) {
-      return new Response(JSON.stringify({ error: 'Your cart is empty' }), {
-        status: 400, headers: { ...cors, 'Content-Type': 'application/json' }
-      })
-    }
+    if (!cartItems || cartItems.length === 0) return json({ error: 'Your cart is empty' }, 400)
 
-    const skus = cartItems.map((c) => c.sku)
     const { data: prices, error: priceErr } = await db
       .from('product_prices')
-      .select('sku, price_cents, is_purchasable, stock_quantity')
-      .in('sku', skus)
-
+      .select('sku, price_cents, sale_price_cents, sale_ends_at, is_purchasable, stock_quantity')
+      .in('sku', cartItems.map((c) => c.sku))
     if (priceErr) throw priceErr
     const priceMap = new Map((prices ?? []).map((p) => [p.sku, p]))
 
     const lineItems: { sku: string; quantity: number; unit_price_cents: number }[] = []
     let subtotal = 0
-
     for (const item of cartItems) {
       const p = priceMap.get(item.sku)
       if (!p || !p.is_purchasable || p.price_cents == null) {
-        return new Response(JSON.stringify({ error: `${item.sku} is not available for purchase right now` }), {
-          status: 409, headers: { ...cors, 'Content-Type': 'application/json' }
-        })
+        return json({ error: `${skuMeta[item.sku]?.productName ?? item.sku} is not available for purchase right now` }, 409)
       }
       if (p.stock_quantity < item.quantity) {
-        return new Response(JSON.stringify({ error: `Not enough stock for ${item.sku}` }), {
-          status: 409, headers: { ...cors, 'Content-Type': 'application/json' }
-        })
+        return json({ error: `Not enough stock for ${skuMeta[item.sku]?.productName ?? item.sku}` }, 409)
       }
-      lineItems.push({ sku: item.sku, quantity: item.quantity, unit_price_cents: p.price_cents })
-      subtotal += p.price_cents * item.quantity
+      const onSale =
+        p.sale_price_cents != null && p.sale_ends_at != null && new Date(p.sale_ends_at).getTime() > Date.now()
+      const unit = onSale ? p.sale_price_cents : p.price_cents
+      lineItems.push({ sku: item.sku, quantity: item.quantity, unit_price_cents: unit })
+      subtotal += unit * item.quantity
     }
+
+    const { data: settings } = await db
+      .from('store_settings')
+      .select('shipping_flat_cents, free_shipping_threshold_cents')
+      .eq('id', 1)
+      .maybeSingle()
+    const threshold = settings?.free_shipping_threshold_cents
+    const shippingCharge =
+      threshold != null && subtotal >= threshold ? 0 : (settings?.shipping_flat_cents ?? 0)
+    const total = subtotal + shippingCharge
+    if (total < 100) return json({ error: 'Order total must be at least ₹1' }, 400)
+
+    // A buyer who dismissed the payment window and retries would otherwise
+    // leave a trail of unpaid orders — close out their earlier attempts.
+    await db
+      .from('orders')
+      .update({ status: 'cancelled', payment_error: 'Superseded by a newer checkout', updated_at: new Date().toISOString() })
+      .eq('user_id', user.id)
+      .eq('status', 'pending')
+      .eq('payment_status', 'pending')
 
     const { data: order, error: orderErr } = await db
       .from('orders')
       .insert({
         user_id: user.id,
         status: 'pending',
+        payment_status: 'pending',
         subtotal_cents: subtotal,
+        shipping_charge_cents: shippingCharge,
+        total_cents: total,
         currency: 'INR',
-        shipping_name: shipping.name,
-        shipping_phone: shipping.phone,
-        shipping_email: shipping.email,
-        shipping_address_line1: shipping.addressLine1,
-        shipping_address_line2: shipping.addressLine2 ?? null,
-        shipping_city: shipping.city,
-        shipping_state: shipping.state,
-        shipping_postal_code: shipping.postalCode,
-        shipping_country: shipping.country ?? 'India',
-        notes: shipping.notes ?? null,
+        shipping_name: String(shipping.name).trim(),
+        shipping_phone: String(shipping.phone).trim(),
+        shipping_email: String(shipping.email).trim(),
+        shipping_address_line1: String(shipping.addressLine1).trim(),
+        shipping_address_line2: shipping.addressLine2?.trim() || null,
+        shipping_city: String(shipping.city).trim(),
+        shipping_state: String(shipping.state).trim(),
+        shipping_postal_code: String(shipping.postalCode).trim(),
+        shipping_country: shipping.country?.trim() || 'India',
+        notes: shipping.notes?.trim() || null,
       })
       .select('id')
       .single()
-
     if (orderErr || !order) throw orderErr ?? new Error('Order insert failed')
 
-    const itemsToInsert = lineItems.map((li) => {
-      const meta = skuMeta[li.sku] ?? {}
-      return {
-        order_id: order.id,
-        sku: li.sku,
-        product_name: meta.productName ?? li.sku,
-        collection_name: meta.collectionName ?? '',
-        format: meta.format ?? '',
-        unit_price_cents: li.unit_price_cents,
-        quantity: li.quantity,
-        line_total_cents: li.unit_price_cents * li.quantity,
-      }
-    })
-
-    const { error: itemsErr } = await db.from('order_items').insert(itemsToInsert)
+    const { error: itemsErr } = await db.from('order_items').insert(
+      lineItems.map((li) => {
+        const meta = skuMeta[li.sku] ?? {}
+        return {
+          order_id: order.id,
+          sku: li.sku,
+          product_name: meta.productName ?? li.sku,
+          collection_name: meta.collectionName ?? '',
+          format: meta.format ?? '',
+          unit_price_cents: li.unit_price_cents,
+          quantity: li.quantity,
+          line_total_cents: li.unit_price_cents * li.quantity,
+        }
+      }),
+    )
     if (itemsErr) throw itemsErr
 
-    // Best-effort stock decrement (fine for v1; a single flash-sale race
-    // window is not a concern at current scale).
-    for (const li of lineItems) {
-      const p = priceMap.get(li.sku)!
-      await db.from('product_prices').update({ stock_quantity: p.stock_quantity - li.quantity }).eq('sku', li.sku)
+    let rzpOrder
+    try {
+      // Amounts are stored in paise already (the *_cents columns).
+      rzpOrder = await createRazorpayOrder(total, order.id.slice(0, 40), { order_id: order.id, user_id: user.id })
+    } catch (err) {
+      await db
+        .from('orders')
+        .update({ status: 'cancelled', payment_status: 'failed', payment_error: String((err as Error).message) })
+        .eq('id', order.id)
+      if (err instanceof RazorpayError) return json({ error: err.message }, err.status)
+      throw err
     }
 
-    await db.from('cart_items').delete().eq('user_id', user.id)
+    await db.from('orders').update({ razorpay_order_id: rzpOrder.id }).eq('id', order.id)
 
-    return new Response(JSON.stringify({ ok: true, order_id: order.id, subtotal_cents: subtotal }), {
-      status: 200, headers: { ...cors, 'Content-Type': 'application/json' }
+    return json({
+      ok: true,
+      order_id: order.id,
+      razorpay_order_id: rzpOrder.id,
+      amount: rzpOrder.amount,
+      currency: rzpOrder.currency,
+      key_id: razorpayKeyId(),
     })
   } catch (err) {
     console.error('create-order error:', err)
-    return new Response(JSON.stringify({ error: 'Unexpected error' }), {
-      status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
-    })
+    return json({ error: 'Unexpected error' }, 500)
   }
 })

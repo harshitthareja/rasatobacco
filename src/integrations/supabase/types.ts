@@ -275,6 +275,20 @@ export type Database = {
       }
       orders: {
         Row: {
+          payment_status: string
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          payment_verified_at: string | null
+          payment_error: string | null
+          shipping_charge_cents: number
+          total_cents: number | null
+          shipment_tracking_number: string | null
+          shipment_status: string | null
+          shipment_created_at: string | null
+          shipment_pickup_scheduled_at: string | null
+          shipment_label_url: string | null
+          shipment_events: Json | null
+          shipment_synced_at: string | null
           created_at: string | null
           currency: string
           id: string
@@ -294,6 +308,20 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          payment_status?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          payment_verified_at?: string | null
+          payment_error?: string | null
+          shipping_charge_cents?: number
+          total_cents?: number | null
+          shipment_tracking_number?: string | null
+          shipment_status?: string | null
+          shipment_created_at?: string | null
+          shipment_pickup_scheduled_at?: string | null
+          shipment_label_url?: string | null
+          shipment_events?: Json | null
+          shipment_synced_at?: string | null
           created_at?: string | null
           currency?: string
           id?: string
@@ -313,6 +341,20 @@ export type Database = {
           user_id: string
         }
         Update: {
+          payment_status?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          payment_verified_at?: string | null
+          payment_error?: string | null
+          shipping_charge_cents?: number
+          total_cents?: number | null
+          shipment_tracking_number?: string | null
+          shipment_status?: string | null
+          shipment_created_at?: string | null
+          shipment_pickup_scheduled_at?: string | null
+          shipment_label_url?: string | null
+          shipment_events?: Json | null
+          shipment_synced_at?: string | null
           created_at?: string | null
           currency?: string
           id?: string
@@ -335,6 +377,8 @@ export type Database = {
       }
       product_prices: {
         Row: {
+          sale_ends_at: string | null
+          sale_price_cents: number | null
           currency: string
           is_purchasable: boolean
           price_cents: number | null
@@ -343,6 +387,8 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          sale_ends_at?: string | null
+          sale_price_cents?: number | null
           currency?: string
           is_purchasable?: boolean
           price_cents?: number | null
@@ -351,6 +397,8 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          sale_ends_at?: string | null
+          sale_price_cents?: number | null
           currency?: string
           is_purchasable?: boolean
           price_cents?: number | null
@@ -423,6 +471,51 @@ export type Database = {
           state?: string
           status?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      store_settings: {
+        Row: {
+          default_box_breadth_cm: number
+          default_box_height_cm: number
+          default_box_length_cm: number
+          default_box_weight_kg: number
+          flexi_courier_code: number | null
+          flexi_rto_warehouse_code: string | null
+          flexi_warehouse_code: string | null
+          free_shipping_threshold_cents: number | null
+          hsn_code: string
+          id: number
+          shipping_flat_cents: number
+          updated_at: string
+        }
+        Insert: {
+          default_box_breadth_cm?: number
+          default_box_height_cm?: number
+          default_box_length_cm?: number
+          default_box_weight_kg?: number
+          flexi_courier_code?: number | null
+          flexi_rto_warehouse_code?: string | null
+          flexi_warehouse_code?: string | null
+          free_shipping_threshold_cents?: number | null
+          hsn_code?: string
+          id?: number
+          shipping_flat_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          default_box_breadth_cm?: number
+          default_box_height_cm?: number
+          default_box_length_cm?: number
+          default_box_weight_kg?: number
+          flexi_courier_code?: number | null
+          flexi_rto_warehouse_code?: string | null
+          flexi_warehouse_code?: string | null
+          free_shipping_threshold_cents?: number | null
+          hsn_code?: string
+          id?: number
+          shipping_flat_cents?: number
+          updated_at?: string
         }
         Relationships: []
       }

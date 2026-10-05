@@ -120,7 +120,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isLoginPage = pathname === "/login" || pathname === "/admin";
+  const isLoginPage = pathname === "/login";
   const isExcluded = isLoginPage || pathname === "/age-restricted";
 
   return (
