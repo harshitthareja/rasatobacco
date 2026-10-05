@@ -9,87 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ShopRouteImport } from './routes/shop'
-import { Route as PartnersRouteImport } from './routes/partners'
-import { Route as LoyaltyRouteImport } from './routes/loyalty'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as HouseOfRasaRouteImport } from './routes/house-of-rasa'
-import { Route as HookahRouteImport } from './routes/hookah'
-import { Route as FlavoursRouteImport } from './routes/flavours'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as ComingSoonRouteImport } from './routes/coming-soon'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as CartRouteImport } from './routes/cart'
-import { Route as AgeRestrictedRouteImport } from './routes/age-restricted'
-import { Route as AccessoriesRouteImport } from './routes/accessories'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
-import { Route as ProductKeyRouteImport } from './routes/product.$key'
-import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
-import { Route as CollectionsTarkibRouteImport } from './routes/collections.tarkib'
-import { Route as CollectionsMakhmalRouteImport } from './routes/collections.makhmal'
-import { Route as CollectionsMajlisRouteImport } from './routes/collections.majlis'
-import { Route as AccountSettingsRouteImport } from './routes/account.settings'
+import { Route as AccessoriesRouteImport } from './routes/accessories'
+import { Route as AgeRestrictedRouteImport } from './routes/age-restricted'
+import { Route as CartRouteImport } from './routes/cart'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ComingSoonRouteImport } from './routes/coming-soon'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as FlavoursRouteImport } from './routes/flavours'
+import { Route as HookahRouteImport } from './routes/hookah'
+import { Route as HouseOfRasaRouteImport } from './routes/house-of-rasa'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as LoyaltyRouteImport } from './routes/loyalty'
+import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as ShopRouteImport } from './routes/shop'
 import { Route as AccountOrdersRouteImport } from './routes/account.orders'
+import { Route as AccountSettingsRouteImport } from './routes/account.settings'
+import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
+import { Route as CollectionsMajlisRouteImport } from './routes/collections.majlis'
+import { Route as CollectionsMakhmalRouteImport } from './routes/collections.makhmal'
+import { Route as CollectionsTarkibRouteImport } from './routes/collections.tarkib'
+import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order-confirmation.$orderId'
+import { Route as ProductKeyRouteImport } from './routes/product.$key'
 
-const ShopRoute = ShopRouteImport.update({
-  id: '/shop',
-  path: '/shop',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PartnersRoute = PartnersRouteImport.update({
-  id: '/partners',
-  path: '/partners',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoyaltyRoute = LoyaltyRouteImport.update({
-  id: '/loyalty',
-  path: '/loyalty',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HouseOfRasaRoute = HouseOfRasaRouteImport.update({
-  id: '/house-of-rasa',
-  path: '/house-of-rasa',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HookahRoute = HookahRouteImport.update({
-  id: '/hookah',
-  path: '/hookah',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FlavoursRoute = FlavoursRouteImport.update({
-  id: '/flavours',
-  path: '/flavours',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ComingSoonRoute = ComingSoonRouteImport.update({
-  id: '/coming-soon',
-  path: '/coming-soon',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CartRoute = CartRouteImport.update({
-  id: '/cart',
-  path: '/cart',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AgeRestrictedRoute = AgeRestrictedRouteImport.update({
-  id: '/age-restricted',
-  path: '/age-restricted',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccessoriesRoute = AccessoriesRouteImport.update({
@@ -97,9 +42,74 @@ const AccessoriesRoute = AccessoriesRouteImport.update({
   path: '/accessories',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AgeRestrictedRoute = AgeRestrictedRouteImport.update({
+  id: '/age-restricted',
+  path: '/age-restricted',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComingSoonRoute = ComingSoonRouteImport.update({
+  id: '/coming-soon',
+  path: '/coming-soon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlavoursRoute = FlavoursRouteImport.update({
+  id: '/flavours',
+  path: '/flavours',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HookahRoute = HookahRouteImport.update({
+  id: '/hookah',
+  path: '/hookah',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HouseOfRasaRoute = HouseOfRasaRouteImport.update({
+  id: '/house-of-rasa',
+  path: '/house-of-rasa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoyaltyRoute = LoyaltyRouteImport.update({
+  id: '/loyalty',
+  path: '/loyalty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartnersRoute = PartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountOrdersRoute = AccountOrdersRouteImport.update({
+  id: '/account/orders',
+  path: '/account/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountSettingsRoute = AccountSettingsRouteImport.update({
+  id: '/account/settings',
+  path: '/account/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
@@ -107,9 +117,19 @@ const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
   path: '/collections/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductKeyRoute = ProductKeyRouteImport.update({
-  id: '/product/$key',
-  path: '/product/$key',
+const CollectionsMajlisRoute = CollectionsMajlisRouteImport.update({
+  id: '/collections/majlis',
+  path: '/collections/majlis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsMakhmalRoute = CollectionsMakhmalRouteImport.update({
+  id: '/collections/makhmal',
+  path: '/collections/makhmal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsTarkibRoute = CollectionsTarkibRouteImport.update({
+  id: '/collections/tarkib',
+  path: '/collections/tarkib',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrderConfirmationOrderIdRoute =
@@ -118,29 +138,9 @@ const OrderConfirmationOrderIdRoute =
     path: '/order-confirmation/$orderId',
     getParentRoute: () => rootRouteImport,
   } as any)
-const CollectionsTarkibRoute = CollectionsTarkibRouteImport.update({
-  id: '/collections/tarkib',
-  path: '/collections/tarkib',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CollectionsMakhmalRoute = CollectionsMakhmalRouteImport.update({
-  id: '/collections/makhmal',
-  path: '/collections/makhmal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CollectionsMajlisRoute = CollectionsMajlisRouteImport.update({
-  id: '/collections/majlis',
-  path: '/collections/majlis',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountSettingsRoute = AccountSettingsRouteImport.update({
-  id: '/account/settings',
-  path: '/account/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountOrdersRoute = AccountOrdersRouteImport.update({
-  id: '/account/orders',
-  path: '/account/orders',
+const ProductKeyRoute = ProductKeyRouteImport.update({
+  id: '/product/$key',
+  path: '/product/$key',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -319,88 +319,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/shop': {
-      id: '/shop'
-      path: '/shop'
-      fullPath: '/shop'
-      preLoaderRoute: typeof ShopRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/partners': {
-      id: '/partners'
-      path: '/partners'
-      fullPath: '/partners'
-      preLoaderRoute: typeof PartnersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/loyalty': {
-      id: '/loyalty'
-      path: '/loyalty'
-      fullPath: '/loyalty'
-      preLoaderRoute: typeof LoyaltyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/house-of-rasa': {
-      id: '/house-of-rasa'
-      path: '/house-of-rasa'
-      fullPath: '/house-of-rasa'
-      preLoaderRoute: typeof HouseOfRasaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hookah': {
-      id: '/hookah'
-      path: '/hookah'
-      fullPath: '/hookah'
-      preLoaderRoute: typeof HookahRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/flavours': {
-      id: '/flavours'
-      path: '/flavours'
-      fullPath: '/flavours'
-      preLoaderRoute: typeof FlavoursRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/coming-soon': {
-      id: '/coming-soon'
-      path: '/coming-soon'
-      fullPath: '/coming-soon'
-      preLoaderRoute: typeof ComingSoonRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cart': {
-      id: '/cart'
-      path: '/cart'
-      fullPath: '/cart'
-      preLoaderRoute: typeof CartRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/age-restricted': {
-      id: '/age-restricted'
-      path: '/age-restricted'
-      fullPath: '/age-restricted'
-      preLoaderRoute: typeof AgeRestrictedRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accessories': {
@@ -410,53 +333,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccessoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/age-restricted': {
+      id: '/age-restricted'
+      path: '/age-restricted'
+      fullPath: '/age-restricted'
+      preLoaderRoute: typeof AgeRestrictedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/collections/': {
-      id: '/collections/'
-      path: '/collections'
-      fullPath: '/collections/'
-      preLoaderRoute: typeof CollectionsIndexRouteImport
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/product/$key': {
-      id: '/product/$key'
-      path: '/product/$key'
-      fullPath: '/product/$key'
-      preLoaderRoute: typeof ProductKeyRouteImport
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/order-confirmation/$orderId': {
-      id: '/order-confirmation/$orderId'
-      path: '/order-confirmation/$orderId'
-      fullPath: '/order-confirmation/$orderId'
-      preLoaderRoute: typeof OrderConfirmationOrderIdRouteImport
+    '/coming-soon': {
+      id: '/coming-soon'
+      path: '/coming-soon'
+      fullPath: '/coming-soon'
+      preLoaderRoute: typeof ComingSoonRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/collections/tarkib': {
-      id: '/collections/tarkib'
-      path: '/collections/tarkib'
-      fullPath: '/collections/tarkib'
-      preLoaderRoute: typeof CollectionsTarkibRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/collections/makhmal': {
-      id: '/collections/makhmal'
-      path: '/collections/makhmal'
-      fullPath: '/collections/makhmal'
-      preLoaderRoute: typeof CollectionsMakhmalRouteImport
+    '/flavours': {
+      id: '/flavours'
+      path: '/flavours'
+      fullPath: '/flavours'
+      preLoaderRoute: typeof FlavoursRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/collections/majlis': {
-      id: '/collections/majlis'
-      path: '/collections/majlis'
-      fullPath: '/collections/majlis'
-      preLoaderRoute: typeof CollectionsMajlisRouteImport
+    '/hookah': {
+      id: '/hookah'
+      path: '/hookah'
+      fullPath: '/hookah'
+      preLoaderRoute: typeof HookahRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/house-of-rasa': {
+      id: '/house-of-rasa'
+      path: '/house-of-rasa'
+      fullPath: '/house-of-rasa'
+      preLoaderRoute: typeof HouseOfRasaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loyalty': {
+      id: '/loyalty'
+      path: '/loyalty'
+      fullPath: '/loyalty'
+      preLoaderRoute: typeof LoyaltyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/partners': {
+      id: '/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof PartnersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account/orders': {
+      id: '/account/orders'
+      path: '/account/orders'
+      fullPath: '/account/orders'
+      preLoaderRoute: typeof AccountOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/settings': {
@@ -466,11 +431,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/account/orders': {
-      id: '/account/orders'
-      path: '/account/orders'
-      fullPath: '/account/orders'
-      preLoaderRoute: typeof AccountOrdersRouteImport
+    '/collections/': {
+      id: '/collections/'
+      path: '/collections'
+      fullPath: '/collections/'
+      preLoaderRoute: typeof CollectionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/majlis': {
+      id: '/collections/majlis'
+      path: '/collections/majlis'
+      fullPath: '/collections/majlis'
+      preLoaderRoute: typeof CollectionsMajlisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/makhmal': {
+      id: '/collections/makhmal'
+      path: '/collections/makhmal'
+      fullPath: '/collections/makhmal'
+      preLoaderRoute: typeof CollectionsMakhmalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/tarkib': {
+      id: '/collections/tarkib'
+      path: '/collections/tarkib'
+      fullPath: '/collections/tarkib'
+      preLoaderRoute: typeof CollectionsTarkibRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order-confirmation/$orderId': {
+      id: '/order-confirmation/$orderId'
+      path: '/order-confirmation/$orderId'
+      fullPath: '/order-confirmation/$orderId'
+      preLoaderRoute: typeof OrderConfirmationOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/$key': {
+      id: '/product/$key'
+      path: '/product/$key'
+      fullPath: '/product/$key'
+      preLoaderRoute: typeof ProductKeyRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
