@@ -18,12 +18,19 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
   const { user } = useAuth();
   const { addItem } = useCart();
   const navigate = useNavigate();
-  const [format, setFormat] = useState(formats[1]);
+  const [chosenFormat, setFormat] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [authOpen, setAuthOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
+  // A pack size is on sale only once it has a price and is marked buyable;
+  // the rest are shown as "coming soon" and can't be selected.
+  const isReleased = (f: string) => {
+    const p = prices[productSku(entry.collection.slug, entry.flavour.name, f)];
+    return p?.price_cents != null && !!p.is_purchasable;
+  };
+  const format = chosenFormat ?? formats.find(isReleased) ?? formats[0];
   const sku = productSku(entry.collection.slug, entry.flavour.name, format);
   const price = prices[sku];
   const hasPrice = price?.price_cents != null;
@@ -70,19 +77,29 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
           </p>
         )}
         <div className="flex flex-wrap gap-1.5">
-          {formats.map((f) => (
-            <button
-              key={f}
-              onClick={() => setFormat(f)}
-              className={`text-[0.65rem] tracking-luxe uppercase px-3 py-2 border transition-all duration-200 ${
-                format === f
-                  ? "border-gold text-gold bg-gold/10"
-                  : "border-border/40 text-foreground/60 hover:border-gold/50 hover:text-gold"
-              }`}
-            >
-              {f}
-            </button>
-          ))}
+          {formats.map((f) => {
+            const released = isReleased(f);
+            return (
+              <button
+                key={f}
+                onClick={() => released && setFormat(f)}
+                disabled={!released}
+                title={released ? undefined : "Coming soon"}
+                className={`text-[0.65rem] tracking-luxe uppercase px-3 py-2 border transition-all duration-200 ${
+                  format === f
+                    ? "border-gold text-gold bg-gold/10"
+                    : released
+                      ? "border-border/40 text-foreground/60 hover:border-gold/50 hover:text-gold"
+                      : "border-border/25 text-foreground/30 cursor-not-allowed"
+                }`}
+              >
+                {f}
+                {!released && (
+                  <span className="block text-[0.5rem] tracking-wide normal-case">Coming soon</span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -105,7 +122,7 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
           </>
         ) : (
           <span className="text-[0.65rem] tracking-luxe uppercase text-foreground/45">
-            Price coming soon
+            Coming soon
           </span>
         )}
         {hasPrice && !inStock && (
