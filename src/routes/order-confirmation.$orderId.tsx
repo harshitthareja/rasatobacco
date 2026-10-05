@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/money";
 import type { Tables } from "@/integrations/supabase/types";
+import { OrderTracking } from "@/components/shop/OrderTracking";
 
 export const Route = createFileRoute("/order-confirmation/$orderId")({
   head: () => ({
@@ -61,17 +62,35 @@ function OrderConfirmationPage() {
     );
   }
 
+  const paid = order.payment_status === "paid";
+  const total = order.total_cents ?? order.subtotal_cents + (order.shipping_charge_cents ?? 0);
+
   return (
     <main className="bg-ink text-foreground min-h-screen pt-32 pb-24 px-6">
       <div className="max-w-2xl mx-auto text-center">
-        <CheckCircle2 className="h-12 w-12 text-gold mx-auto mb-6" strokeWidth={1.25} />
-        <p className="text-[0.65rem] tracking-luxe uppercase text-gold mb-3">Order Placed</p>
+        {paid ? (
+          <CheckCircle2 className="h-12 w-12 text-gold mx-auto mb-6" strokeWidth={1.25} />
+        ) : (
+          <Clock className="h-12 w-12 text-gold/70 mx-auto mb-6" strokeWidth={1.25} />
+        )}
+        <p className="text-[0.65rem] tracking-luxe uppercase text-gold mb-3">
+          {paid ? "Order Confirmed" : "Awaiting Payment"}
+        </p>
         <h1 className="font-serif text-4xl mb-4">
-          Thank you, {order.shipping_name.split(" ")[0]}.
+          {paid ? `Thank you, ${order.shipping_name.split(" ")[0]}.` : "Payment not completed"}
         </h1>
         <p className="text-foreground/70 leading-relaxed mb-10">
-          Your order has been received and is <span className="text-gold">{order.status}</span>. Our
-          team will reach out to confirm payment and delivery details.
+          {paid ? (
+            <>
+              Your payment was received and your order is{" "}
+              <span className="text-gold">{order.status}</span>. We'll email you as soon as it
+              ships.
+            </>
+          ) : order.status === "cancelled" ? (
+            "This checkout was not paid and has been closed. Your cart is saved — you can check out again any time."
+          ) : (
+            "We haven't received payment for this order yet. If money was debited, it will be confirmed here automatically within a few minutes."
+          )}
         </p>
 
         <div className="border border-border/40 p-6 text-left">
@@ -100,11 +119,30 @@ function OrderConfirmationPage() {
             ))}
           </div>
 
-          <div className="flex items-center justify-between border-t border-border/30 pt-4 text-sm mb-6">
-            <span className="text-foreground/70">Subtotal</span>
-            <span className="font-serif text-lg text-gold">
-              {formatPrice(order.subtotal_cents, order.currency)}
-            </span>
+          <div className="space-y-2 border-t border-border/30 pt-4 text-sm mb-6">
+            <div className="flex items-center justify-between">
+              <span className="text-foreground/70">Subtotal</span>
+              <span>{formatPrice(order.subtotal_cents, order.currency)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-foreground/70">Shipping</span>
+              <span>
+                {order.shipping_charge_cents
+                  ? formatPrice(order.shipping_charge_cents, order.currency)
+                  : "Free"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-foreground/70">{paid ? "Paid" : "Total"}</span>
+              <span className="font-serif text-lg text-gold">
+                {formatPrice(total, order.currency)}
+              </span>
+            </div>
+            {order.razorpay_payment_id && (
+              <p className="text-[0.65rem] text-foreground/45">
+                Payment ref: <span className="font-mono">{order.razorpay_payment_id}</span>
+              </p>
+            )}
           </div>
 
           <p className="text-[0.65rem] tracking-luxe uppercase text-foreground/50 mb-2">
@@ -122,6 +160,15 @@ function OrderConfirmationPage() {
             <br />
             {order.shipping_phone}
           </p>
+
+          {paid && (
+            <div className="mt-6 border-t border-border/30 pt-5">
+              <p className="text-[0.65rem] tracking-luxe uppercase text-foreground/50 mb-3">
+                Delivery Tracking
+              </p>
+              <OrderTracking orderId={order.id} />
+            </div>
+          )}
         </div>
 
         <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">

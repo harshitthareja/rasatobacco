@@ -6,7 +6,9 @@ import { useCart } from "@/hooks/useCart";
 import { useProductPrices } from "@/hooks/useProductPrices";
 import { parseSku } from "@/data/catalog";
 import { formatPrice } from "@/lib/money";
-import { supabase } from "@/integrations/supabase/client";
+import { invokeFunction } from "@/lib/functions";
+import { openRazorpayCheckout } from "@/lib/razorpay";
+import { shippingChargeFor, useShippingSettings } from "@/hooks/useStoreSettings";
 import { AuthModal } from "@/components/AuthModal";
 
 export const Route = createFileRoute("/checkout")({
@@ -29,6 +31,23 @@ type ShippingForm = {
   notes: string;
 };
 
+type CreateOrderResponse = {
+  order_id: string;
+  razorpay_order_id: string;
+  amount: number;
+  currency: string;
+  key_id: string;
+};
+
+type Stage = "idle" | "creating" | "paying" | "verifying";
+
+const STAGE_LABEL: Record<Stage, string> = {
+  idle: "",
+  creating: "Preparing Payment…",
+  paying: "Awaiting Payment…",
+  verifying: "Confirming Payment…",
+};
+
 const emptyForm: ShippingForm = {
   name: "",
   phone: "",
@@ -47,17 +66,19 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const { items, loading: cartLoading, clear } = useCart();
   const { prices, loading: pricesLoading } = useProductPrices();
+  const { settings: shippingSettings, loading: settingsLoading } = useShippingSettings();
   const [form, setForm] = useState<ShippingForm>({
     ...emptyForm,
     name: (user?.user_metadata?.full_name as string) ?? "",
     email: user?.email ?? "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof ShippingForm, string>>>({});
-  const [placing, setPlacing] = useState(false);
+  const [stage, setStage] = useState<Stage>("idle");
+  const placing = stage !== "idle";
   const [placeError, setPlaceError] = useState<string | null>(null);
   const [authOpen, setAuthOpen] = useState(!authLoading && !user);
 
-  const loading = authLoading || cartLoading || pricesLoading;
+  const loading = authLoading || cartLoading || pricesLoading || settingsLoading;
 
   const resolved = items
     .map((item) => {
@@ -74,6 +95,8 @@ function CheckoutPage() {
     (sum, r) => sum + (r.price!.price_cents as number) * r.quantity,
     0,
   );
+  const shippingCents = shippingChargeFor(subtotalCents, shippingSettings);
+  const totalCents = subtotalCents + shippingCents;
 
   const onChange =
     (field: keyof ShippingForm) =>
@@ -96,6 +119,15 @@ function CheckoutPage() {
     for (const field of required) {
       if (!form[field].trim()) next[field] = "Required";
     }
+    if (!next.phone && !/^\d{10}$/.test(form.phone.replace(/\D/g, "").slice(-10))) {
+      next.phone = "Enter a 10-digit mobile number";
+    }
+    if (!next.email && !/^\S+@\S+\.\S+$/.test(form.email.trim())) {
+      next.email = "Enter a valid email";
+    }
+    if (!next.postalCode && !/^\d{6}$/.test(form.postalCode.trim())) {
+      next.postalCode = "Enter a 6-digit PIN code";
+    }
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -111,7 +143,7 @@ function CheckoutPage() {
     }
     if (!validate()) return;
 
-    setPlacing(true);
+    setStage("creating");
     setPlaceError(null);
     try {
       const skuMeta: Record<
@@ -126,24 +158,66 @@ function CheckoutPage() {
         };
       }
 
-      const { data, error } = await supabase.functions.invoke("create-order", {
-        body: { shipping: form, skuMeta },
+      // 1. Server creates the order + Razorpay order from the cart and
+      //    authoritative prices — the client never sends an amount.
+      const { data: order, error: orderError } = await invokeFunction<CreateOrderResponse>(
+        "create-order",
+        { shipping: form, skuMeta },
+      );
+      if (orderError || !order) {
+        setPlaceError(orderError ?? "Could not start payment. Please try again.");
+        setStage("idle");
+        return;
+      }
+
+      // 2. Razorpay Standard Checkout modal.
+      setStage("paying");
+      const outcome = await openRazorpayCheckout({
+        key: order.key_id || (import.meta.env.VITE_RAZORPAY_KEY_ID as string),
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.razorpay_order_id,
+        name: "RASA",
+        description: `Order #${order.order_id.slice(0, 8)}`,
+        prefill: { name: form.name, email: form.email, contact: form.phone },
+        notes: { order_id: order.order_id },
+        theme: { color: "#c9a96b" },
       });
 
-      if (error || data?.error) {
+      if (outcome.type === "dismissed") {
         setPlaceError(
-          data?.error ?? error?.message ?? "Could not place your order. Please try again.",
+          outcome.failure
+            ? `Payment failed: ${outcome.failure}. You have not been charged — please try again.`
+            : "Payment was cancelled. Your cart is saved — you can try again whenever you're ready.",
         );
-        setPlacing(false);
+        setStage("idle");
+        return;
+      }
+
+      // 3. Server verifies the HMAC signature before marking the order paid.
+      setStage("verifying");
+      const { error: verifyError } = await invokeFunction<{ ok: true; order_id: string }>(
+        "verify-payment",
+        outcome.response,
+      );
+      if (verifyError) {
+        setPlaceError(
+          `We couldn't confirm your payment (${verifyError}). If money was debited it will be reconciled automatically — payment reference ${outcome.response.razorpay_payment_id}.`,
+        );
+        setStage("idle");
         return;
       }
 
       await clear();
-      navigate({ to: "/order-confirmation/$orderId", params: { orderId: data.order_id } });
+      navigate({ to: "/order-confirmation/$orderId", params: { orderId: order.order_id } });
     } catch (e) {
       console.error(e);
-      setPlaceError("Could not place your order. Please try again.");
-      setPlacing(false);
+      setPlaceError(
+        e instanceof Error && e.message
+          ? e.message
+          : "Could not complete payment. Please try again.",
+      );
+      setStage("idle");
     }
   };
 
@@ -288,7 +362,7 @@ function CheckoutPage() {
                   disabled={placing || purchasableItems.length === 0}
                   className="group inline-flex items-center justify-center gap-3 px-10 py-4 bg-gold text-primary-foreground text-xs tracking-luxe uppercase hover:bg-gold-soft transition-colors duration-500 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {placing ? "Placing Order…" : "Place Order"}
+                  {placing ? STAGE_LABEL[stage] : `Pay ${formatPrice(totalCents, "INR")}`}
                   {placing ? (
                     <span className="h-3.5 w-3.5 rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground animate-spin" />
                   ) : (
@@ -300,9 +374,9 @@ function CheckoutPage() {
                 <p className="text-xs font-serif italic text-destructive">{placeError}</p>
               )}
               <p className="text-xs text-foreground/60">
-                Payment is collected after order confirmation — our team will follow up to complete
-                payment and dispatch. By placing this order you confirm you are 18+ and the
-                recipient is legally permitted to receive these products at the delivery address.
+                Payments are processed securely by Razorpay — UPI, cards, net banking and wallets.
+                By paying you confirm you are 18+ and the recipient is legally permitted to receive
+                these products at the delivery address.
               </p>
             </form>
 
@@ -328,15 +402,30 @@ function CheckoutPage() {
                   </div>
                 ))}
               </div>
-              <div className="flex items-center justify-between border-t border-border/30 pt-4 text-sm">
-                <span className="text-foreground/70">Subtotal</span>
-                <span className="font-serif text-lg text-gold">
-                  {formatPrice(subtotalCents, "INR")}
-                </span>
+              <div className="space-y-2 border-t border-border/30 pt-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-foreground/70">Subtotal</span>
+                  <span className="text-foreground/80">{formatPrice(subtotalCents, "INR")}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-foreground/70">Shipping</span>
+                  <span className="text-foreground/80">
+                    {shippingCents === 0 ? "Free" : formatPrice(shippingCents, "INR")}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t border-border/30 pt-3">
+                  <span className="text-foreground/70">Total</span>
+                  <span className="font-serif text-lg text-gold">
+                    {formatPrice(totalCents, "INR")}
+                  </span>
+                </div>
               </div>
-              <p className="mt-2 text-[0.65rem] text-foreground/45">
-                Shipping calculated after confirmation.
-              </p>
+              {shippingSettings?.free_shipping_threshold_cents != null && shippingCents > 0 && (
+                <p className="mt-2 text-[0.65rem] text-foreground/45">
+                  Free shipping on orders over{" "}
+                  {formatPrice(shippingSettings.free_shipping_threshold_cents, "INR")}.
+                </p>
+              )}
             </div>
           </div>
         )}

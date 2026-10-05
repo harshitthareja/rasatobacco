@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-const BYPASS = ["/age-restricted", "/login", "/test-email", "/admin"];
+const BYPASS = ["/age-restricted", "/login", "/test-email"];
 const shouldBypass = (path: string) => BYPASS.includes(path);
 
 describe("AgeGate bypass paths", () => {

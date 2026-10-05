@@ -128,17 +128,30 @@ function OrdersPage() {
                       {new Date(order.created_at ?? "").toLocaleString("en-IN")}
                     </p>
                   </div>
-                  <span
-                    className="text-[0.6rem] tracking-luxe uppercase px-3 py-1 border shrink-0"
-                    style={{
-                      color: ORDER_STATUS_COLORS[order.status] ?? "#888",
-                      borderColor: `${ORDER_STATUS_COLORS[order.status] ?? "#888"}40`,
-                    }}
-                  >
-                    {order.status}
-                  </span>
+                  <div className="flex gap-2 shrink-0">
+                    {order.payment_status !== "paid" && (
+                      <span className="text-[0.6rem] tracking-luxe uppercase px-3 py-1 border border-destructive/40 text-destructive/80">
+                        {order.status === "cancelled" ? "Unpaid" : "Payment pending"}
+                      </span>
+                    )}
+                    <span
+                      className="text-[0.6rem] tracking-luxe uppercase px-3 py-1 border"
+                      style={{
+                        color: ORDER_STATUS_COLORS[order.status] ?? "#888",
+                        borderColor: `${ORDER_STATUS_COLORS[order.status] ?? "#888"}40`,
+                      }}
+                    >
+                      {order.status}
+                    </span>
+                  </div>
                 </div>
 
+                {order.shipment_tracking_number && (
+                  <p className="text-xs text-foreground/60 mb-3">
+                    AWB <span className="font-mono">{order.shipment_tracking_number}</span>
+                    {order.shipment_status ? ` · ${order.shipment_status}` : ""}
+                  </p>
+                )}
                 <div className="space-y-1.5 mb-4">
                   {order.order_items.map((item) => (
                     <p key={item.id} className="text-sm text-foreground/75">
@@ -153,10 +166,14 @@ function OrdersPage() {
                     params={{ orderId: order.id }}
                     className="text-[0.65rem] tracking-luxe uppercase text-gold/80 hover:text-gold transition-colors"
                   >
-                    View Details
+                    {order.shipment_tracking_number ? "Track Order" : "View Details"}
                   </Link>
                   <span className="font-serif text-gold">
-                    {formatPrice(order.subtotal_cents, order.currency)}
+                    {formatPrice(
+                      order.total_cents ??
+                        order.subtotal_cents + (order.shipping_charge_cents ?? 0),
+                      order.currency,
+                    )}
                   </span>
                 </div>
               </div>
