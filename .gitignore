@@ -36,3 +36,6 @@ dist-ssr
 
 # Local preview screenshots
 screenshots/
+
+# Vercel build output
+.vercel
