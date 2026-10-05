@@ -34,7 +34,7 @@ export function Orders() {
     sessionStorage.removeItem("rasa-admin-order-status");
     return preset ?? "";
   });
-  const [payment, setPayment] = useState("active");
+  const [payment, setPayment] = useState("");
   const [searchDraft, setSearchDraft] = useState("");
   const [search, setSearch] = useState("");
   const { rows, count, page, setPage, loading, error, reload } = usePaged<Order>("orders", {
@@ -121,13 +121,13 @@ export function Orders() {
         </div>
         <div className="w-40">
           <Select label="Payment" value={payment} onChange={(e) => setPayment(e.target.value)}>
+            <option value="">All orders</option>
             <option value="active">To fulfil (paid + COD)</option>
             <option value="cod">Cash on delivery</option>
             <option value="paid">Paid</option>
             <option value="pending">Unpaid</option>
             <option value="failed">Failed</option>
             <option value="refunded">Refunded</option>
-            <option value="">All checkouts</option>
           </Select>
         </div>
         <form

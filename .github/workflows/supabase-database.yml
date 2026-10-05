@@ -1,0 +1,74 @@
+name: Supabase database setup
+
+# Brings the website's Supabase database up to date (idempotent) and prints a
+# health check plus recent edge-function errors. Uses the Supabase Management
+# API with the SUPABASE_ACCESS_TOKEN repository secret.
+#   mode=check  → read-only report
+#   mode=setup  → apply supabase/setup/ensure_schema.sql, then report
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "check (read-only) or setup (apply schema, then check)"
+        required: true
+        default: setup
+        type: choice
+        options: [setup, check]
+
+jobs:
+  database:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      PROJECT_REF: qhzbxlyyksppynxnnmqe
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Define query helper
+        run: |
+          cat > /tmp/q.sh <<'SH'
+          #!/usr/bin/env bash
+          # Usage: q.sh <file.sql> — runs SQL via the Management API, prints the JSON result.
+          set -euo pipefail
+          body=$(jq -Rs '{query: .}' < "$1")
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' -X POST \
+            "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" -d "$body")
+          echo "HTTP $code"
+          jq . /tmp/out.json 2>/dev/null || cat /tmp/out.json
+          [ "$code" -lt 300 ]
+          SH
+          chmod +x /tmp/q.sh
+
+      - name: Health check (before)
+        continue-on-error: true
+        run: /tmp/q.sh supabase/setup/health_check.sql
+
+      - name: Apply schema
+        if: inputs.mode == 'setup'
+        run: /tmp/q.sh supabase/setup/ensure_schema.sql
+
+      - name: Health check (after)
+        if: inputs.mode == 'setup'
+        run: /tmp/q.sh supabase/setup/health_check.sql
+
+      - name: Recent edge function errors
+        continue-on-error: true
+        run: |
+          end=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          start=$(date -u -d '-24 hours' +%Y-%m-%dT%H:%M:%SZ)
+          sql="select timestamp, event_message from function_logs where metadata.level in ('error','warning') or regexp_contains(event_message, 'error') order by timestamp desc limit 40"
+          curl -sS -G "https://api.supabase.com/v1/projects/$PROJECT_REF/analytics/endpoints/logs.all" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            --data-urlencode "sql=$sql" \
+            --data-urlencode "iso_timestamp_start=$start" \
+            --data-urlencode "iso_timestamp_end=$end" | jq '.result // .' | head -200
+          echo "--- edge requests with status >= 400 ---"
+          sql2="select timestamp, event_message, response.status_code from function_edge_logs cross join unnest(metadata) as m cross join unnest(m.response) as response where response.status_code >= 400 order by timestamp desc limit 40"
+          curl -sS -G "https://api.supabase.com/v1/projects/$PROJECT_REF/analytics/endpoints/logs.all" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            --data-urlencode "sql=$sql2" \
+            --data-urlencode "iso_timestamp_start=$start" \
+            --data-urlencode "iso_timestamp_end=$end" | jq '.result // .' | head -200
