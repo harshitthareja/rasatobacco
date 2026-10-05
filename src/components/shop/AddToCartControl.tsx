@@ -23,6 +23,7 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
   const [authOpen, setAuthOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [cartError, setCartError] = useState<string | null>(null);
 
   // A pack size is on sale only once it has a price and is marked buyable;
   // the rest are shown as "coming soon" and can't be selected.
@@ -45,6 +46,7 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
     }
     if (!canBuy) return;
     setBusy(true);
+    setCartError(null);
     try {
       await addItem(sku, qty);
       if (buyNow) {
@@ -53,6 +55,12 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
         setJustAdded(true);
         setTimeout(() => setJustAdded(false), 1800);
       }
+    } catch (e) {
+      setCartError(
+        e instanceof Error && e.message
+          ? `Couldn't add to cart: ${e.message}`
+          : "Couldn't add to cart. Please sign in again and retry.",
+      );
     } finally {
       setBusy(false);
     }
@@ -181,6 +189,8 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
           Buy Now
         </button>
       </div>
+
+      {cartError && <p className="text-xs font-serif italic text-destructive">{cartError}</p>}
 
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} reason="cart" />
     </div>

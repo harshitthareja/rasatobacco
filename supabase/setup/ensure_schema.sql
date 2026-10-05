@@ -111,3 +111,17 @@ WHERE is_purchasable AND price_cents IS NOT NULL AND stock_quantity = 0;
 UPDATE public.store_settings
 SET shipping_flat_cents = 4900, free_shipping_threshold_cents = 24900, updated_at = now()
 WHERE id = 1 AND (shipping_flat_cents = 0 OR free_shipping_threshold_cents IS NULL);
+
+-- Cart access for signed-in shoppers (re-asserted in case the original
+-- policies or grants are missing on this project).
+ALTER TABLE public.cart_items ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Owner can read own cart" ON public.cart_items;
+DROP POLICY IF EXISTS "Owner can insert own cart items" ON public.cart_items;
+DROP POLICY IF EXISTS "Owner can update own cart items" ON public.cart_items;
+DROP POLICY IF EXISTS "Owner can delete own cart items" ON public.cart_items;
+CREATE POLICY "Owner can read own cart" ON public.cart_items FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Owner can insert own cart items" ON public.cart_items FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Owner can update own cart items" ON public.cart_items FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Owner can delete own cart items" ON public.cart_items FOR DELETE USING (auth.uid() = user_id);
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.cart_items TO authenticated;
+GRANT SELECT ON public.orders, public.order_items TO authenticated;
