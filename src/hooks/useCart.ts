@@ -42,14 +42,19 @@ export function useCart() {
     async (sku: string, quantity = 1) => {
       if (!user) throw new Error("Sign in required");
       const existing = items.find((i) => i.sku === sku);
-      if (existing) {
-        await supabase
-          .from("cart_items")
-          .update({ quantity: existing.quantity + quantity, updated_at: new Date().toISOString() })
-          .eq("user_id", user.id)
-          .eq("sku", sku);
-      } else {
-        await supabase.from("cart_items").insert({ user_id: user.id, sku, quantity });
+      const { error } = existing
+        ? await supabase
+            .from("cart_items")
+            .update({
+              quantity: existing.quantity + quantity,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("user_id", user.id)
+            .eq("sku", sku)
+        : await supabase.from("cart_items").insert({ user_id: user.id, sku, quantity });
+      if (error) {
+        console.error("cart write failed", error);
+        throw new Error(error.message || "Could not add to cart");
       }
       notifyCartChanged();
       await refresh();
