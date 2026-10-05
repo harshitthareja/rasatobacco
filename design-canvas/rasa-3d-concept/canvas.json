@@ -1,0 +1,28 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1440, "h": 900, "title": "Homepage Hero" },
+    { "file": "CollectionMajlis.dc.html", "x": 1540, "y": 0, "w": 1200, "h": 900, "title": "Majlis — Burgundy" },
+    { "file": "CollectionMakhmal.dc.html", "x": 2840, "y": 0, "w": 1200, "h": 900, "title": "Makhmal — Aubergine" },
+    { "file": "CollectionTarkib.dc.html", "x": 4140, "y": 0, "w": 1200, "h": 900, "title": "Tarkib — Navy" },
+    { "file": "ScrollStory.dc.html", "x": 0, "y": 1040, "w": 1680, "h": 560, "title": "Scroll Camera Storyboard" },
+    { "file": "ProductCard.dc.html", "x": 1780, "y": 1040, "w": 1180, "h": 600, "title": "Flavour Card (hover 3D)" },
+    { "file": "MobileFallback.dc.html", "x": 3060, "y": 1040, "w": 390, "h": 844, "title": "Mobile / Reduced-Motion Fallback" }
+  ],
+  "annotations": [
+    {
+      "id": "concept-note",
+      "x": 0,
+      "y": -190,
+      "w": 480,
+      "text": "RASA — 3D Hero Concept\n\nThese are static mockups (SVG/CSS) previewing lighting, composition and per-collection material direction — this canvas can't run real WebGL. The metal/copper tone stays constant across all three collections (matches the real --majlis-accent / --makhmal-accent / --tarkib-accent tokens, all #D3A188); only the background wash + pattern differ per collection."
+    },
+    {
+      "id": "handoff-note",
+      "x": 520,
+      "y": -190,
+      "w": 480,
+      "text": "Engineering handoff: implement with @react-three/drei ScrollControls driving camera position against a real GLB hookah model. Asset options: commission a 3D artist from the hero-hookah.jpg/hookah-luxury.jpg references, license + retexture a close match in Blender, or a fast procedurally-lathed placeholder. Compress with Draco/Meshopt — target under ~2MB per model."
+    }
+  ],
+  "launch": { "view": "focused", "file": "Main.dc.html" }
+}

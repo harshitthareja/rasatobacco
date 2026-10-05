@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500&family=Inter:wght@300;400;500&family=Montserrat:wght@600&display=swap">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .stage {
+      position: relative; width: 100%; height: 100%;
+      background: oklch(0.16 0.005 60);
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      color: oklch(0.94 0.005 80);
+      padding: 40px 48px;
+    }
+    .eyebrow { font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 0.26em; font-size: 12px; color: #DEA193; text-transform: uppercase; margin-bottom: 6px; }
+    .sub { font-size: 13px; color: oklch(0.72 0.01 70); font-weight: 300; margin-bottom: 30px; }
+    .grid { display: flex; gap: 32px; }
+    .card {
+      width: 316px; background: oklch(0.19 0.006 60);
+      border: 1px solid oklch(0.78 0.09 48 / 0.18);
+      border-radius: 8px; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .stripe { height: 3px; width: 100%; }
+    .body { padding: 22px 24px 26px; display: flex; flex-direction: column; gap: 16px; }
+    .jar-stage { height: 168px; display: flex; align-items: center; justify-content: center; perspective: 600px; position: relative; }
+    .jar { transition: transform 0.5s cubic-bezier(.2,.7,.3,1); transform-style: preserve-3d; }
+    .card:hover .jar { transform: rotateY(24deg) rotateX(-8deg) scale(1.06); }
+    .hint {
+      position: absolute; bottom: 6px; right: 6px;
+      display: flex; align-items: center; gap: 5px;
+      font-size: 10px; letter-spacing: 0.1em; color: oklch(0.72 0.01 70);
+      opacity: 0.55; transition: opacity 0.3s; text-transform: uppercase;
+    }
+    .card:hover .hint { opacity: 0.95; color: oklch(0.86 0.07 52); }
+    .name { font-family: 'Cormorant Garamond', ui-serif, Georgia, serif; font-size: 28px; font-weight: 500; }
+    .notes { font-size: 13px; color: oklch(0.72 0.01 70); font-weight: 300; line-height: 1.5; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      font-size: 10px; letter-spacing: 0.08em; padding: 5px 10px;
+      border: 1px solid oklch(0.78 0.09 48 / 0.28); border-radius: 20px;
+      color: oklch(0.94 0.005 80 / 0.75);
+    }
+    .cta {
+      margin-top: 4px; align-self: flex-start;
+      padding: 11px 22px; border: 1px solid oklch(0.86 0.07 52 / 0.55);
+      font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 10.5px;
+      letter-spacing: 0.2em; text-transform: uppercase;
+    }
+  </style>
+</helmet>
+
+<div class="stage">
+  <div class="eyebrow">Flavour Card</div>
+  <div class="sub">Shared across all three collections — hover lifts and rotates the 3D tin to preview it in the round.</div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="stripe" style="background: linear-gradient(90deg, #5B1823, #742131);"></div>
+      <div class="body">
+        <div class="jar-stage">
+          <svg class="jar" width="110" height="150" viewBox="0 0 110 150">
+            <defs>
+              <linearGradient id="jm1" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="oklch(0.42 0.05 48)"/><stop offset="36%" stop-color="oklch(0.90 0.05 65)"/><stop offset="55%" stop-color="oklch(0.68 0.09 48)"/><stop offset="100%" stop-color="oklch(0.30 0.04 44)"/>
+              </linearGradient>
+            </defs>
+            <ellipse cx="55" cy="24" rx="42" ry="14" fill="url(#jm1)"/>
+            <rect x="13" y="24" width="84" height="98" fill="url(#jm1)"/>
+            <rect x="13" y="60" width="84" height="34" fill="#5B1823"/>
+            <ellipse cx="55" cy="122" rx="42" ry="14" fill="url(#jm1)"/>
+            <rect x="42" y="66" width="4" height="4" fill="#D3A188" transform="rotate(45 44 68)"/>
+          </svg>
+          <div class="hint">↻ Hover to preview</div>
+        </div>
+        <div class="name">Commissioner</div>
+        <div class="notes">Dark Berries · Exotic Fruits · Arabian Spice</div>
+        <div class="chips"><div class="chip">20G</div><div class="chip">60G</div><div class="chip">250G</div><div class="chip">500G</div><div class="chip">1KG</div></div>
+        <div class="cta">Enquire</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stripe" style="background: linear-gradient(90deg, #3A123F, #4D1754);"></div>
+      <div class="body">
+        <div class="jar-stage">
+          <svg class="jar" width="110" height="150" viewBox="0 0 110 150">
+            <defs>
+              <linearGradient id="jm2" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="oklch(0.42 0.05 48)"/><stop offset="36%" stop-color="oklch(0.90 0.05 65)"/><stop offset="55%" stop-color="oklch(0.68 0.09 48)"/><stop offset="100%" stop-color="oklch(0.30 0.04 44)"/>
+              </linearGradient>
+            </defs>
+            <ellipse cx="55" cy="24" rx="42" ry="14" fill="url(#jm2)"/>
+            <rect x="13" y="24" width="84" height="98" fill="url(#jm2)"/>
+            <rect x="13" y="60" width="84" height="34" fill="#3A123F"/>
+            <ellipse cx="55" cy="122" rx="42" ry="14" fill="url(#jm2)"/>
+            <rect x="42" y="66" width="4" height="4" fill="#D3A188" transform="rotate(45 44 68)"/>
+          </svg>
+          <div class="hint">↻ Hover to preview</div>
+        </div>
+        <div class="name">Double Apple</div>
+        <div class="notes">Red Apple · Green Apple · Anise Spice</div>
+        <div class="chips"><div class="chip">20G</div><div class="chip">60G</div><div class="chip">250G</div><div class="chip">500G</div><div class="chip">1KG</div></div>
+        <div class="cta">Enquire</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stripe" style="background: linear-gradient(90deg, #081A3B, #0D2552);"></div>
+      <div class="body">
+        <div class="jar-stage">
+          <svg class="jar" width="110" height="150" viewBox="0 0 110 150">
+            <defs>
+              <linearGradient id="jm3" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="oklch(0.42 0.05 48)"/><stop offset="36%" stop-color="oklch(0.90 0.05 65)"/><stop offset="55%" stop-color="oklch(0.68 0.09 48)"/><stop offset="100%" stop-color="oklch(0.30 0.04 44)"/>
+              </linearGradient>
+            </defs>
+            <ellipse cx="55" cy="24" rx="42" ry="14" fill="url(#jm3)"/>
+            <rect x="13" y="24" width="84" height="98" fill="url(#jm3)"/>
+            <rect x="13" y="60" width="84" height="34" fill="#081A3B"/>
+            <ellipse cx="55" cy="122" rx="42" ry="14" fill="url(#jm3)"/>
+            <rect x="42" y="66" width="4" height="4" fill="#D3A188" transform="rotate(45 44 68)"/>
+          </svg>
+          <div class="hint">↻ Hover to preview</div>
+        </div>
+        <div class="name">Lychee Bliss</div>
+        <div class="notes">Exotic Lychee · White Blossom · Citrus Spark</div>
+        <div class="chips"><div class="chip">20G</div><div class="chip">60G</div><div class="chip">250G</div><div class="chip">500G</div><div class="chip">1KG</div></div>
+        <div class="cta">Enquire</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
