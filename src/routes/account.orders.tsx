@@ -129,10 +129,16 @@ function OrdersPage() {
                     </p>
                   </div>
                   <div className="flex gap-2 shrink-0">
-                    {order.payment_status !== "paid" && (
-                      <span className="text-[0.6rem] tracking-luxe uppercase px-3 py-1 border border-destructive/40 text-destructive/80">
-                        {order.status === "cancelled" ? "Unpaid" : "Payment pending"}
+                    {order.payment_method === "cod" && order.payment_status !== "paid" ? (
+                      <span className="text-[0.6rem] tracking-luxe uppercase px-3 py-1 border border-gold/40 text-gold/80">
+                        Cash on delivery
                       </span>
+                    ) : (
+                      order.payment_status !== "paid" && (
+                        <span className="text-[0.6rem] tracking-luxe uppercase px-3 py-1 border border-destructive/40 text-destructive/80">
+                          {order.status === "cancelled" ? "Unpaid" : "Payment pending"}
+                        </span>
+                      )
                     )}
                     <span
                       className="text-[0.6rem] tracking-luxe uppercase px-3 py-1 border"

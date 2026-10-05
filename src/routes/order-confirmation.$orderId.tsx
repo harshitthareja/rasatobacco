@@ -62,25 +62,34 @@ function OrderConfirmationPage() {
     );
   }
 
+  const isCod = order.payment_method === "cod";
   const paid = order.payment_status === "paid";
+  // COD orders are confirmed at checkout; the cash is collected on delivery.
+  const confirmed = paid || (isCod && order.status !== "cancelled");
   const total = order.total_cents ?? order.subtotal_cents + (order.shipping_charge_cents ?? 0);
 
   return (
     <main className="bg-ink text-foreground min-h-screen pt-32 pb-24 px-6">
       <div className="max-w-2xl mx-auto text-center">
-        {paid ? (
+        {confirmed ? (
           <CheckCircle2 className="h-12 w-12 text-gold mx-auto mb-6" strokeWidth={1.25} />
         ) : (
           <Clock className="h-12 w-12 text-gold/70 mx-auto mb-6" strokeWidth={1.25} />
         )}
         <p className="text-[0.65rem] tracking-luxe uppercase text-gold mb-3">
-          {paid ? "Order Confirmed" : "Awaiting Payment"}
+          {confirmed ? "Order Confirmed" : "Awaiting Payment"}
         </p>
         <h1 className="font-serif text-4xl mb-4">
-          {paid ? `Thank you, ${order.shipping_name.split(" ")[0]}.` : "Payment not completed"}
+          {confirmed ? `Thank you, ${order.shipping_name.split(" ")[0]}.` : "Payment not completed"}
         </h1>
         <p className="text-foreground/70 leading-relaxed mb-10">
-          {paid ? (
+          {isCod && !paid && order.status !== "cancelled" ? (
+            <>
+              Your order is <span className="text-gold">{order.status}</span>. Please keep{" "}
+              <span className="text-gold">{formatPrice(total, order.currency)}</span> ready — you'll
+              pay in cash when it's delivered. We'll email you as soon as it ships.
+            </>
+          ) : paid ? (
             <>
               Your payment was received and your order is{" "}
               <span className="text-gold">{order.status}</span>. We'll email you as soon as it
@@ -133,7 +142,9 @@ function OrderConfirmationPage() {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-foreground/70">{paid ? "Paid" : "Total"}</span>
+              <span className="text-foreground/70">
+                {paid ? "Paid" : isCod ? "Pay on delivery" : "Total"}
+              </span>
               <span className="font-serif text-lg text-gold">
                 {formatPrice(total, order.currency)}
               </span>
@@ -161,7 +172,7 @@ function OrderConfirmationPage() {
             {order.shipping_phone}
           </p>
 
-          {paid && (
+          {confirmed && (
             <div className="mt-6 border-t border-border/30 pt-5">
               <p className="text-[0.65rem] tracking-luxe uppercase text-foreground/50 mb-3">
                 Delivery Tracking

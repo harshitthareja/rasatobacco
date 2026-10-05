@@ -4,7 +4,7 @@ import { flexi, FlexiError, type FlexiAddress } from '../_shared/flexi.ts'
 import { syncTracking } from '../_shared/shipments.ts'
 
 const ORDER_COLUMNS =
-  'id, status, payment_status, subtotal_cents, shipping_charge_cents, total_cents, currency, shipping_name, shipping_phone, shipping_address_line1, shipping_address_line2, shipping_city, shipping_state, shipping_postal_code, shipment_tracking_number, shipment_status, order_items(sku, product_name, format, quantity, unit_price_cents)'
+  'id, status, payment_status, payment_method, subtotal_cents, shipping_charge_cents, total_cents, currency, shipping_name, shipping_phone, shipping_address_line1, shipping_address_line2, shipping_city, shipping_state, shipping_postal_code, shipment_tracking_number, shipment_status, order_items(sku, product_name, format, quantity, unit_price_cents)'
 
 const rupees = (paise: number) => Math.round(paise) / 100
 
@@ -57,7 +57,10 @@ serve(async (req) => {
 
       const { data: order } = await db.from('orders').select(ORDER_COLUMNS).eq('id', order_id).maybeSingle()
       if (!order) return json({ error: 'Order not found' }, 404)
-      if (order.payment_status !== 'paid') return json({ error: 'Only paid orders can be shipped' }, 409)
+      const isCod = order.payment_method === 'cod'
+      if (!isCod && order.payment_status !== 'paid') {
+        return json({ error: 'Only paid orders can be shipped' }, 409)
+      }
       if (order.status === 'cancelled') return json({ error: 'Order is cancelled' }, 409)
       if (order.shipment_tracking_number && order.shipment_status !== 'cancelled') {
         return json({ error: 'A shipment already exists for this order' }, 409)
@@ -67,7 +70,7 @@ serve(async (req) => {
       const orderNo = order.id.replace(/-/g, '').slice(0, 12).toUpperCase()
       const [length, breadth, height, weight] = dims
       const result = await flexi.createShipment({
-        pay_mode: 'prepaid',
+        pay_mode: isCod ? 'cod' : 'prepaid',
         order_no: orderNo,
         billing: address,
         shipping: address,
@@ -119,7 +122,7 @@ serve(async (req) => {
       if (orderIds.length === 0) return json({ error: 'order_id or order_ids is required' }, 400)
       const { data: orders } = await db
         .from('orders')
-        .select('id, status, shipment_tracking_number, shipment_status')
+        .select('id, status, payment_method, shipment_tracking_number, shipment_status')
         .in('id', orderIds)
       const shipped = (orders ?? []).filter((o) => o.shipment_tracking_number && o.shipment_status !== 'cancelled')
       if (shipped.length === 0) return json({ error: 'None of these orders has an active shipment' }, 409)
@@ -170,7 +173,7 @@ serve(async (req) => {
     if (action === 'sync_all') {
       const { data: active } = await db
         .from('orders')
-        .select('id, status, shipment_tracking_number')
+        .select('id, status, payment_method, shipment_tracking_number')
         .not('shipment_tracking_number', 'is', null)
         .not('status', 'in', '(delivered,cancelled)')
         .neq('shipment_status', 'cancelled')

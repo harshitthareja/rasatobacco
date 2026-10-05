@@ -23,6 +23,7 @@ export type Order = {
   user_id: string;
   status: string;
   payment_status: string;
+  payment_method: "razorpay" | "cod";
   subtotal_cents: number;
   shipping_charge_cents: number;
   total_cents: number | null;

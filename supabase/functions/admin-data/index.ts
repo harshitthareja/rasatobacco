@@ -24,12 +24,19 @@ serve(async (req) => {
         db.from('users').select('id', { count: 'exact', head: true }),
         db.from('orders').select('id', { count: 'exact', head: true }),
       ])
-      const { data: paidRows } = await db
+      // Live orders = paid online orders + every non-cancelled COD order.
+      const { data: liveRows } = await db
         .from('orders')
-        .select('status, total_cents, subtotal_cents, shipment_tracking_number')
-        .eq('payment_status', 'paid')
-      const paid = paidRows ?? []
-      const revenueCents = paid.reduce((sum, r) => sum + (r.total_cents ?? r.subtotal_cents ?? 0), 0)
+        .select('status, payment_status, payment_method, total_cents, subtotal_cents, shipment_tracking_number')
+        .or('payment_status.eq.paid,payment_method.eq.cod')
+        .neq('status', 'cancelled')
+      const paid = liveRows ?? []
+      const revenueCents = paid
+        .filter((r) => r.payment_status === 'paid')
+        .reduce((sum, r) => sum + (r.total_cents ?? r.subtotal_cents ?? 0), 0)
+      const codDueCents = paid
+        .filter((r) => r.payment_method === 'cod' && r.payment_status !== 'paid')
+        .reduce((sum, r) => sum + (r.total_cents ?? r.subtotal_cents ?? 0), 0)
       const toShip = paid.filter((r) => r.status === 'confirmed' && !r.shipment_tracking_number).length
       const inTransit = paid.filter((r) => r.status === 'processing' || r.status === 'shipped').length
       const delivered = paid.filter((r) => r.status === 'delivered').length
@@ -42,6 +49,7 @@ serve(async (req) => {
         orders: ord.count ?? 0,
         paid_orders: paid.length,
         revenue_cents: revenueCents,
+        cod_due_cents: codDueCents,
         to_ship: toShip,
         in_transit: inTransit,
         delivered,
@@ -57,9 +65,13 @@ serve(async (req) => {
         .select('*, order_items(*)', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1)
-      if (status === 'to_ship') q = q.eq('status', 'confirmed').eq('payment_status', 'paid')
-      else if (status) q = q.eq('status', status)
-      if (payment) q = q.eq('payment_status', payment)
+      if (status === 'to_ship') {
+        q = q.eq('status', 'confirmed').or('payment_status.eq.paid,payment_method.eq.cod')
+      } else if (status) q = q.eq('status', status)
+      // 'active' = orders to fulfil: paid online, or cash on delivery.
+      if (payment === 'active') q = q.or('payment_status.eq.paid,payment_method.eq.cod')
+      else if (payment === 'cod') q = q.eq('payment_method', 'cod')
+      else if (payment) q = q.eq('payment_status', payment)
       if (search) {
         const term = `%${search}%`
         q = q.or(
