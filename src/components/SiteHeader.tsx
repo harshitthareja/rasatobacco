@@ -73,6 +73,9 @@ export function SiteHeader() {
             <Link to="/house-of-rasa" className={navLink} activeProps={{ className: "text-gold" }}>
               House of RASA
             </Link>
+            <Link to="/loyalty" className={navLink} activeProps={{ className: "text-gold" }}>
+              Loyalty
+            </Link>
 
             <CollectionsMega
               isOpen={openDrop === "collections"}
@@ -246,6 +249,7 @@ export function SiteHeader() {
             {[
               { to: "/", label: "Home" },
               { to: "/house-of-rasa", label: "House of RASA" },
+              { to: "/loyalty", label: "Loyalty" },
               { to: "/collections", label: "Collections" },
               { to: "/collections/majlis", label: "— Majlis" },
               { to: "/collections/makhmal", label: "— Makhmal" },

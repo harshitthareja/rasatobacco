@@ -53,14 +53,14 @@
 :root {
   --radius: 0.25rem;
 
-  /* Deep charcoal grey base */
-  --background: oklch(0.16 0.005 60);
+  /* Refined charcoal grey base: lighter than near-black for clearer separation. */
+  --background: oklch(0.20 0.008 65);
   --foreground: oklch(0.94 0.005 80);
 
-  --ink: oklch(0.10 0.004 60);
-  --surface: oklch(0.20 0.006 60);
+  --ink: oklch(0.16 0.008 65);
+  --surface: oklch(0.24 0.010 65);
 
-  --card: oklch(0.19 0.006 60);
+  --card: oklch(0.23 0.010 65);
   --card-foreground: oklch(0.94 0.005 80);
   --popover: oklch(0.16 0.005 60);
   --popover-foreground: oklch(0.94 0.005 80);
@@ -111,7 +111,7 @@
 }
 
 .dark {
-  --background: oklch(0.16 0.005 60);
+  --background: oklch(0.20 0.008 65);
   --foreground: oklch(0.94 0.005 80);
 }
 

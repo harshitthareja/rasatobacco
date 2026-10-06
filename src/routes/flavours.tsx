@@ -46,35 +46,6 @@ function FlavoursPage() {
 
   return (
     <main className="bg-ink text-foreground min-h-screen">
-      {/* Hero */}
-      <section className="relative pt-40 pb-20 px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 grain opacity-30 pointer-events-none" />
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 0%, oklch(0.74 0.08 45 / 0.12), transparent 60%)",
-          }}
-        />
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <p className="text-[0.65rem] tracking-luxe uppercase text-gold mb-4">House of RASA</p>
-          <h1 className="font-serif text-6xl md:text-8xl leading-none mb-6">Flavours</h1>
-          <p
-            className="font-display text-sm tracking-luxe uppercase mb-8"
-            style={{ color: "#DEA193" }}
-          >
-            SMOKE, PERFECTED
-          </p>
-          <p className="text-foreground/70 max-w-xl mx-auto leading-relaxed text-sm">
-            {ALL_FLAVOURS.length} distinct flavours, crafted across three collections —{" "}
-            {ALL_FLAVOURS.filter((f) => f.available).length} available to order now, with more
-            arriving soon.
-          </p>
-        </div>
-      </section>
-
-      <div className="luxe-divider max-w-md mx-auto" />
-
       {/* Filters */}
       <section className="sticky top-20 z-30 bg-ink/95 backdrop-blur-xl border-b border-border/30 px-6 py-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-4">
