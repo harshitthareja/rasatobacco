@@ -49,7 +49,7 @@ export function SiteHeader() {
           scrolled ? "bg-ink/80 backdrop-blur-xl border-b border-border/60" : "bg-transparent"
         }`}
       >
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 h-20 flex items-center justify-between gap-6">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 h-20 flex items-center justify-between gap-5">
           <Link to="/" aria-label="RASA — Home" className="flex items-center shrink-0">
             <img
               src={rasaLogo}
@@ -61,7 +61,7 @@ export function SiteHeader() {
             />
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-7 xl:gap-9">
+          <nav className="hidden xl:flex flex-1 items-center justify-center gap-5 2xl:gap-7">
             <Link
               to="/"
               className={navLink}
@@ -86,16 +86,12 @@ export function SiteHeader() {
               onClose={() => setOpenDrop(null)}
             />
 
-            <Link to="/partners" className={navLink} activeProps={{ className: "text-gold" }}>
-              Partner
-            </Link>
-            <Link to="/loyalty" className={navLink} activeProps={{ className: "text-gold" }}>
-              Loyalty
-            </Link>
             <Link to="/contact" className={navLink} activeProps={{ className: "text-gold" }}>
               Contact
             </Link>
+          </nav>
 
+          <div className="hidden xl:flex shrink-0 items-center gap-4 2xl:gap-5">
             <button
               aria-label="Search"
               onClick={() => setSearch(true)}
@@ -131,7 +127,7 @@ export function SiteHeader() {
                 onClick={() =>
                   sessionStorage.setItem("rasa_login_return", window.location.pathname)
                 }
-                className="hidden md:inline-flex items-center gap-2 px-5 py-2 border border-gold/50 text-gold text-[0.65rem] tracking-luxe uppercase hover:bg-gold hover:text-primary-foreground transition-all duration-300"
+                className="inline-flex items-center gap-2 text-[0.65rem] tracking-luxe uppercase text-foreground/85 hover:text-gold transition-colors"
               >
                 <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
                   <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2" />
@@ -145,13 +141,19 @@ export function SiteHeader() {
                 Sign In
               </Link>
             )}
-          </nav>
+            <Link
+              to="/shop"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap bg-gold px-4 py-2.5 text-[0.65rem] uppercase tracking-luxe text-primary-foreground transition-all duration-300 hover:bg-gold/85 hover:shadow-[0_0_24px_rgba(201,169,110,0.25)]"
+            >
+              Shop Now <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
 
-          <div className="lg:hidden flex items-center gap-3">
+          <div className="xl:hidden flex items-center gap-2 sm:gap-3">
             <button
               aria-label="Search"
               onClick={() => setSearch(true)}
-              className="text-foreground/85"
+              className="hidden text-foreground/85 sm:inline-flex"
             >
               <Search className="h-4 w-4" />
             </button>
@@ -164,7 +166,7 @@ export function SiteHeader() {
               )}
             </Link>
             {user ? (
-              <Link to="/loyalty" aria-label="Account" className="flex items-center">
+              <Link to="/account/settings" aria-label="Account" className="flex items-center">
                 {user.user_metadata?.avatar_url ? (
                   <img
                     src={user.user_metadata.avatar_url as string}
@@ -185,11 +187,17 @@ export function SiteHeader() {
                 onClick={() =>
                   sessionStorage.setItem("rasa_login_return", window.location.pathname)
                 }
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gold/50 text-gold text-[0.6rem] tracking-luxe uppercase hover:bg-gold hover:text-primary-foreground transition-all duration-300"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 border border-gold/50 text-gold text-[0.6rem] tracking-luxe uppercase hover:bg-gold hover:text-primary-foreground transition-all duration-300"
               >
                 Sign In
               </Link>
             )}
+            <Link
+              to="/shop"
+              className="inline-flex items-center whitespace-nowrap bg-gold px-2.5 py-2 text-[0.55rem] uppercase tracking-luxe text-primary-foreground transition-colors hover:bg-gold/85 sm:px-3"
+            >
+              Shop Now
+            </Link>
             <button
               onClick={() => setOpen(true)}
               className="p-1 text-foreground"
@@ -203,7 +211,7 @@ export function SiteHeader() {
 
       {/* Mobile drawer */}
       {open && (
-        <div className="fixed inset-0 z-50 bg-ink/98 backdrop-blur-xl animate-fade-in lg:hidden overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-ink/98 backdrop-blur-xl animate-fade-in xl:hidden overflow-y-auto">
           <div className="flex items-center justify-between h-20 px-6 border-b border-border/40">
             <img
               src={rasaLogo}
@@ -218,6 +226,23 @@ export function SiteHeader() {
             </button>
           </div>
           <nav className="flex flex-col px-8 py-10 gap-5">
+            <Link
+              to="/shop"
+              onClick={() => setOpen(false)}
+              className="mb-2 inline-flex items-center justify-center gap-3 border border-gold/60 bg-gold/10 px-6 py-4 text-[0.7rem] uppercase tracking-luxe text-gold transition-colors hover:bg-gold hover:text-primary-foreground"
+            >
+              Shop Now <ArrowRight className="h-4 w-4" />
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                setSearch(true);
+              }}
+              className="text-left font-serif text-xl text-foreground transition-colors hover:text-gold sm:hidden"
+            >
+              Search products
+            </button>
             {[
               { to: "/", label: "Home" },
               { to: "/house-of-rasa", label: "House of RASA" },
@@ -225,13 +250,10 @@ export function SiteHeader() {
               { to: "/collections/majlis", label: "— Majlis" },
               { to: "/collections/makhmal", label: "— Makhmal" },
               { to: "/collections/tarkib", label: "— Tarkib" },
-              { to: "/shop", label: "Shop" },
               { to: "/cart", label: "Cart" },
               { to: "/flavours", label: "Hookah Flavours" },
               { to: "/coming-soon", label: "Hookah", search: { category: "hookahs" } },
               { to: "/coming-soon", label: "Accessories", search: { category: "accessories" } },
-              { to: "/partners", label: "Partner" },
-              { to: "/loyalty", label: "Loyalty" },
               { to: "/contact", label: "Contact" },
             ].map((item) => (
               <Link
@@ -409,13 +431,6 @@ function ProfileMenu({
               >
                 My Enquiries
               </Link>
-              <Link
-                to="/loyalty"
-                onClick={onClose}
-                className="block px-5 py-2.5 text-[0.7rem] tracking-luxe uppercase text-foreground/80 hover:text-gold hover:bg-surface/40 transition-colors"
-              >
-                Loyalty
-              </Link>
               <div className="my-1 border-t border-border/40" />
               <button
                 onClick={async () => {
@@ -555,13 +570,6 @@ function ProductsMega({
   onClose: () => void;
 }) {
   const items = [
-    {
-      title: "Shop",
-      sub: "Browse every flavour & collection",
-      to: "/shop" as const,
-      search: undefined,
-      accent: "#c9a96e",
-    },
     {
       title: "Hookah Flavours",
       sub: "20g · 60g · 250g · 500g · 1kg",

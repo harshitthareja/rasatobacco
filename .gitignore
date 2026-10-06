@@ -39,3 +39,5 @@ screenshots/
 
 # Vercel build output
 .vercel
+# Local copy of the previous frontend used as a design reference
+rasa/

@@ -1,27 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  useTransform,
-} from "framer-motion";
-import { useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import heroHookah from "@/assets/hero-hookah.jpg";
-import chapterMajlis from "@/assets/chapter-majlis.jpg";
-import chapterMakhmal from "@/assets/chapter-makhmal.jpg";
-import chapterTarkib from "@/assets/chapter-tarkib.jpg";
 import { CinematicSmoke } from "@/components/CinematicSmoke";
-import { Reveal, RevealChild, RevealGroup } from "@/components/motion/Reveal";
+import { RevealChild, RevealGroup } from "@/components/motion/Reveal";
 import { AnimatedWordmark } from "@/components/AnimatedWordmark";
-import {
-  ChapterLabels,
-  CollectionsChapter,
-  DisciplineChapter,
-  OriginChapter,
-  type CollectionSlide,
-} from "@/components/scroll/chapters";
+import { LaunchShowcase } from "@/components/LaunchShowcase";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,8 +14,7 @@ export const Route = createFileRoute("/")({
       { title: "RASA — Smoke, Perfected." },
       {
         name: "description",
-        content:
-          "RASA — a luxury hookah lifestyle house. Three collections. One discipline. Smoke, perfected.",
+        content: "RASA — a luxury hookah lifestyle house. Three collections. One discipline. Smoke, perfected.",
       },
       { property: "og:title", content: "RASA — Smoke, Perfected." },
       {
@@ -44,42 +28,12 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const collections: CollectionSlide[] = [
-  {
-    name: "Majlis",
-    expression: "Heritage",
-    oneLiner: "Where evenings remember themselves.",
-    body: "A tribute to gathering. Rooted in heritage, warmed by hospitality — the timeless character of an evening spent in good company.",
-    image: chapterMajlis,
-    path: "/collections/majlis",
-  },
-  {
-    name: "Makhmal",
-    expression: "Refinement",
-    oneLiner: "Velvet, made vapour.",
-    body: "Quiet, composed, effortlessly elegant. Luxury without volume, refinement without effort — the confidence of simplicity executed well.",
-    image: chapterMakhmal,
-    path: "/collections/makhmal",
-  },
-  {
-    name: "Tarkib",
-    expression: "Innovation",
-    oneLiner: "Curiosity, bottled.",
-    body: "Bold, modern, progressive. The House of RASA looking forward — composing flavours the way a perfumer composes an accord.",
-    image: chapterTarkib,
-    path: "/collections/tarkib",
-  },
-];
-
 function Home() {
   return (
     <>
       <Hero />
-      <OriginChapter />
-      <DisciplineChapter />
-      <CollectionsChapter items={collections} />
+      <LaunchShowcase />
       <Invitation />
-      <PartnerPill />
     </>
   );
 }
@@ -97,7 +51,7 @@ function Hero() {
 
   return (
     <section ref={ref} className="relative min-h-[100svh] overflow-hidden bg-ink">
-      {/* Cinematic background */}
+      {/* Cinematic background image */}
       <motion.div className="absolute inset-0" style={{ y: bgY, scale: bgScale }}>
         <img
           src={heroHookah}
@@ -111,8 +65,7 @@ function Hero() {
         <div
           className="absolute inset-0"
           style={{
-            background:
-              "radial-gradient(ellipse at 50% 55%, transparent 25%, oklch(0.06 0.004 60 / 0.85) 80%)",
+            background: "radial-gradient(ellipse at 50% 55%, transparent 25%, oklch(0.06 0.004 60 / 0.85) 80%)",
           }}
         />
       </motion.div>
@@ -131,13 +84,7 @@ function Hero() {
           }}
           className="text-center will-change-transform"
         >
-          <AnimatedWordmark
-            size="h-[18vw] max-h-[18rem] min-h-[7rem]"
-            halo
-            float
-            shimmer={false}
-            reveal={false}
-          />
+          <AnimatedWordmark size="h-[18vw] max-h-[18rem] min-h-[7rem]" halo float shimmer={false} reveal={false} />
 
           <motion.div
             initial={{ scaleX: 0, opacity: 0 }}
@@ -167,14 +114,14 @@ function Hero() {
         transition={{ duration: 1.2, delay: 2.2, ease: [0.22, 1, 0.36, 1] }}
         className="absolute bottom-10 inset-x-0 z-10 flex flex-col items-center gap-6"
       >
-        <Link
-          to="/collections"
+        <a
+          href="#launch"
           className="group inline-flex items-center gap-3 text-[0.65rem] tracking-luxe uppercase text-foreground/90 hover:text-gold transition-colors duration-500"
         >
           <span className="h-px w-10 bg-gold/70 group-hover:w-16 transition-all duration-500" />
-          Enter the House
+          Explore the launch
           <span className="h-px w-10 bg-gold/70 group-hover:w-16 transition-all duration-500" />
-        </Link>
+        </a>
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
@@ -191,8 +138,7 @@ function Hero() {
 
 function Invitation() {
   return (
-    <section className="relative bg-background py-28 md:py-40 overflow-hidden">
-      <ChapterLabels left="About Partners" right="Chapter 04" top="top-8" />
+    <section className="relative bg-background pt-10 pb-24 md:pt-12 md:pb-32 overflow-hidden">
       <CinematicSmoke intensity={0.25} tone="copper" className="opacity-40" />
       <div
         className="absolute inset-0 opacity-60"
@@ -204,9 +150,7 @@ function Invitation() {
       <div className="relative mx-auto max-w-3xl px-6 text-center">
         <RevealGroup stagger={0.12}>
           <RevealChild>
-            <p className="text-[0.6rem] tracking-wider-luxe uppercase text-gold">
-              Partner Programme
-            </p>
+            <p className="text-[0.6rem] tracking-wider-luxe uppercase text-gold">Partner Programme</p>
           </RevealChild>
           <RevealChild>
             <h2 className="mt-6 font-serif font-light text-4xl md:text-6xl leading-[1.05] text-balance">
@@ -216,8 +160,8 @@ function Invitation() {
           </RevealChild>
           <RevealChild>
             <p className="mt-8 text-foreground/80 leading-relaxed max-w-xl mx-auto">
-              A curated network of distributors, lounges and boutiques. We grow with you — with
-              structured support, exclusive access, and the discipline of a luxury house.
+              A curated network of distributors, lounges and boutiques. We grow with you — with structured support,
+              exclusive access, and the discipline of a luxury house.
             </p>
           </RevealChild>
           <RevealChild>
@@ -240,36 +184,5 @@ function Invitation() {
         </RevealGroup>
       </div>
     </section>
-  );
-}
-
-/* ─────────────────────── FLOATING PARTNER PILL ─────────────────────── */
-
-function PartnerPill() {
-  const { scrollY } = useScroll();
-  const [show, setShow] = useState(false);
-  useMotionValueEvent(scrollY, "change", (v) => setShow(v > window.innerHeight * 0.8));
-  return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-30 flex justify-center">
-      <AnimatePresence>
-        {show && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.4 }}
-            className="pointer-events-auto"
-          >
-            <Link
-              to="/partners"
-              className="inline-flex items-center gap-3 rounded-full border border-gold/40 bg-ink/80 px-6 py-3 text-[0.65rem] uppercase tracking-luxe text-gold backdrop-blur transition-colors duration-500 hover:bg-gold hover:text-primary-foreground"
-            >
-              Become a Partner
-              <ArrowRight className="h-3 w-3" />
-            </Link>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
   );
 }

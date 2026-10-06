@@ -9,7 +9,7 @@ caller's role server-side, so this bundle holds no secrets.
 
 ```sh
 cd admin
-cp .env.example .env   # fill in the same VITE_SUPABASE_* values as the website
+# Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in ../.env
 npm install
 npm run dev            # http://localhost:5174/admin/
 ```
@@ -20,6 +20,9 @@ The repo deploys to Vercel as one project with two services (see `/vercel.json`)
 
 - `app`: the storefront, serving every path except `/admin`.
 - `admin`: this console, served at `/admin/` on the same domain.
+
+Set the Vercel project's Framework Preset to **Services** so its two services
+and `/admin/` rewrite are used.
 
 Both services only talk to Supabase, never to each other. Set `VITE_SUPABASE_URL`
 and `VITE_SUPABASE_PUBLISHABLE_KEY` once in the Vercel project; both services

@@ -8,6 +8,9 @@ import tailwindcss from "@tailwindcss/vite";
 // whether or not the rewrite keeps the /admin prefix.
 export default defineConfig({
   base: "/admin/",
+  // Share the storefront's local Supabase configuration. Deployment values
+  // supplied by the host still take precedence over values in this file.
+  envDir: "..",
   plugins: [react(), tailwindcss()],
   build: { outDir: "dist/admin" },
   server: { port: 5174 },

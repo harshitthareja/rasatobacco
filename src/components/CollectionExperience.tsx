@@ -7,6 +7,7 @@ import { flavourKey } from "@/data/sku";
 import { productImages } from "@/data/productImages";
 import { useProductPrices, type ProductPrice } from "@/hooks/useProductPrices";
 import { AddToCartControl } from "@/components/shop/AddToCartControl";
+import { ProductHoverPreview } from "@/components/shop/ProductHoverPreview";
 import { CinematicSmoke } from "@/components/CinematicSmoke";
 import { Reveal, RevealChild, RevealGroup } from "@/components/motion/Reveal";
 
@@ -354,33 +355,39 @@ function FlavourCard({
 
   if (!flavour.available) {
     return (
-      <article className="card-luxe p-6 flex flex-col h-full opacity-60">
-        <div className="flex items-start justify-between gap-3">
-          <h4 className="font-serif text-2xl md:text-[1.5rem] leading-tight text-foreground/70">
-            {flavour.name}
-          </h4>
-          <span className="shrink-0 text-[0.55rem] tracking-wider-luxe uppercase border border-foreground/25 text-foreground/50 px-2 py-1">
-            Forthcoming
-          </span>
+      <article className="card-luxe group overflow-hidden p-6 flex flex-col h-full opacity-60">
+        <ProductHoverPreview image={entry.image} />
+        <div className="relative z-10 flex h-full flex-col">
+          <div className="flex items-start justify-between gap-3">
+            <h4 className="font-serif text-2xl md:text-[1.5rem] leading-tight text-foreground/70">
+              {flavour.name}
+            </h4>
+            <span className="shrink-0 text-[0.55rem] tracking-wider-luxe uppercase border border-foreground/25 text-foreground/50 px-2 py-1">
+              Forthcoming
+            </span>
+          </div>
+          <p className="mt-2 text-sm text-foreground/50 leading-relaxed">{flavour.notes}</p>
+          <p className="mt-auto pt-6 text-[0.65rem] tracking-luxe uppercase text-foreground/40">
+            Not yet available
+          </p>
         </div>
-        <p className="mt-2 text-sm text-foreground/50 leading-relaxed">{flavour.notes}</p>
-        <p className="mt-auto pt-6 text-[0.65rem] tracking-luxe uppercase text-foreground/40">
-          Not yet available
-        </p>
       </article>
     );
   }
 
   return (
-    <article className="card-luxe p-6 flex flex-col h-full">
-      <Link to="/product/$key" params={{ key }}>
-        <h4 className="font-serif text-2xl md:text-[1.5rem] leading-tight hover:text-gold transition-colors">
-          {flavour.name}
-        </h4>
-      </Link>
-      <p className="mt-2 text-sm text-foreground/70 leading-relaxed">{flavour.notes}</p>
-      <div className="mt-5">
-        <AddToCartControl entry={entry} prices={prices} compact />
+    <article className="card-luxe group overflow-hidden p-6 flex flex-col h-full">
+      <ProductHoverPreview image={entry.image} />
+      <div className="relative z-10 flex h-full flex-col">
+        <Link to="/product/$key" params={{ key }}>
+          <h4 className="font-serif text-2xl md:text-[1.5rem] leading-tight hover:text-gold transition-colors">
+            {flavour.name}
+          </h4>
+        </Link>
+        <p className="mt-2 text-sm text-foreground/70 leading-relaxed">{flavour.notes}</p>
+        <div className="mt-5">
+          <AddToCartControl entry={entry} prices={prices} compact />
+        </div>
       </div>
     </article>
   );

@@ -3,6 +3,8 @@ import { useState, useMemo } from "react";
 import { ArrowRight } from "lucide-react";
 import { collections } from "@/data/collections";
 import { flavourKey } from "@/data/sku";
+import { productImages } from "@/data/productImages";
+import { ProductHoverPreview } from "@/components/shop/ProductHoverPreview";
 
 export const Route = createFileRoute("/flavours")({
   head: () => ({
@@ -17,12 +19,16 @@ export const Route = createFileRoute("/flavours")({
 // Flatten all flavours without mentioning collection
 const ALL_FLAVOURS = collections
   .flatMap((c) =>
-    c.flavours.map((f) => ({
-      name: f.name,
-      notes: f.notes,
-      available: f.available,
-      key: flavourKey(c.slug, f.name),
-    })),
+    c.flavours.map((f) => {
+      const key = flavourKey(c.slug, f.name);
+      return {
+        name: f.name,
+        notes: f.notes,
+        available: f.available,
+        key,
+        image: productImages[key],
+      };
+    }),
   )
   .filter((f, i, arr) => arr.findIndex((x) => x.name === f.name) === i) // deduplicate by name
   .sort((a, b) => Number(b.available) - Number(a.available));
@@ -117,9 +123,10 @@ function FlavoursPage() {
                   key={flavour.name}
                   to="/product/$key"
                   params={{ key: flavour.key }}
-                  className="group border border-border/40 hover:border-gold/40 transition-all duration-500 bg-surface/10 hover:bg-surface/20 flex flex-col"
+                  className="group relative overflow-hidden border border-border/40 hover:border-gold/40 transition-all duration-500 bg-surface/10 hover:bg-surface/20 flex flex-col"
                 >
-                  <div className="p-6 flex-1">
+                  <ProductHoverPreview image={flavour.image} />
+                  <div className="relative z-10 p-6 flex-1">
                     <div className="w-8 h-px bg-gold/60 mb-4" />
                     <h3 className="font-serif text-2xl text-foreground group-hover:text-gold transition-colors duration-300 mb-2">
                       {flavour.name}
@@ -128,7 +135,7 @@ function FlavoursPage() {
                       {flavour.notes}
                     </p>
                   </div>
-                  <div className="px-6 py-4 border-t border-border/30">
+                  <div className="relative z-10 px-6 py-4 border-t border-border/30">
                     <span className="inline-flex items-center gap-2 text-[0.65rem] tracking-luxe uppercase text-gold/80 group-hover:text-gold transition-colors duration-300">
                       View & Buy
                       <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
@@ -138,9 +145,10 @@ function FlavoursPage() {
               ) : (
                 <div
                   key={flavour.name}
-                  className="border border-border/25 bg-surface/5 flex flex-col opacity-60"
+                  className="group relative overflow-hidden border border-border/25 bg-surface/5 flex flex-col opacity-60"
                 >
-                  <div className="p-6 flex-1">
+                  <ProductHoverPreview image={flavour.image} />
+                  <div className="relative z-10 p-6 flex-1">
                     <div className="flex items-start justify-between gap-3 mb-4">
                       <div className="w-8 h-px bg-foreground/25 mt-3" />
                       <span className="text-[0.55rem] tracking-wider-luxe uppercase border border-foreground/25 text-foreground/50 px-2 py-1">
@@ -152,7 +160,7 @@ function FlavoursPage() {
                       {flavour.notes}
                     </p>
                   </div>
-                  <div className="px-6 py-4 border-t border-border/20">
+                  <div className="relative z-10 px-6 py-4 border-t border-border/20">
                     <p className="text-[0.65rem] tracking-luxe uppercase text-foreground/35">
                       Not yet available
                     </p>

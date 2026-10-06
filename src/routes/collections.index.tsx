@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { collections, type Collection, type Flavour } from "@/data/collections";
 import { flavourKey } from "@/data/sku";
+import { productImages } from "@/data/productImages";
+import { ProductHoverPreview } from "@/components/shop/ProductHoverPreview";
 import { CinematicSmoke } from "@/components/CinematicSmoke";
 import { Reveal, RevealChild, RevealGroup } from "@/components/motion/Reveal";
 import { motion } from "framer-motion";
@@ -193,12 +195,14 @@ function CollectionPreview({ c }: { c: Collection }) {
 }
 
 function PreviewFlavourCard({ flavour, c }: { flavour: Flavour; c: Collection }) {
+  const key = flavourKey(c.slug, flavour.name);
   return (
     <Link
       to="/product/$key"
-      params={{ key: flavourKey(c.slug, flavour.name) }}
-      className="group relative block p-5 border border-foreground/10 hover:border-foreground/30 bg-ink/35 backdrop-blur-sm hover:-translate-y-1 transition-all duration-500"
+      params={{ key }}
+      className="group relative block overflow-hidden p-5 border border-foreground/10 hover:border-foreground/30 bg-ink/35 backdrop-blur-sm hover:-translate-y-1 transition-all duration-500"
     >
+      <ProductHoverPreview image={productImages[key]} />
       <div
         className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         style={{
