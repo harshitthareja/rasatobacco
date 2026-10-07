@@ -10,7 +10,10 @@ name: Deploy Supabase functions
 on:
   push:
     branches: [main]
-    paths: ["supabase/functions/**", "supabase/config.toml"]
+    paths:
+      - "supabase/functions/**"
+      - "supabase/config.toml"
+      - ".github/workflows/supabase-functions.yml"
   workflow_dispatch:
 
 jobs:
