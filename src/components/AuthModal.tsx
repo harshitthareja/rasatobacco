@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { EmailPasswordAuth } from "@/components/EmailPasswordAuth";
 
 type Props = {
   open: boolean;
@@ -9,8 +10,8 @@ type Props = {
 };
 
 export function AuthModal({ open, onClose, reason = "contact" }: Props) {
-  const { signInWithGoogle, user } = useAuth();
-  const [signingIn, setSigningIn] = useState(false);
+  const { signInWithGoogle, signInWithPassword, signUpWithPassword, user } = useAuth();
+  const [googleBusy, setGoogleBusy] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -40,19 +41,19 @@ export function AuthModal({ open, onClose, reason = "contact" }: Props) {
           : "sign in to send your enquiry";
 
   const handleGoogleSignIn = async () => {
-    setSigningIn(true);
+    setGoogleBusy(true);
     try {
       await signInWithGoogle();
     } catch {
-      setSigningIn(false);
+      setGoogleBusy(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center px-4 animate-fade-in">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden px-4 py-3 animate-fade-in">
       <div className="absolute inset-0 bg-ink/85 backdrop-blur-md" onClick={onClose} />
       <div
-        className="relative w-full max-w-md p-10 text-center animate-fade-up"
+        className="relative w-full max-w-md p-5 text-center animate-fade-up sm:p-6"
         style={{
           background:
             "linear-gradient(180deg, oklch(0.22 0.006 60 / 0.97), oklch(0.14 0.005 60 / 0.99))",
@@ -79,19 +80,27 @@ export function AuthModal({ open, onClose, reason = "contact" }: Props) {
         <span className="absolute bottom-0 right-0 w-6 h-px bg-gold" />
         <span className="absolute bottom-0 right-0 w-px h-6 bg-gold" />
 
-        <p className="text-[0.6rem] tracking-luxe uppercase text-gold mb-4">House of RASA</p>
-        <h2 className="font-serif text-3xl text-foreground mb-3">Welcome</h2>
-        <p className="text-sm text-foreground/70 leading-relaxed mb-8">
+        <p className="mb-1 text-[0.6rem] uppercase tracking-luxe text-gold">House of RASA</p>
+        <h2 className="mb-1 font-serif text-2xl text-foreground">Welcome</h2>
+        <p className="mb-4 text-xs leading-relaxed text-foreground/70">
           Please {reasonText}. We keep your details safe and use them only to personalise your
           experience.
         </p>
 
+        <EmailPasswordAuth signIn={signInWithPassword} signUp={signUpWithPassword} />
+
+        <div className="my-3 flex items-center gap-3 text-[0.6rem] uppercase tracking-luxe text-foreground/35">
+          <span className="h-px flex-1 bg-border/60" />
+          Or
+          <span className="h-px flex-1 bg-border/60" />
+        </div>
+
         <button
           onClick={handleGoogleSignIn}
-          disabled={signingIn}
-          className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white text-gray-800 text-sm font-medium hover:bg-gray-100 transition-colors duration-300 mb-4 disabled:opacity-70 disabled:cursor-not-allowed"
+          disabled={googleBusy}
+          className="mb-2 flex w-full items-center justify-center gap-3 bg-white px-6 py-3 text-sm font-medium text-gray-800 transition-colors duration-300 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {signingIn ? (
+          {googleBusy ? (
             <>
               <span className="w-5 h-5 rounded-full border-2 border-gray-300 border-t-gray-700 animate-spin shrink-0" />
               Redirecting to Google…

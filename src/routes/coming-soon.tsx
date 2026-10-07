@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { ArrowRight, Phone, Handshake, Home } from "lucide-react";
 import rasaLogo from "@/assets/rasa-logo.png";
+import { partnerWhatsAppUrl } from "@/data/contact";
 
 export const Route = createFileRoute("/coming-soon")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -58,12 +59,14 @@ function ComingSoon() {
             <Phone className="h-3.5 w-3.5" /> Contact Sales
             <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
           </Link>
-          <Link
-            to="/partners"
+          <a
+            href={partnerWhatsAppUrl}
+            target="_blank"
+            rel="noreferrer"
             className="inline-flex items-center justify-center gap-3 px-8 py-4 border border-gold/40 text-gold text-[0.7rem] tracking-luxe uppercase hover:bg-gold hover:text-primary-foreground transition-all duration-500"
           >
             <Handshake className="h-3.5 w-3.5" /> Become a Partner
-          </Link>
+          </a>
           <Link
             to="/"
             className="inline-flex items-center justify-center gap-3 px-8 py-4 border border-border/60 text-foreground/80 text-[0.7rem] tracking-luxe uppercase hover:border-gold/50 hover:text-gold transition-all duration-500"

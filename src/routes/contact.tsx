@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
 import { SectionLabel } from "../components/SectionLabel";
-import { contactInfo } from "@/data/contact";
+import { catalogueWhatsAppUrl, contactInfo, partnerWhatsAppUrl } from "@/data/contact";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowRight,
@@ -96,7 +96,7 @@ function Contact() {
   const prefilledMessage = (() => {
     const parts: string[] = [];
     if (search.product) parts.push(`Selected Product: ${search.product}`);
-    if (search.collection) parts.push(`Selected Collection: ${search.collection}`);
+    if (search.collection) parts.push(`Selected Series: ${search.collection}`);
     if (search.format) parts.push(`Selected Format: ${search.format}`);
     return parts.length
       ? parts.join("\n") + "\n\nPlease share availability and wholesale pricing."
@@ -188,13 +188,15 @@ function Contact() {
       icon: Handshake,
       label: "Become a Partner",
       sub: "Distribution & retail",
-      href: "/partners",
+      href: partnerWhatsAppUrl,
+      external: true,
     },
     {
       icon: FileText,
       label: "Request Catalogue",
       sub: "Full house portfolio",
-      href: `mailto:${contactInfo.email}?subject=Catalogue%20Request`,
+      href: catalogueWhatsAppUrl,
+      external: true,
     },
   ];
 
@@ -391,10 +393,6 @@ function Contact() {
                   <Instagram className="h-4 w-4 text-gold" /> @{contactInfo.instagramHandle}
                 </a>
               </div>
-              <p className="mt-5 text-xs text-foreground/60">
-                Serving India · UAE · Saudi Arabia · Qatar · Kuwait · Oman · Bahrain · Global
-                Distribution
-              </p>
             </div>
           </aside>
         </div>

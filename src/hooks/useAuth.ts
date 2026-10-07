@@ -84,9 +84,30 @@ export function useAuth() {
     }
   }, []);
 
+  const signInWithPassword = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    if (error) throw error;
+  }, []);
+
+  const signUpWithPassword = useCallback(async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
+    });
+    if (error) throw error;
+    return { needsEmailConfirmation: !data.session };
+  }, []);
+
   const signOut = useCallback(async () => {
     try {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut({ scope: "local" });
+      if (error) throw error;
     } catch (e) {
       console.error("signOut error", e);
     }
@@ -96,9 +117,16 @@ export function useAuth() {
     } catch {
       /* ignore */
     }
-    // Hard reload to clear any in-memory state / cached queries.
-    window.location.replace("/");
+    // Return to a fresh, provider-neutral form after clearing in-memory state.
+    window.location.replace("/login");
   }, []);
 
-  return { user, loading, signInWithGoogle, signOut };
+  return {
+    user,
+    loading,
+    signInWithGoogle,
+    signInWithPassword,
+    signUpWithPassword,
+    signOut,
+  };
 }

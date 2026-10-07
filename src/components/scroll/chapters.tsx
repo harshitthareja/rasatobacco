@@ -264,7 +264,7 @@ export function CollectionsChapter({ items }: { items: CollectionSlide[] }) {
     >
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-ink/30 via-transparent to-ink/50" />
-        <ChapterLabels left="About Collections" right="Chapter 03" />
+        <ChapterLabels left="About the Series" right="Chapter 03" />
 
         <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col items-center justify-center gap-6 px-6 pt-20 md:grid md:grid-cols-12 md:gap-12 lg:px-10">
           <div className="order-2 w-full md:order-1 md:col-span-7">

@@ -117,7 +117,7 @@ function Partners() {
           <div className="mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border/30">
             {[
               ["Wholesale Pricing", "Tiered structures aligned with serious trade partners."],
-              ["Exclusive Collections", "Access to limited and territory-specific releases."],
+              ["Exclusive Series", "Access to limited and territory-specific releases."],
               ["Dedicated Support", "A named account lead for every relationship."],
               ["Reliable Supply Chain", "Disciplined logistics across India and the Gulf."],
               ["Marketing Support", "Brand assets, training and co-branded campaigns."],

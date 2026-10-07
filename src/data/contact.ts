@@ -14,3 +14,14 @@ export const contactInfo = {
     line3: "Gurugram, Haryana — 122016",
   },
 };
+
+export const whatsappUrlFor = (message: string) =>
+  `${contactInfo.whatsappUrl}?text=${encodeURIComponent(message)}`;
+
+export const catalogueWhatsAppUrl = whatsappUrlFor(
+  "Hi RASA! I would like to request the full product catalogue. Please share the available series, flavours, formats, and pricing.",
+);
+
+export const partnerWhatsAppUrl = whatsappUrlFor(
+  "Hi RASA! I am interested in becoming a RASA partner. Please share the partnership details and next steps.",
+);

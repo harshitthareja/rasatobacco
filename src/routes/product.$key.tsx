@@ -44,9 +44,9 @@ function ProductPage() {
 
   const { collection, flavour, image } = entry;
   const gallery = productImageGalleries[key] ?? (image ? [image] : []);
-  const related = CATALOG.filter(
-    (e) => e.collection.slug === collection.slug && e.key !== key,
-  ).slice(0, 3);
+  const related = CATALOG.filter((candidate) => candidate.key !== key)
+    .sort((a, b) => Number(b.flavour.available) - Number(a.flavour.available))
+    .slice(0, 3);
 
   return (
     <main className="bg-ink text-foreground min-h-screen pt-32 pb-24">
@@ -100,11 +100,8 @@ function ProductPage() {
 
         {related.length > 0 && (
           <div className="mt-20 pt-12 border-t border-border/30">
-            <p
-              className="text-[0.6rem] tracking-luxe uppercase mb-6"
-              style={{ color: collection.accentVar }}
-            >
-              More from {collection.name}
+            <p className="text-[0.6rem] tracking-luxe uppercase text-gold mb-6">
+              More from RASA
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               {related.map((r) => (
@@ -125,6 +122,14 @@ function ProductPage() {
                   )}
                 </Link>
               ))}
+            </div>
+            <div className="mt-8 text-center">
+              <Link
+                to="/flavours"
+                className="inline-flex items-center justify-center border border-gold/50 px-8 py-3 text-[0.65rem] uppercase tracking-luxe text-gold transition-all duration-300 hover:bg-gold hover:text-ink"
+              >
+                View All Flavours
+              </Link>
             </div>
           </div>
         )}

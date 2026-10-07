@@ -5,6 +5,7 @@ import { CATALOG, type CatalogEntry } from "@/data/catalog";
 import { useProductPrices } from "@/hooks/useProductPrices";
 import { AddToCartControl } from "@/components/shop/AddToCartControl";
 import { collections, type Collection } from "@/data/collections";
+import { partnerWhatsAppUrl } from "@/data/contact";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
@@ -38,44 +39,14 @@ function ShopPage() {
     }).sort((a, b) => Number(b.flavour.available) - Number(a.flavour.available));
   }, [collectionFilter, availFilter]);
 
-  const availableCount = CATALOG.filter((i) => i.flavour.available).length;
-
   return (
-    <main className="bg-ink text-foreground min-h-screen">
-      {/* Hero */}
-      <section className="relative pt-40 pb-20 px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 grain opacity-30 pointer-events-none" />
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 0%, oklch(0.74 0.08 45 / 0.12), transparent 60%)",
-          }}
-        />
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <p className="text-[0.65rem] tracking-luxe uppercase text-gold mb-4">House of RASA</p>
-          <h1 className="font-serif text-6xl md:text-8xl leading-none mb-6">Shop</h1>
-          <p
-            className="font-display text-sm tracking-luxe uppercase mb-8"
-            style={{ color: "#DEA193" }}
-          >
-            SMOKE, PERFECTED
-          </p>
-          <p className="text-foreground/70 max-w-xl mx-auto leading-relaxed text-sm">
-            {availableCount} flavours available to order now across Majlis, Makhmal and Tarkib, with
-            the rest of the cellar arriving in stages.
-          </p>
-        </div>
-      </section>
-
-      <div className="luxe-divider max-w-md mx-auto" />
-
+    <main className="min-h-screen bg-ink pt-24 text-foreground">
       {/* Filters */}
       <section className="sticky top-20 z-30 bg-ink/95 backdrop-blur-xl border-b border-border/30 px-6 py-4">
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-4">
           <div className="flex items-center gap-2 flex-wrap justify-center">
             <span className="text-[0.6rem] tracking-luxe uppercase text-foreground/40 mr-1">
-              Collection:
+              Series:
             </span>
             {(["all", ...collections.map((c) => c.slug)] as CollectionFilter[]).map((slug) => (
               <button
@@ -157,12 +128,14 @@ function ShopPage() {
           For wholesale pricing and larger quantities, RASA partners directly with retailers,
           lounges and distributors.
         </p>
-        <Link
-          to="/partners"
+        <a
+          href={partnerWhatsAppUrl}
+          target="_blank"
+          rel="noreferrer"
           className="inline-flex items-center gap-3 px-8 py-4 bg-gold text-ink text-[0.7rem] tracking-luxe uppercase hover:bg-gold-soft transition-all duration-500"
         >
           Become a Partner
-        </Link>
+        </a>
       </section>
     </main>
   );

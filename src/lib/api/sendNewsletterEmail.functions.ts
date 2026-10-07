@@ -29,7 +29,7 @@ export const sendNewsletterEmail = createServerFn({ method: 'POST' })
         <h2 style="color:#e8e0d4;font-size:1.5rem;font-weight:400;margin:0 0 16px;">You are now subscribed.</h2>
         <p style="color:#b0a898;line-height:1.8;margin:0 0 24px;font-size:0.95rem;">
           Welcome to the House of RASA. You will be among the first to receive product launches, 
-          collection releases, flavour updates, partnership opportunities, and curated industry news.
+          series releases, flavour updates, partnership opportunities, and curated industry news.
         </p>
         <p style="color:#b0a898;line-height:1.8;margin:0 0 32px;font-size:0.95rem;">
           We do not believe in noise. Only in substance.

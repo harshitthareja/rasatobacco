@@ -6,7 +6,8 @@ import heroHookah from "@/assets/hero-hookah.jpg";
 import { CinematicSmoke } from "@/components/CinematicSmoke";
 import { RevealChild, RevealGroup } from "@/components/motion/Reveal";
 import { AnimatedWordmark } from "@/components/AnimatedWordmark";
-import { LaunchShowcase } from "@/components/LaunchShowcase";
+import { SeriesShowcase } from "@/components/SeriesShowcase";
+import { partnerWhatsAppUrl } from "@/data/contact";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/")({
       { title: "RASA — Smoke, Perfected." },
       {
         name: "description",
-        content: "RASA — a luxury hookah lifestyle house. Three collections. One discipline. Smoke, perfected.",
+        content: "RASA — a luxury hookah lifestyle house. Three series. One discipline. Smoke, perfected.",
       },
       { property: "og:title", content: "RASA — Smoke, Perfected." },
       {
@@ -32,7 +33,7 @@ function Home() {
   return (
     <>
       <Hero />
-      <LaunchShowcase />
+      <SeriesShowcase />
       <Invitation />
     </>
   );
@@ -107,21 +108,13 @@ function Hero() {
         </motion.div>
       </div>
 
-      {/* Bottom CTAs and scroll cue */}
+      {/* Scroll cue */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, delay: 2.2, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute bottom-10 inset-x-0 z-10 flex flex-col items-center gap-6"
+        className="absolute bottom-10 inset-x-0 z-10 flex flex-col items-center"
       >
-        <a
-          href="#launch"
-          className="group inline-flex items-center gap-3 text-[0.65rem] tracking-luxe uppercase text-foreground/90 hover:text-gold transition-colors duration-500"
-        >
-          <span className="h-px w-10 bg-gold/70 group-hover:w-16 transition-all duration-500" />
-          Explore the launch
-          <span className="h-px w-10 bg-gold/70 group-hover:w-16 transition-all duration-500" />
-        </a>
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
@@ -166,13 +159,15 @@ function Invitation() {
           </RevealChild>
           <RevealChild>
             <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/partners"
+              <a
+                href={partnerWhatsAppUrl}
+                target="_blank"
+                rel="noreferrer"
                 className="group inline-flex items-center justify-center gap-3 px-12 py-4 bg-gold text-primary-foreground text-[0.65rem] tracking-luxe uppercase hover:bg-gold-soft transition-all duration-500"
               >
                 Become a Partner
                 <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              </a>
               <Link
                 to="/contact"
                 className="inline-flex items-center justify-center px-12 py-4 border border-foreground/25 text-[0.65rem] tracking-luxe uppercase hover:border-gold/70 hover:text-gold transition-all duration-500"

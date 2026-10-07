@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import rasaLogo from "@/assets/rasa-logo.png";
+import { EmailPasswordAuth } from "@/components/EmailPasswordAuth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -14,7 +15,13 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const { user, loading, signInWithGoogle } = useAuth();
+  const {
+    user,
+    loading,
+    signInWithGoogle,
+    signInWithPassword,
+    signUpWithPassword,
+  } = useAuth();
   const navigate = useNavigate();
   const redirected = useRef(false);
   const [busy, setBusy] = useState(false);
@@ -46,7 +53,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-ink flex items-center justify-center px-4 overflow-hidden">
+    <div className="relative min-h-screen bg-ink flex items-center justify-center overflow-hidden px-4 py-3">
       <div className="absolute inset-0 smoke-bg opacity-80 pointer-events-none" />
       <div className="absolute inset-0 grain pointer-events-none" />
 
@@ -61,15 +68,14 @@ function LoginPage() {
             "0 40px 100px -20px oklch(0 0 0 / 0.8), 0 0 60px -10px oklch(0.78 0.09 48 / 0.2)",
         }}
       >
-        <div className="px-10 py-12 text-center">
-          <div className="flex justify-center mb-6">
-            <img src={rasaLogo} alt="RASA" className="h-16 w-auto" draggable={false} />
+        <div className="px-6 py-5 text-center sm:px-8">
+          <div className="mb-2 flex justify-center">
+            <img src={rasaLogo} alt="RASA" className="h-10 w-auto" draggable={false} />
           </div>
-          <p className="text-[0.6rem] tracking-luxe uppercase text-gold mb-3">Welcome</p>
-          <h1 className="font-serif text-4xl text-foreground mb-3">Sign In</h1>
-          <p className="text-sm text-foreground/65 leading-relaxed mb-8">
-            Access the House of RASA. Sign in to submit enquiries, request
-            catalogues, and manage your loyalty membership.
+          <p className="mb-1 text-[0.6rem] uppercase tracking-luxe text-gold">Welcome</p>
+          <h1 className="mb-1 font-serif text-3xl text-foreground">Your Account</h1>
+          <p className="mb-4 text-xs leading-relaxed text-foreground/65">
+            Sign in or create an account to manage your RASA experience.
           </p>
 
           {loading || (user && redirected.current) ? (
@@ -78,11 +84,19 @@ function LoginPage() {
             </div>
           ) : (
             <>
+              <EmailPasswordAuth signIn={signInWithPassword} signUp={signUpWithPassword} />
+
+              <div className="my-3 flex items-center gap-3 text-[0.6rem] uppercase tracking-luxe text-foreground/35">
+                <span className="h-px flex-1 bg-border/60" />
+                Or
+                <span className="h-px flex-1 bg-border/60" />
+              </div>
+
               <button
                 type="button"
                 onClick={handleGoogle}
                 disabled={busy}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white text-gray-800 text-sm font-medium hover:bg-gray-50 transition-all duration-300 mb-4 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="mb-2 flex w-full items-center justify-center gap-3 bg-white px-6 py-3 text-sm font-medium text-gray-800 transition-all duration-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
                 style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
               >
                 {busy ? (
@@ -109,7 +123,7 @@ function LoginPage() {
             </>
           )}
 
-          <div className="luxe-divider mt-8 mb-6" />
+          <div className="luxe-divider mb-3 mt-4" />
           <Link
             to="/"
             className="inline-flex items-center gap-2 text-[0.65rem] tracking-luxe uppercase text-foreground/50 hover:text-gold transition-colors duration-300"

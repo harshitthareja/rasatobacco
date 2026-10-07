@@ -10,6 +10,8 @@ const mocks = vi.hoisted(() => {
     signOut: vi.fn().mockResolvedValue({}),
     upsert: vi.fn().mockReturnValue({ error: null }),
     signInWithOAuth: vi.fn().mockResolvedValue({ error: null }),
+    signInWithPassword: vi.fn().mockResolvedValue({ error: null }),
+    signUp: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
   };
 });
 
@@ -20,6 +22,8 @@ vi.mock("@/integrations/supabase/client", () => ({
       onAuthStateChange: mocks.onAuthStateChange,
       signOut: mocks.signOut,
       signInWithOAuth: mocks.signInWithOAuth,
+      signInWithPassword: mocks.signInWithPassword,
+      signUp: mocks.signUp,
     },
     from: () => ({ upsert: mocks.upsert }),
   },
@@ -47,9 +51,11 @@ describe("useAuth", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
   });
 
-  it("exposes signInWithGoogle and signOut functions", () => {
+  it("exposes all sign-in and sign-out functions", () => {
     const { result } = renderHook(() => useAuth());
     expect(typeof result.current.signInWithGoogle).toBe("function");
+    expect(typeof result.current.signInWithPassword).toBe("function");
+    expect(typeof result.current.signUpWithPassword).toBe("function");
     expect(typeof result.current.signOut).toBe("function");
   });
 
@@ -62,6 +68,27 @@ describe("useAuth", () => {
     );
   });
 
+  it("signs in with a trimmed email and password", async () => {
+    const { result } = renderHook(() => useAuth());
+    await result.current.signInWithPassword("  member@example.com ", "password123");
+    expect(mocks.signInWithPassword).toHaveBeenCalledWith({
+      email: "member@example.com",
+      password: "password123",
+    });
+  });
+
+  it("creates an email account and reports when confirmation is required", async () => {
+    const { result } = renderHook(() => useAuth());
+    const response = await result.current.signUpWithPassword(
+      "new@example.com",
+      "password123",
+    );
+    expect(mocks.signUp).toHaveBeenCalledWith(
+      expect.objectContaining({ email: "new@example.com", password: "password123" }),
+    );
+    expect(response.needsEmailConfirmation).toBe(true);
+  });
+
   it("calls supabase signOut on signOut()", async () => {
     const replaceSpy = vi.fn();
     Object.defineProperty(window, "location", {
@@ -70,6 +97,7 @@ describe("useAuth", () => {
     });
     const { result } = renderHook(() => useAuth());
     await result.current.signOut();
-    expect(mocks.signOut).toHaveBeenCalled();
+    expect(mocks.signOut).toHaveBeenCalledWith({ scope: "local" });
+    expect(replaceSpy).toHaveBeenCalledWith("/login");
   });
 });

@@ -250,7 +250,7 @@ export function SiteHeader() {
               { to: "/", label: "Home" },
               { to: "/house-of-rasa", label: "House of RASA" },
               { to: "/loyalty", label: "Loyalty" },
-              { to: "/collections", label: "Collections" },
+              { to: "/collections", label: "Series" },
               { to: "/collections/majlis", label: "— Majlis" },
               { to: "/collections/makhmal", label: "— Makhmal" },
               { to: "/collections/tarkib", label: "— Tarkib" },
@@ -466,7 +466,7 @@ function CollectionsMega({
     {
       name: "Majlis",
       tag: "The Expression of Heritage",
-      label: "Collection I",
+      label: "Series I",
       slug: "majlis",
       path: "/collections/majlis" as const,
       logo: majlisLogo,
@@ -477,7 +477,7 @@ function CollectionsMega({
     {
       name: "Makhmal",
       tag: "The Expression of Refinement",
-      label: "Collection II",
+      label: "Series II",
       slug: "makhmal",
       path: "/collections/makhmal" as const,
       logo: makhmalLogo,
@@ -488,7 +488,7 @@ function CollectionsMega({
     {
       name: "Tarkib",
       tag: "The Expression of Innovation",
-      label: "Collection III",
+      label: "Series III",
       slug: "tarkib",
       path: "/collections/tarkib" as const,
       logo: tarkibLogo,
@@ -499,7 +499,7 @@ function CollectionsMega({
   ];
 
   return (
-    <DropButton label="Collections" isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+    <DropButton label="Series" isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
       <div className="bg-ink/95 backdrop-blur-xl border border-gold/15 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] p-5 w-[600px]">
         <Link
           to="/collections"
@@ -507,7 +507,7 @@ function CollectionsMega({
           className="block mb-4 pb-4 border-b border-border/40 hover:text-gold transition-colors"
         >
           <p className="text-[0.6rem] tracking-luxe uppercase text-gold/80">Explore</p>
-          <p className="font-serif text-lg mt-1">View All Collections</p>
+          <p className="font-serif text-lg mt-1">View All Series</p>
         </Link>
         <div className="grid grid-cols-3 gap-3">
           {items.map((c) => (
@@ -703,14 +703,14 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
             autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search flavours, collections, notes…"
+            placeholder="Search flavours, series, notes…"
             className="w-full bg-transparent border-b border-border/60 focus:border-gold transition-colors py-5 text-xl md:text-3xl font-serif text-center outline-none placeholder:text-muted-foreground/40"
           />
 
           <div className="mt-8">
             {q.trim() === "" ? (
               <p className="text-center text-xs tracking-luxe uppercase text-muted-foreground">
-                Type to filter flavours across all collections
+                Type to filter flavours across all series
               </p>
             ) : results.length === 0 ? (
               <p className="text-center text-sm text-foreground/70 font-serif italic">
@@ -750,7 +750,7 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
                     onClick={onClose}
                     className="text-[0.65rem] tracking-luxe uppercase text-gold/80 hover:text-gold"
                   >
-                    Browse all collections →
+                    Browse all series →
                   </Link>
                 </li>
               </ul>

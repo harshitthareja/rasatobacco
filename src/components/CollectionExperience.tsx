@@ -152,7 +152,7 @@ function CinematicHero({ collection }: { collection: Collection }) {
           to="/collections"
           className="text-[0.6rem] tracking-luxe uppercase text-foreground/60 hover:text-foreground transition-colors"
         >
-          ← All Collections
+          ← All Series
         </Link>
       </motion.div>
 

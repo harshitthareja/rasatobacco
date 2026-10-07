@@ -4,10 +4,10 @@ const WA_NUMBER = "919090204008";
 
 const PAGE_MESSAGES: Record<string, string> = {
   "/": "Hi RASA! I'm interested in your Hookah Flavours. Could you share more details?",
-  "/collections/majlis": "Hi RASA! I'm interested in the Majlis collection. Could you share more details?",
-  "/collections/makhmal": "Hi RASA! I'm interested in the Makhmal collection. Could you share more details?",
-  "/collections/tarkib": "Hi RASA! I'm interested in the Tarkib collection. Could you share more details?",
-  "/collections": "Hi RASA! I'm interested in your collections. Could you share more details?",
+  "/collections/majlis": "Hi RASA! I'm interested in the Majlis series. Could you share more details?",
+  "/collections/makhmal": "Hi RASA! I'm interested in the Makhmal series. Could you share more details?",
+  "/collections/tarkib": "Hi RASA! I'm interested in the Tarkib series. Could you share more details?",
+  "/collections": "Hi RASA! I'm interested in your series. Could you share more details?",
   "/flavours": "Hi RASA! I'm interested in your Hookah Flavours. Could you share more details about pricing and availability?",
   "/hookah": "Hi RASA! I'm interested in this product. Could you share more details?",
   "/accessories": "Hi RASA! I'm interested in this product. Could you share more details?",

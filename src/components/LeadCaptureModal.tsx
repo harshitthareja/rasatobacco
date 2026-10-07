@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "@tanstack/react-router";
 import { X, ArrowRight, Mail } from "lucide-react";
+import { subscribeToNewsletter } from "@/lib/newsletter";
 
 
 const SESSION_KEY = "rasa_lead_modal_shown";
@@ -120,11 +121,7 @@ export function LeadCaptureModal() {
     setSendError("");
     setSending(true);
     try {
-      const { supabase } = await import('@/integrations/supabase/client');
-      const { error } = await supabase.functions.invoke('newsletter', {
-        body: { email: email.trim(), source: 'popup' },
-      });
-      if (error) throw error;
+      await subscribeToNewsletter(email, "popup");
       markSubscribed();
       setDone(true);
       setTimeout(() => setOpen(false), 2500);
@@ -200,7 +197,7 @@ export function LeadCaptureModal() {
               Stay Updated with RASA
             </h2>
             <p className="mt-4 text-sm text-foreground/80 leading-relaxed">
-              Subscribe to receive product launches, collection releases, flavour
+              Subscribe to receive product launches, series releases, flavour
               updates, partnership opportunities, and industry news.
             </p>
 

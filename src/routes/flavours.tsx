@@ -5,6 +5,7 @@ import { collections } from "@/data/collections";
 import { flavourKey } from "@/data/sku";
 import { productImages } from "@/data/productImages";
 import { ProductHoverPreview } from "@/components/shop/ProductHoverPreview";
+import { partnerWhatsAppUrl } from "@/data/contact";
 
 export const Route = createFileRoute("/flavours")({
   head: () => ({
@@ -153,13 +154,15 @@ function FlavoursPage() {
           RASA offers wholesale pricing for retailers, lounges, and distributors across India and
           internationally.
         </p>
-        <Link
-          to="/partners"
+        <a
+          href={partnerWhatsAppUrl}
+          target="_blank"
+          rel="noreferrer"
           className="inline-flex items-center gap-3 px-8 py-4 bg-gold text-ink text-[0.7rem] tracking-luxe uppercase hover:bg-gold-soft transition-all duration-500 group"
         >
           Become a Partner
           <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-        </Link>
+        </a>
       </section>
     </main>
   );

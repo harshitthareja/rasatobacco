@@ -80,7 +80,7 @@ export function AgeGate() {
         style={{ background: "rgba(10, 8, 7, 0.97)" }}
       >
         <div
-          className="relative w-full max-w-xl border border-gold/30 px-8 py-14 text-center md:px-14"
+          className="relative w-full max-w-lg border border-gold/30 px-6 py-8 text-center md:px-10 md:py-9"
           style={{
             background: "rgba(14, 11, 9, 0.96)",
             boxShadow:
@@ -102,23 +102,23 @@ export function AgeGate() {
               alt="RASA"
               width={728}
               height={292}
-              className="h-24 w-auto md:h-28"
+              className="h-16 w-auto md:h-20"
             />
-            <p className="mt-5 font-display text-lg uppercase md:text-xl" style={{ color: "#DEA193" }}>
+            <p className="mt-3 font-display text-base uppercase md:text-lg" style={{ color: "#DEA193" }}>
               SMOKE, PERFECTED
             </p>
           </div>
 
-          <div className="luxe-divider my-10" />
+          <div className="luxe-divider my-6" />
 
-          <p className="font-serif text-2xl leading-snug text-balance text-foreground/95 md:text-[1.75rem]">
+          <p className="font-serif text-xl leading-snug text-balance text-foreground/95 md:text-2xl">
             This website contains content intended for adults.
           </p>
           <p className="mt-3 text-sm text-muted-foreground">
             Please confirm you are 18 years of age or older.
           </p>
 
-          <div className="luxe-divider my-8" />
+          <div className="luxe-divider my-6" />
 
           <div className="age-gate-form">
             <div className="mx-auto flex w-full max-w-md items-start gap-3 text-left">
@@ -149,7 +149,7 @@ export function AgeGate() {
             <div
               className="sm:flex-row"
               style={{
-                marginTop: "32px",
+                marginTop: "24px",
                 display: "flex",
                 flexDirection: "column",
                 gap: "12px",
@@ -162,7 +162,7 @@ export function AgeGate() {
               disabled={!checked}
               className="age-gate-enter"
               style={{
-                padding: "16px 48px",
+                padding: "13px 40px",
                 fontSize: "0.7rem",
                 letterSpacing: "0.32em",
                 textTransform: "uppercase",
@@ -176,7 +176,7 @@ export function AgeGate() {
             <Link
               to="/age-restricted"
               style={{
-                padding: "16px 40px",
+                padding: "13px 32px",
                 border: "1px solid rgba(255,255,255,0.15)",
                 color: "rgba(255,255,255,0.5)",
                 fontSize: "0.7rem",
@@ -197,7 +197,7 @@ export function AgeGate() {
               color: "rgba(255,255,255,0.4)",
               lineHeight: 1.6,
               maxWidth: "380px",
-              margin: "32px auto 0",
+              margin: "22px auto 0",
             }}
           >
             By entering, you confirm that you are of legal age to view tobacco-related content in

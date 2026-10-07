@@ -7,17 +7,18 @@ import { ProductHoverPreview } from "@/components/shop/ProductHoverPreview";
 import { CinematicSmoke } from "@/components/CinematicSmoke";
 import { Reveal, RevealChild, RevealGroup } from "@/components/motion/Reveal";
 import { motion } from "framer-motion";
+import { catalogueWhatsAppUrl, partnerWhatsAppUrl } from "@/data/contact";
 
 export const Route = createFileRoute("/collections/")({
   head: () => ({
     meta: [
-      { title: "Collections — Three Expressions, One House | RASA" },
+      { title: "Series — Three Expressions, One House | RASA" },
       {
         name: "description",
         content:
-          "Discover featured flavours across the three RASA collections — Majlis, Makhmal, and Tarkib.",
+          "Discover featured flavours across the three RASA series — Majlis, Makhmal, and Tarkib.",
       },
-      { property: "og:title", content: "Collections — RASA" },
+      { property: "og:title", content: "Series — RASA" },
       {
         property: "og:description",
         content: "Majlis, Makhmal, Tarkib — featured flavours from the House of RASA.",
@@ -48,7 +49,7 @@ function Collections() {
             transition={{ duration: 1, delay: 0.1 }}
             className="text-[0.65rem] tracking-wider-luxe uppercase text-gold mb-6"
           >
-            The Collections
+            The Series
           </motion.p>
           <motion.h1
             className="font-serif font-light leading-[0.95] tracking-[-0.02em]"
@@ -88,22 +89,26 @@ function Collections() {
       <section className="bg-ink border-t border-border/40 py-16">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="text-foreground/75 leading-relaxed">
-            Three distinct universes — one disciplined house. Each collection is curated for
+            Three distinct universes — one disciplined house. Each series is curated for
             hospitality, retail, and wholesale partners worldwide.
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              to="/contact"
+            <a
+              href={catalogueWhatsAppUrl}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex items-center justify-center gap-3 px-8 py-3.5 bg-gold text-primary-foreground text-[0.7rem] tracking-luxe uppercase hover:bg-gold-soft transition-colors duration-500"
             >
               Request Catalogue <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-            <Link
-              to="/partners"
+            </a>
+            <a
+              href={partnerWhatsAppUrl}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex items-center justify-center px-8 py-3.5 border border-foreground/30 text-[0.7rem] tracking-luxe uppercase hover:border-gold hover:text-gold transition-all duration-500"
             >
               Become a Partner
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -175,7 +180,7 @@ function CollectionPreview({ c }: { c: Collection }) {
         {/* EXPLORE BUTTON */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-foreground/65 max-w-md">
-            A curated preview from the {c.name} cellar. The complete collection is revealed inside.
+            A curated preview from the {c.name} cellar. The complete series is revealed inside.
           </p>
           <Link
             to={c.path}

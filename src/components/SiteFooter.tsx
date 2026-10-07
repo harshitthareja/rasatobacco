@@ -2,7 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Instagram, Mail, Phone, MessageCircle, MapPin, ArrowRight } from "lucide-react";
 
-import { contactInfo } from "@/data/contact";
+import { contactInfo, partnerWhatsAppUrl } from "@/data/contact";
+import { subscribeToNewsletter } from "@/lib/newsletter";
 import { AnimatedWordmark } from "@/components/AnimatedWordmark";
 import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 import { AgeRestrictionPolicyModal } from "@/components/AgeRestrictionPolicyModal";
@@ -72,9 +73,9 @@ export function SiteFooter() {
             </ul>
           </div>
 
-          {/* Collections */}
+          {/* Series */}
           <div>
-            <h4 className="text-[0.7rem] tracking-luxe uppercase text-gold mb-6">Collections</h4>
+            <h4 className="text-[0.7rem] tracking-luxe uppercase text-gold mb-6">Series</h4>
             <ul className="space-y-3 text-sm text-foreground/75">
               <li>
                 <Link to="/collections" className="hover:text-gold transition-colors">
@@ -104,9 +105,14 @@ export function SiteFooter() {
             <h4 className="text-[0.7rem] tracking-luxe uppercase text-gold mb-6">Partnerships</h4>
             <ul className="space-y-3 text-sm text-foreground/75">
               <li>
-                <Link to="/partners" className="hover:text-gold transition-colors">
+                <a
+                  href={partnerWhatsAppUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-gold transition-colors"
+                >
                   Become a Partner
-                </Link>
+                </a>
               </li>
               <li>
                 <Link to="/partners" hash="distributor" className="hover:text-gold transition-colors">
@@ -260,11 +266,7 @@ function Newsletter() {
     setError("");
     setSending(true);
     try {
-      const { supabase } = await import('@/integrations/supabase/client');
-      const { error } = await supabase.functions.invoke('newsletter', {
-        body: { email: email.trim(), source: 'footer' },
-      });
-      if (error) throw error;
+      await subscribeToNewsletter(email, "footer");
       markSubscribed();
       setDone(true);
     } catch {
@@ -280,7 +282,7 @@ function Newsletter() {
         <p className="text-[0.65rem] tracking-luxe uppercase text-gold">Stay Updated</p>
         <h3 className="mt-3 font-serif text-3xl md:text-4xl text-balance">Stay Updated with RASA</h3>
         <p className="mt-3 text-sm text-foreground/75 max-w-md leading-relaxed">
-          Subscribe to receive product launches, collection releases, flavour updates, partnership opportunities, and
+          Subscribe to receive product launches, series releases, flavour updates, partnership opportunities, and
           industry news.
         </p>
       </div>

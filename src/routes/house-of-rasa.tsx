@@ -6,6 +6,11 @@ import { ArrowRight } from "lucide-react";
 import houseAtelier from "@/assets/house-atelier.jpg";
 import houseCraft from "@/assets/house-craft.jpg";
 import bandCopper from "@/assets/band-copper.jpg";
+import bandEarth from "@/assets/band-earth.jpg";
+import aboutAtmosphere from "@/assets/about-atmosphere.jpg";
+import consistencyRasa from "@/assets/consistency-rasa.png";
+import hookahLuxury from "@/assets/hookah-luxury.jpg";
+import heroSmoke from "@/assets/hero-smoke.jpg";
 import chapterMajlis from "@/assets/chapter-majlis.jpg";
 import chapterMakhmal from "@/assets/chapter-makhmal.jpg";
 import chapterTarkib from "@/assets/chapter-tarkib.jpg";
@@ -42,21 +47,29 @@ const pillars = [
     no: "01",
     title: "Craftsmanship",
     body: "Every detail deserves attention — from the cut of the leaf to the curve of the bowl.",
+    image: houseCraft,
+    alt: "Artisan hands preparing the RASA blend",
   },
   {
     no: "02",
     title: "Character",
     body: "Every experience should leave an impression — composed, considered, unmistakable.",
+    image: aboutAtmosphere,
+    alt: "A composed lounge atmosphere from the House of RASA",
   },
   {
     no: "03",
     title: "Consistency",
     body: "Excellence should never be occasional. Discipline is the only ritual that holds.",
+    image: consistencyRasa,
+    alt: "RASA-branded premium packaging finished in rose gold",
   },
   {
     no: "04",
     title: "Refinement",
     body: "The pursuit never ends. Each batch is a draft of the next.",
+    image: heroSmoke,
+    alt: "Refined smoke forms against a dark background",
   },
 ];
 
@@ -65,21 +78,29 @@ const process = [
     step: "I",
     title: "Sourcing",
     body: "Hand-selected leaf from origin growers, graded by season, cured to a house standard.",
+    image: bandEarth,
+    alt: "Tobacco leaves growing at origin",
   },
   {
     step: "II",
     title: "Composition",
     body: "Blended in small ateliers — fruit, spice and resin balanced like a perfumer's accord.",
+    image: houseCraft,
+    alt: "An artisan composing a premium tobacco blend",
   },
   {
     step: "III",
     title: "Maceration",
     body: "Slow infusion in molasses and glycerin until aroma settles into the leaf.",
+    image: bandCopper,
+    alt: "A rich blend during slow maceration",
   },
   {
     step: "IV",
     title: "Ritual",
     body: "Sealed, hallmarked, and dispatched only when it carries the house signature.",
+    image: hookahLuxury,
+    alt: "A finished hookah carrying the house standard",
   },
 ];
 
@@ -166,15 +187,6 @@ function HeroBlock() {
         style={{ y: titleY, opacity: titleOpacity }}
         className="relative z-10 text-center px-6 pt-24 will-change-transform"
       >
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="text-[0.6rem] tracking-wider-luxe uppercase text-gold/85 mb-8"
-        >
-          The Philosophy
-        </motion.p>
-
         <AnimatedWordmark size="h-[18vw] max-h-64 min-h-24" reveal={false} />
 
         <motion.h1
@@ -259,11 +271,6 @@ function CraftedSection() {
               tone="copper"
               className="opacity-60 mix-blend-screen"
             />
-            <div className="absolute bottom-6 left-6 right-6">
-              <p className="text-[0.6rem] tracking-wider-luxe uppercase gradient-gold-text">
-                An Atelier of Atmosphere
-              </p>
-            </div>
           </div>
         </Reveal>
       </div>
@@ -299,7 +306,18 @@ function PillarsSection() {
         >
           {pillars.map((p) => (
             <RevealChild key={p.title}>
-              <div className="group bg-ink p-10 md:p-12 transition-all duration-700 hover:bg-surface/40 h-full relative overflow-hidden">
+              <div className="group bg-ink transition-all duration-700 hover:bg-surface/40 h-full relative overflow-hidden">
+                <div className="relative aspect-[16/9] overflow-hidden border-b border-border/30">
+                  <img
+                    src={p.image}
+                    alt={p.alt}
+                    width={1280}
+                    height={720}
+                    loading="lazy"
+                    className="h-full w-full object-cover opacity-75 transition-all duration-700 group-hover:scale-105 group-hover:opacity-95"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
+                </div>
                 <div
                   className="absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                   style={{
@@ -307,16 +325,18 @@ function PillarsSection() {
                       "radial-gradient(circle, color-mix(in oklab, var(--gold) 25%, transparent) 0%, transparent 70%)",
                   }}
                 />
-                <span className="text-[0.6rem] tracking-wider-luxe text-gold/70 group-hover:text-gold transition-colors">
-                  {p.no}
-                </span>
-                <h3 className="mt-5 font-serif font-light text-3xl md:text-4xl group-hover:text-gold-soft transition-colors">
-                  {p.title}
-                </h3>
-                <p className="mt-4 text-muted-foreground leading-relaxed max-w-sm">
-                  {p.body}
-                </p>
-                <div className="mt-6 h-px w-10 bg-gold/40 group-hover:w-24 group-hover:bg-gold transition-all duration-700" />
+                <div className="p-8 md:p-10">
+                  <span className="text-[0.6rem] tracking-wider-luxe text-gold/70 group-hover:text-gold transition-colors">
+                    {p.no}
+                  </span>
+                  <h3 className="mt-4 font-serif font-light text-3xl md:text-4xl group-hover:text-gold-soft transition-colors">
+                    {p.title}
+                  </h3>
+                  <p className="mt-4 text-muted-foreground leading-relaxed max-w-sm">
+                    {p.body}
+                  </p>
+                  <div className="mt-6 h-px w-10 bg-gold/40 group-hover:w-24 group-hover:bg-gold transition-all duration-700" />
+                </div>
               </div>
             </RevealChild>
           ))}
@@ -366,19 +386,30 @@ function ProcessSection() {
         <RevealGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-gold/15" stagger={0.08}>
           {process.map((p) => (
             <RevealChild key={p.step}>
-              <div className="bg-ink/85 backdrop-blur-sm p-8 md:p-10 h-full group hover:bg-ink transition-colors duration-700">
-                <p
-                  className="font-serif text-5xl gradient-gold-text group-hover:translate-x-1 transition-transform duration-500"
-                >
-                  {p.step}
-                </p>
-                <div className="mt-6 h-px w-8 bg-gold/40 group-hover:w-16 group-hover:bg-gold transition-all duration-700" />
-                <h3 className="mt-6 font-serif text-2xl text-foreground group-hover:text-gold-soft transition-colors">
-                  {p.title}
-                </h3>
-                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                  {p.body}
-                </p>
+              <div className="bg-ink/85 backdrop-blur-sm h-full group hover:bg-ink transition-colors duration-700 overflow-hidden">
+                <div className="relative aspect-[4/3] overflow-hidden border-b border-gold/10">
+                  <img
+                    src={p.image}
+                    alt={p.alt}
+                    width={960}
+                    height={720}
+                    loading="lazy"
+                    className="h-full w-full object-cover opacity-70 transition-all duration-700 group-hover:scale-105 group-hover:opacity-95"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" />
+                </div>
+                <div className="p-7 md:p-8">
+                  <p className="font-serif text-5xl gradient-gold-text group-hover:translate-x-1 transition-transform duration-500">
+                    {p.step}
+                  </p>
+                  <div className="mt-5 h-px w-8 bg-gold/40 group-hover:w-16 group-hover:bg-gold transition-all duration-700" />
+                  <h3 className="mt-5 font-serif text-2xl text-foreground group-hover:text-gold-soft transition-colors">
+                    {p.title}
+                  </h3>
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                    {p.body}
+                  </p>
+                </div>
               </div>
             </RevealChild>
           ))}

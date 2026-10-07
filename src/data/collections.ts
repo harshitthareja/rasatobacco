@@ -30,7 +30,7 @@ export const collections: Collection[] = [
     slug: "majlis",
     path: "/collections/majlis",
     name: "Majlis",
-    label: "Collection I",
+    label: "Series I",
     expression: "The Expression of Heritage",
     tagline: "Tradition Lives On.",
     intro:
@@ -79,7 +79,7 @@ export const collections: Collection[] = [
     slug: "makhmal",
     path: "/collections/makhmal",
     name: "Makhmal",
-    label: "Collection II",
+    label: "Series II",
     expression: "The Expression of Refinement",
     tagline: "Refinement Endures.",
     intro:
@@ -133,7 +133,7 @@ export const collections: Collection[] = [
     slug: "tarkib",
     path: "/collections/tarkib",
     name: "Tarkib",
-    label: "Collection III",
+    label: "Series III",
     expression: "The Expression of Innovation",
     tagline: "Discovery Never Ends.",
     intro:

@@ -74,14 +74,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "A luxury hookah lifestyle house uniting premium tobacco collections, hookah systems, and curated accessories.",
+          "A luxury hookah lifestyle house uniting three premium tobacco series, hookah systems, and curated accessories.",
       },
       { name: "author", content: "RASA" },
       { property: "og:title", content: "RASA — Smoke, Perfected." },
       {
         property: "og:description",
         content:
-          "A luxury hookah lifestyle house uniting premium tobacco collections, hookah systems, and curated accessories.",
+          "A luxury hookah lifestyle house uniting three premium tobacco series, hookah systems, and curated accessories.",
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "RASA" },

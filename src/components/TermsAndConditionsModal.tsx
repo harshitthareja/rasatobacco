@@ -57,7 +57,7 @@ export function TermsAndConditionsModal({ open, onClose }: Props) {
 
           <div>
             <h3 className="font-serif text-base text-gold mb-3">1. Website Purpose</h3>
-            <p className="mb-2">The RASA website is provided for informational, brand, partnership, and communication purposes. Information presented on this website is intended to introduce visitors to the House of RASA, its collections, products, partnerships, and related activities.</p>
+            <p className="mb-2">The RASA website is provided for informational, brand, partnership, and communication purposes. Information presented on this website is intended to introduce visitors to the House of RASA, its series, products, partnerships, and related activities.</p>
             <p>Nothing on this website should be interpreted as a binding offer, contractual commitment, or guarantee of product availability.</p>
           </div>
 
