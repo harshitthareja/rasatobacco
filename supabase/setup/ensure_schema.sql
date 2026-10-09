@@ -147,10 +147,3 @@ SET price_cents = 8500, stock_quantity = 100, updated_at = now()
 WHERE price_cents IS NULL
   AND sku LIKE 'accessories-%-mouth-tip-%';
 
-
--- ONE-OFF (remove after it has run once): re-enable the mouth tips that the
--- launch-range step above switched off before it learned to skip accessories.
-UPDATE public.product_prices
-SET is_purchasable = true, updated_at = now()
-WHERE sku LIKE 'accessories-%-mouth-tip-%'
-  AND NOT is_purchasable;
