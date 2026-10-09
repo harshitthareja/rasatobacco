@@ -92,7 +92,8 @@ SET price_cents = CASE WHEN sku LIKE 'makhmal-%' THEN 7900 ELSE 8500 END,
 WHERE price_cents IS NULL
   AND sku ~ '^(majlis|makhmal|tarkib)-.*-20g$';
 
--- Launch range: the 10 flavours in 20g only
+-- Launch range: the 10 flavours in 20g only (flavours only — accessories
+-- are switched on and off separately in admin).
 UPDATE public.product_prices
 SET is_purchasable = (
       sku ~ '^(majlis-(commissioner|paan-mint-cigar|paan-raas)|makhmal-(spring-water|kiwi|grape)|tarkib-(marbella|white-rose|dubai-special|lychee-bliss))-20g$'
@@ -100,7 +101,8 @@ SET is_purchasable = (
     updated_at = now()
 WHERE is_purchasable IS DISTINCT FROM (
       sku ~ '^(majlis-(commissioner|paan-mint-cigar|paan-raas)|makhmal-(spring-water|kiwi|grape)|tarkib-(marbella|white-rose|dubai-special|lychee-bliss))-20g$'
-    );
+    )
+  AND sku NOT LIKE 'accessories-%';
 
 -- Launch stock (only packs still at 0)
 UPDATE public.product_prices
@@ -145,3 +147,10 @@ SET price_cents = 8500, stock_quantity = 100, updated_at = now()
 WHERE price_cents IS NULL
   AND sku LIKE 'accessories-%-mouth-tip-%';
 
+
+-- ONE-OFF (remove after it has run once): re-enable the mouth tips that the
+-- launch-range step above switched off before it learned to skip accessories.
+UPDATE public.product_prices
+SET is_purchasable = true, updated_at = now()
+WHERE sku LIKE 'accessories-%-mouth-tip-%'
+  AND NOT is_purchasable;
