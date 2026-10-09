@@ -41,8 +41,9 @@ function ShopPage() {
 
   return (
     <main className="min-h-screen bg-ink pt-24 text-foreground">
-      {/* Filters */}
-      <section className="sticky top-20 z-30 bg-ink/95 backdrop-blur-xl border-b border-border/30 px-6 py-4">
+      {/* Filters — sticky only on wide screens; on phones they wrap to several
+          rows and would cover the products, so they scroll away instead. */}
+      <section className="relative lg:sticky lg:top-20 z-30 bg-ink/95 backdrop-blur-xl border-b border-border/30 px-6 py-4">
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-4">
           <div className="flex items-center gap-2 flex-wrap justify-center">
             <span className="text-[0.6rem] tracking-luxe uppercase text-foreground/40 mr-1">

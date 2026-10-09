@@ -47,8 +47,8 @@ function FlavoursPage() {
 
   return (
     <main className="bg-ink text-foreground min-h-screen">
-      {/* Filters */}
-      <section className="sticky top-20 z-30 bg-ink/95 backdrop-blur-xl border-b border-border/30 px-6 py-4">
+      {/* Filters — sticky only on wide screens so they never cover products on phones. */}
+      <section className="relative lg:sticky lg:top-20 z-30 bg-ink/95 backdrop-blur-xl border-b border-border/30 px-6 py-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-4">
           {/* Search */}
           <div className="relative flex-1 w-full sm:max-w-sm">
