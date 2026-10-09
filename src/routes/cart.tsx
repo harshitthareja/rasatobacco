@@ -8,6 +8,8 @@ import { parseSku } from "@/data/catalog";
 import { formatPrice } from "@/lib/money";
 import { AuthModal } from "@/components/AuthModal";
 import { shippingChargeFor, useShippingSettings } from "@/hooks/useStoreSettings";
+import { mouthTipCount, pairOfferSavings } from "@/lib/offers";
+import { MouthTipOfferNote } from "@/components/shop/MouthTipOffer";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -36,11 +38,21 @@ function CartPage() {
 
   // Only items that can actually be ordered count — the same rule checkout
   // and the server use, so the cart total always matches what's charged.
-  const subtotalCents = resolved
-    .filter((r) => r.price?.price_cents != null && r.price.is_purchasable)
-    .reduce((sum, r) => sum + (r.price!.price_cents as number) * r.quantity, 0);
-  const shippingCents = shippingChargeFor(subtotalCents, shippingSettings);
-  const totalCents = subtotalCents + shippingCents;
+  const orderable = resolved.filter((r) => r.price?.price_cents != null && r.price.is_purchasable);
+  const subtotalCents = orderable.reduce(
+    (sum, r) => sum + (r.price!.price_cents as number) * r.quantity,
+    0,
+  );
+  const offerCents = pairOfferSavings(
+    orderable.map((r) => ({
+      sku: r.sku,
+      quantity: r.quantity,
+      unit_price_cents: r.price!.price_cents as number,
+    })),
+  );
+  const tipCount = mouthTipCount(orderable);
+  const shippingCents = shippingChargeFor(subtotalCents - offerCents, shippingSettings);
+  const totalCents = subtotalCents - offerCents + shippingCents;
   const hasUnpriced = resolved.some((r) => r.price?.price_cents == null || !r.price.is_purchasable);
 
   if (!authLoading && !user) {
@@ -175,6 +187,12 @@ function CartPage() {
                   <span className="text-foreground/70">Subtotal</span>
                   <span className="text-foreground/80">{formatPrice(subtotalCents, "INR")}</span>
                 </div>
+                {offerCents > 0 && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-foreground/70">Mouth tips · 2 for ₹150</span>
+                    <span className="text-gold">−{formatPrice(offerCents, "INR")}</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-foreground/70">Delivery</span>
                   <span className="text-foreground/80">
@@ -194,6 +212,8 @@ function CartPage() {
                   </p>
                 )}
               </div>
+
+              <MouthTipOfferNote count={tipCount} className="mb-5" />
 
               {hasUnpriced && (
                 <p className="text-[0.65rem] text-destructive/80 mb-4 leading-relaxed">

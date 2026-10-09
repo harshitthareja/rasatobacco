@@ -14,6 +14,8 @@ import {
   useShippingSettings,
 } from "@/hooks/useStoreSettings";
 import { AuthModal } from "@/components/AuthModal";
+import { MouthTipOfferNote } from "@/components/shop/MouthTipOffer";
+import { mouthTipCount, pairOfferSavings } from "@/lib/offers";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -103,8 +105,17 @@ function CheckoutPage() {
     (sum, r) => sum + (r.price!.price_cents as number) * r.quantity,
     0,
   );
-  const shippingCents = shippingChargeFor(subtotalCents, shippingSettings);
-  const totalCents = subtotalCents + shippingCents;
+  // Same "2 mouth tips for ₹150" rule create-order applies on the server.
+  const offerCents = pairOfferSavings(
+    purchasableItems.map((r) => ({
+      sku: r.sku,
+      quantity: r.quantity,
+      unit_price_cents: r.price!.price_cents as number,
+    })),
+  );
+  const tipCount = mouthTipCount(purchasableItems);
+  const shippingCents = shippingChargeFor(subtotalCents - offerCents, shippingSettings);
+  const totalCents = subtotalCents - offerCents + shippingCents;
 
   const onChange =
     (field: keyof ShippingForm) =>
@@ -448,6 +459,12 @@ function CheckoutPage() {
                   <span className="text-foreground/70">Subtotal</span>
                   <span className="text-foreground/80">{formatPrice(subtotalCents, "INR")}</span>
                 </div>
+                {offerCents > 0 && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-foreground/70">Mouth tips · 2 for ₹150</span>
+                    <span className="text-gold">−{formatPrice(offerCents, "INR")}</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-foreground/70">Delivery</span>
                   <span className="text-foreground/80">
@@ -467,6 +484,7 @@ function CheckoutPage() {
                   {formatPrice(shippingSettings.free_shipping_threshold_cents, "INR")}.
                 </p>
               )}
+              <MouthTipOfferNote count={tipCount} className="mt-5" />
             </div>
           </div>
         )}

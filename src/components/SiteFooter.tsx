@@ -52,11 +52,7 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/coming-soon"
-                  search={{ category: "accessories" }}
-                  className="hover:text-gold transition-colors"
-                >
+                <Link to="/accessories" className="hover:text-gold transition-colors">
                   Accessories
                 </Link>
               </li>

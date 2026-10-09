@@ -3,8 +3,7 @@ import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { collections, type Collection, type Flavour } from "@/data/collections";
-import { flavourKey } from "@/data/sku";
-import { productImages } from "@/data/productImages";
+import { flavourEntry } from "@/data/catalog";
 import { useProductPrices, type ProductPrice } from "@/hooks/useProductPrices";
 import { AddToCartControl } from "@/components/shop/AddToCartControl";
 import { ProductHoverPreview } from "@/components/shop/ProductHoverPreview";
@@ -350,8 +349,8 @@ function FlavourCard({
   collection: Collection;
   prices: Record<string, ProductPrice>;
 }) {
-  const key = flavourKey(collection.slug, flavour.name);
-  const entry = { collection, flavour, key, image: productImages[key] };
+  const entry = flavourEntry(collection, flavour);
+  const { key } = entry;
 
   if (!flavour.available) {
     return (

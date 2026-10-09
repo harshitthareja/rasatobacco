@@ -6,6 +6,7 @@ import majlisLogo from "@/assets/majlis-logo.png";
 import makhmalLogo from "@/assets/makhmal-logo.png";
 import tarkibLogo from "@/assets/tarkib-logo.png";
 import { collections } from "@/data/collections";
+import { accessorySubcategories } from "@/data/accessories";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 
@@ -257,7 +258,11 @@ export function SiteHeader() {
               { to: "/cart", label: "Cart" },
               { to: "/flavours", label: "Hookah Flavours" },
               { to: "/coming-soon", label: "Hookah", search: { category: "hookahs" } },
-              { to: "/coming-soon", label: "Accessories", search: { category: "accessories" } },
+              { to: "/accessories", label: "Accessories" },
+              ...accessorySubcategories.map((s) => ({
+                to: `/accessories/${s.slug}`,
+                label: `— ${s.name}`,
+              })),
               { to: "/contact", label: "Contact" },
             ].map((item) => (
               <Link
@@ -590,9 +595,9 @@ function ProductsMega({
     },
     {
       title: "Accessories",
-      sub: "Bowls · Hoses · Mouthpieces",
-      to: "/coming-soon" as const,
-      search: { category: "accessories" },
+      sub: "Mouth Tips · Bowls · Hoses",
+      to: "/accessories" as const,
+      search: undefined,
       accent: "#b0a898",
     },
   ];
@@ -601,42 +606,59 @@ function ProductsMega({
       <div className="bg-ink/95 backdrop-blur-xl border border-gold/15 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] p-5 w-[480px]">
         <div className="grid grid-cols-1 gap-2">
           {items.map((it) => (
-            <Link
-              key={it.title}
-              to={it.to}
-              search={it.search as any}
-              onClick={onClose}
-              className="group flex items-center gap-4 p-4 border border-transparent hover:border-gold/25 hover:bg-surface/40 transition-all duration-300"
-            >
-              <div
-                className="w-1 h-8 shrink-0 rounded-full transition-colors duration-300"
-                style={{ background: it.accent }}
-              />
-              <div>
-                <p className="font-serif text-lg group-hover:text-gold transition-colors duration-300">
-                  {it.title}
-                </p>
-                <p
-                  className="text-[0.6rem] tracking-luxe uppercase mt-0.5"
-                  style={{ color: `${it.accent}99` }}
-                >
-                  {it.sub}
-                </p>
-              </div>
-              <svg
-                className="w-3.5 h-3.5 ml-auto text-foreground/30 group-hover:text-gold group-hover:translate-x-1 transition-all shrink-0"
-                viewBox="0 0 14 14"
-                fill="none"
+            <div key={it.title}>
+              <Link
+                to={it.to}
+                search={it.search as any}
+                onClick={onClose}
+                className="group flex items-center gap-4 p-4 border border-transparent hover:border-gold/25 hover:bg-surface/40 transition-all duration-300"
               >
-                <path
-                  d="M2 7h10m0 0L8 3m4 4-4 4"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                <div
+                  className="w-1 h-8 shrink-0 rounded-full transition-colors duration-300"
+                  style={{ background: it.accent }}
                 />
-              </svg>
-            </Link>
+                <div>
+                  <p className="font-serif text-lg group-hover:text-gold transition-colors duration-300">
+                    {it.title}
+                  </p>
+                  <p
+                    className="text-[0.6rem] tracking-luxe uppercase mt-0.5"
+                    style={{ color: `${it.accent}99` }}
+                  >
+                    {it.sub}
+                  </p>
+                </div>
+                <svg
+                  className="w-3.5 h-3.5 ml-auto text-foreground/30 group-hover:text-gold group-hover:translate-x-1 transition-all shrink-0"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                >
+                  <path
+                    d="M2 7h10m0 0L8 3m4 4-4 4"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Link>
+              {it.title === "Accessories" && (
+                <div className="ml-9 -mt-1 mb-1 flex flex-col">
+                  {accessorySubcategories.map((s) => (
+                    <Link
+                      key={s.slug}
+                      to="/accessories/$category"
+                      params={{ category: s.slug }}
+                      onClick={onClose}
+                      className="flex items-center gap-3 px-4 py-2 text-[0.65rem] tracking-luxe uppercase text-foreground/60 hover:text-gold transition-colors"
+                    >
+                      <span className="h-px w-4 bg-gold/40" />
+                      {s.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>

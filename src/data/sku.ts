@@ -12,5 +12,5 @@ export function flavourKey(collectionSlug: string, flavourName: string) {
 
 /** Stable per-SKU key (flavour + pack size). Used for pricing, stock, cart and orders. */
 export function productSku(collectionSlug: string, flavourName: string, format: string) {
-  return `${flavourKey(collectionSlug, flavourName)}-${format.toLowerCase()}`;
+  return `${flavourKey(collectionSlug, flavourName)}-${slugify(format)}`;
 }

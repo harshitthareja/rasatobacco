@@ -1,22 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Check, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { AuthModal } from "@/components/AuthModal";
-import { formats, productSku, type CatalogEntry } from "@/data/catalog";
+import { entrySku, type CatalogEntry } from "@/data/catalog";
 import { formatPrice } from "@/lib/money";
 import type { ProductPrice } from "@/hooks/useProductPrices";
+import { isMouthTipSku, mouthTipCount } from "@/lib/offers";
+import { MouthTipOfferNote } from "@/components/shop/MouthTipOffer";
 
 type Props = {
   entry: CatalogEntry;
   prices: Record<string, ProductPrice>;
   compact?: boolean;
+  /** Told whenever the selected variant changes, including the initial pick. */
+  onFormatChange?: (format: string) => void;
 };
 
-export function AddToCartControl({ entry, prices, compact = false }: Props) {
+export function AddToCartControl({ entry, prices, compact = false, onFormatChange }: Props) {
   const { user } = useAuth();
-  const { addItem } = useCart();
+  const { addItem, items: cartItems } = useCart();
   const navigate = useNavigate();
   const [chosenFormat, setFormat] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
@@ -24,20 +28,28 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
   const [busy, setBusy] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [cartError, setCartError] = useState<string | null>(null);
+  // Shown once this tip has been added, to suggest completing a pair.
+  const [offerPrompt, setOfferPrompt] = useState(false);
 
-  // A pack size is on sale only once it has a price and is marked buyable;
+  // A variant (pack size or finish) is on sale only once it has a price and is marked buyable;
   // the rest are shown as "coming soon" and can't be selected.
   const isReleased = (f: string) => {
-    const p = prices[productSku(entry.collection.slug, entry.flavour.name, f)];
+    const p = prices[entrySku(entry, f)];
     return p?.price_cents != null && !!p.is_purchasable;
   };
+  const { formats } = entry;
   const format = chosenFormat ?? formats.find(isReleased) ?? formats[0];
-  const sku = productSku(entry.collection.slug, entry.flavour.name, format);
+  const sku = entrySku(entry, format);
   const price = prices[sku];
   const hasPrice = price?.price_cents != null;
   const purchasable = entry.flavour.available && !!price?.is_purchasable && hasPrice;
   const inStock = (price?.stock_quantity ?? 0) > 0;
   const canBuy = purchasable && inStock;
+  const isMouthTip = isMouthTipSku(sku);
+
+  useEffect(() => {
+    onFormatChange?.(format);
+  }, [format, onFormatChange]);
 
   const act = async (buyNow: boolean) => {
     if (!user) {
@@ -52,6 +64,7 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
       if (buyNow) {
         navigate({ to: "/checkout" });
       } else {
+        if (isMouthTip) setOfferPrompt(true);
         setJustAdded(true);
         setTimeout(() => setJustAdded(false), 1800);
       }
@@ -60,6 +73,22 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
         e instanceof Error && e.message
           ? `Couldn't add to cart: ${e.message}`
           : "Couldn't add to cart. Please sign in again and retry.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const addAnother = async () => {
+    setBusy(true);
+    setCartError(null);
+    try {
+      await addItem(sku, 1);
+    } catch (e) {
+      setCartError(
+        e instanceof Error && e.message
+          ? `Couldn't add to cart: ${e.message}`
+          : "Couldn't add to cart.",
       );
     } finally {
       setBusy(false);
@@ -81,22 +110,24 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
       <div>
         {!compact && (
           <p className="text-[0.55rem] tracking-wider-luxe uppercase mb-2 text-foreground/55">
-            Pack Size
+            {entry.formatLabel}
           </p>
         )}
         <div className="flex flex-wrap gap-1.5">
           {formats.map((f) => {
             const released = isReleased(f);
+            // Finishes with their own photos can be picked just to view them.
+            const selectable = released || !!entry.variantGalleries;
             return (
               <button
                 key={f}
-                onClick={() => released && setFormat(f)}
-                disabled={!released}
+                onClick={() => selectable && setFormat(f)}
+                disabled={!selectable}
                 title={released ? undefined : "Coming soon"}
                 className={`text-[0.65rem] tracking-luxe uppercase px-3 py-2 border transition-all duration-200 ${
                   format === f
                     ? "border-gold text-gold bg-gold/10"
-                    : released
+                    : selectable
                       ? "border-border/40 text-foreground/60 hover:border-gold/50 hover:text-gold"
                       : "border-border/25 text-foreground/30 cursor-not-allowed"
                 }`}
@@ -139,6 +170,12 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
           </span>
         )}
       </div>
+
+      {isMouthTip && hasPrice && (
+        <p className="-mt-2 text-[0.6rem] tracking-luxe uppercase text-gold/80">
+          Any 2 mouth tips for ₹150
+        </p>
+      )}
 
       {canBuy && (
         <div className="flex items-center gap-3">
@@ -191,6 +228,14 @@ export function AddToCartControl({ entry, prices, compact = false }: Props) {
       </div>
 
       {cartError && <p className="text-xs font-serif italic text-destructive">{cartError}</p>}
+
+      {isMouthTip && offerPrompt && (
+        <MouthTipOfferNote
+          count={mouthTipCount(cartItems)}
+          onAddAnother={canBuy ? addAnother : undefined}
+          busy={busy}
+        />
+      )}
 
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} reason="cart" />
     </div>

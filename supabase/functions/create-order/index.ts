@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { cors, getUser, json, serviceClient } from '../_shared/http.ts'
 import { createRazorpayOrder, finalizeOrder, RazorpayError, razorpayKeyId } from '../_shared/razorpay.ts'
+import { applyPairOffer } from '../_shared/offers.ts'
 
 type SkuMeta = { productName?: string; collectionName?: string; format?: string }
 
@@ -50,8 +51,8 @@ serve(async (req) => {
     if (priceErr) throw priceErr
     const priceMap = new Map((prices ?? []).map((p) => [p.sku, p]))
 
-    const lineItems: { sku: string; quantity: number; unit_price_cents: number }[] = []
-    let subtotal = 0
+    let lineItems: { sku: string; quantity: number; unit_price_cents: number; offer?: boolean }[] = []
+
     for (const item of cartItems) {
       const p = priceMap.get(item.sku)
       if (!p || !p.is_purchasable || p.price_cents == null) {
@@ -64,8 +65,11 @@ serve(async (req) => {
         p.sale_price_cents != null && p.sale_ends_at != null && new Date(p.sale_ends_at).getTime() > Date.now()
       const unit = onSale ? p.sale_price_cents : p.price_cents
       lineItems.push({ sku: item.sku, quantity: item.quantity, unit_price_cents: unit })
-      subtotal += unit * item.quantity
     }
+
+    // Any two mouth tips for ₹150: paired tips become their own line at the offer price.
+    lineItems = applyPairOffer(lineItems)
+    const subtotal = lineItems.reduce((sum, li) => sum + li.unit_price_cents * li.quantity, 0)
 
     const { data: settings } = await db
       .from('store_settings')
@@ -122,7 +126,7 @@ serve(async (req) => {
           sku: li.sku,
           product_name: meta.productName ?? li.sku,
           collection_name: meta.collectionName ?? '',
-          format: meta.format ?? '',
+          format: li.offer ? `${meta.format ?? ''} · 2 for ₹150` : (meta.format ?? ''),
           unit_price_cents: li.unit_price_cents,
           quantity: li.quantity,
           line_total_cents: li.unit_price_cents * li.quantity,

@@ -125,3 +125,22 @@ CREATE POLICY "Owner can update own cart items" ON public.cart_items FOR UPDATE 
 CREATE POLICY "Owner can delete own cart items" ON public.cart_items FOR DELETE USING (auth.uid() = user_id);
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.cart_items TO authenticated;
 GRANT SELECT ON public.orders, public.order_items TO authenticated;
+
+-- Accessories → Mouth Tips (Lion Black/White/Glow, Charlie Ivory/Glow).
+-- ₹85 each; any two are ₹150 (applied by create-order). Price and stock are
+-- managed in Admin → Products & Stock; values set there are left untouched.
+INSERT INTO public.product_prices (sku, is_purchasable) VALUES
+  ('accessories-lion-mouth-tip-black', true),
+  ('accessories-lion-mouth-tip-white', true),
+  ('accessories-lion-mouth-tip-glow-in-the-dark', true),
+  ('accessories-charlie-mouth-tip-ivory', true),
+  ('accessories-charlie-mouth-tip-glow-in-the-dark', true)
+ON CONFLICT (sku) DO NOTHING;
+
+-- First-time launch values only (price still unset): ₹85 and 100 in stock,
+-- so re-running never restocks a tip that has since sold out.
+UPDATE public.product_prices
+SET price_cents = 8500, stock_quantity = 100, updated_at = now()
+WHERE price_cents IS NULL
+  AND sku LIKE 'accessories-%-mouth-tip-%';
+

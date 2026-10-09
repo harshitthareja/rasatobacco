@@ -27,6 +27,7 @@ function ProductPage() {
   const { key } = Route.useParams();
   const entry = findCatalogEntry(key);
   const { prices, loading } = useProductPrices();
+  const [format, setFormat] = useState<string | null>(null);
 
   if (!entry) {
     return (
@@ -42,8 +43,11 @@ function ProductPage() {
     );
   }
 
-  const { collection, flavour, image } = entry;
-  const gallery = productImageGalleries[key] ?? (image ? [image] : []);
+  const { collection, flavour, image, variantGalleries } = entry;
+  // Products with per-variant photos show only the chosen finish.
+  const gallery = variantGalleries
+    ? (variantGalleries[format ?? entry.formats[0]] ?? (image ? [image] : []))
+    : (productImageGalleries[key] ?? (image ? [image] : []));
   const related = CATALOG.filter((candidate) => candidate.key !== key)
     .sort((a, b) => Number(b.flavour.available) - Number(a.flavour.available))
     .slice(0, 3);
@@ -56,8 +60,27 @@ function ProductPage() {
             Shop
           </Link>
           <span>/</span>
-          <span style={{ color: collection.accentVar }}>{collection.name}</span>
+          {collection.slug === "accessories" ? (
+            <Link to="/accessories" className="hover:text-gold transition-colors">
+              {collection.name}
+            </Link>
+          ) : (
+            <span style={{ color: collection.accentVar }}>{collection.name}</span>
+          )}
           <span>/</span>
+          {entry.subcategory && entry.subcategorySlug && (
+            <>
+              <Link
+                to="/accessories/$category"
+                params={{ category: entry.subcategorySlug }}
+                className="hover:text-gold transition-colors"
+                style={{ color: collection.accentVar }}
+              >
+                {entry.subcategory}
+              </Link>
+              <span>/</span>
+            </>
+          )}
           <span className="text-foreground/70">{flavour.name}</span>
         </nav>
 
@@ -78,7 +101,9 @@ function ProductPage() {
               className="text-[0.65rem] tracking-wider-luxe uppercase mb-3"
               style={{ color: collection.accentVar }}
             >
-              {collection.label} · {collection.name}
+              {entry.subcategory
+                ? `${collection.name} · ${entry.subcategory}`
+                : `${collection.label} · ${collection.name}`}
             </p>
             <h1 className="font-serif text-4xl md:text-5xl leading-tight mb-4">{flavour.name}</h1>
             <p className="text-foreground/70 leading-relaxed mb-8">{flavour.notes}</p>
@@ -87,22 +112,24 @@ function ProductPage() {
               {loading ? (
                 <div className="w-6 h-6 rounded-full border-2 border-gold/30 border-t-gold animate-spin" />
               ) : (
-                <AddToCartControl entry={entry} prices={prices} />
+                <AddToCartControl entry={entry} prices={prices} onFormatChange={setFormat} />
               )}
             </div>
 
             <div className="mt-10 pt-8 border-t border-border/30 space-y-2 text-xs text-foreground/50">
               <p>Dispatched from Gurugram, Haryana. Delivery timelines shared at checkout.</p>
-              <p>Age verification required — RASA products are for adults 18 years and older.</p>
+              <p>
+                {collection.slug === "accessories"
+                  ? "For 18 years and older."
+                  : "Age verification required — RASA products are for adults 18 years and older."}
+              </p>
             </div>
           </div>
         </div>
 
         {related.length > 0 && (
           <div className="mt-20 pt-12 border-t border-border/30">
-            <p className="text-[0.6rem] tracking-luxe uppercase text-gold mb-6">
-              More from RASA
-            </p>
+            <p className="text-[0.6rem] tracking-luxe uppercase text-gold mb-6">More from RASA</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               {related.map((r) => (
                 <Link
@@ -161,7 +188,7 @@ function ProductGallery({
   }, [initialImage]);
 
   return (
-    <div>
+    <div className="min-w-0">
       <div
         className="relative aspect-square border border-border/30"
         style={{ background: selectedImage ? undefined : background }}

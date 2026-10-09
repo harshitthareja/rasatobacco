@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AccessoriesRouteImport } from './routes/accessories'
 import { Route as AgeRestrictedRouteImport } from './routes/age-restricted'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -23,6 +22,8 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as LoyaltyRouteImport } from './routes/loyalty'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as AccessoriesIndexRouteImport } from './routes/accessories.index'
+import { Route as AccessoriesCategoryRouteImport } from './routes/accessories.$category'
 import { Route as AccountOrdersRouteImport } from './routes/account.orders'
 import { Route as AccountSettingsRouteImport } from './routes/account.settings'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
@@ -35,11 +36,6 @@ import { Route as ProductKeyRouteImport } from './routes/product.$key'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccessoriesRoute = AccessoriesRouteImport.update({
-  id: '/accessories',
-  path: '/accessories',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgeRestrictedRoute = AgeRestrictedRouteImport.update({
@@ -102,6 +98,16 @@ const ShopRoute = ShopRouteImport.update({
   path: '/shop',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccessoriesIndexRoute = AccessoriesIndexRouteImport.update({
+  id: '/accessories/',
+  path: '/accessories/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessoriesCategoryRoute = AccessoriesCategoryRouteImport.update({
+  id: '/accessories/$category',
+  path: '/accessories/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountOrdersRoute = AccountOrdersRouteImport.update({
   id: '/account/orders',
   path: '/account/orders',
@@ -146,7 +152,6 @@ const ProductKeyRoute = ProductKeyRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/accessories': typeof AccessoriesRoute
   '/age-restricted': typeof AgeRestrictedRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
@@ -159,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/loyalty': typeof LoyaltyRoute
   '/partners': typeof PartnersRoute
   '/shop': typeof ShopRoute
+  '/accessories/$category': typeof AccessoriesCategoryRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/collections/majlis': typeof CollectionsMajlisRoute
@@ -166,11 +172,11 @@ export interface FileRoutesByFullPath {
   '/collections/tarkib': typeof CollectionsTarkibRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/product/$key': typeof ProductKeyRoute
+  '/accessories/': typeof AccessoriesIndexRoute
   '/collections/': typeof CollectionsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/accessories': typeof AccessoriesRoute
   '/age-restricted': typeof AgeRestrictedRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
@@ -183,6 +189,7 @@ export interface FileRoutesByTo {
   '/loyalty': typeof LoyaltyRoute
   '/partners': typeof PartnersRoute
   '/shop': typeof ShopRoute
+  '/accessories/$category': typeof AccessoriesCategoryRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/collections/majlis': typeof CollectionsMajlisRoute
@@ -190,12 +197,12 @@ export interface FileRoutesByTo {
   '/collections/tarkib': typeof CollectionsTarkibRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/product/$key': typeof ProductKeyRoute
+  '/accessories': typeof AccessoriesIndexRoute
   '/collections': typeof CollectionsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/accessories': typeof AccessoriesRoute
   '/age-restricted': typeof AgeRestrictedRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
@@ -208,6 +215,7 @@ export interface FileRoutesById {
   '/loyalty': typeof LoyaltyRoute
   '/partners': typeof PartnersRoute
   '/shop': typeof ShopRoute
+  '/accessories/$category': typeof AccessoriesCategoryRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/collections/majlis': typeof CollectionsMajlisRoute
@@ -215,13 +223,13 @@ export interface FileRoutesById {
   '/collections/tarkib': typeof CollectionsTarkibRoute
   '/order-confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/product/$key': typeof ProductKeyRoute
+  '/accessories/': typeof AccessoriesIndexRoute
   '/collections/': typeof CollectionsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/accessories'
     | '/age-restricted'
     | '/cart'
     | '/checkout'
@@ -234,6 +242,7 @@ export interface FileRouteTypes {
     | '/loyalty'
     | '/partners'
     | '/shop'
+    | '/accessories/$category'
     | '/account/orders'
     | '/account/settings'
     | '/collections/majlis'
@@ -241,11 +250,11 @@ export interface FileRouteTypes {
     | '/collections/tarkib'
     | '/order-confirmation/$orderId'
     | '/product/$key'
+    | '/accessories/'
     | '/collections/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/accessories'
     | '/age-restricted'
     | '/cart'
     | '/checkout'
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/loyalty'
     | '/partners'
     | '/shop'
+    | '/accessories/$category'
     | '/account/orders'
     | '/account/settings'
     | '/collections/majlis'
@@ -265,11 +275,11 @@ export interface FileRouteTypes {
     | '/collections/tarkib'
     | '/order-confirmation/$orderId'
     | '/product/$key'
+    | '/accessories'
     | '/collections'
   id:
     | '__root__'
     | '/'
-    | '/accessories'
     | '/age-restricted'
     | '/cart'
     | '/checkout'
@@ -282,6 +292,7 @@ export interface FileRouteTypes {
     | '/loyalty'
     | '/partners'
     | '/shop'
+    | '/accessories/$category'
     | '/account/orders'
     | '/account/settings'
     | '/collections/majlis'
@@ -289,12 +300,12 @@ export interface FileRouteTypes {
     | '/collections/tarkib'
     | '/order-confirmation/$orderId'
     | '/product/$key'
+    | '/accessories/'
     | '/collections/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AccessoriesRoute: typeof AccessoriesRoute
   AgeRestrictedRoute: typeof AgeRestrictedRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
@@ -307,6 +318,7 @@ export interface RootRouteChildren {
   LoyaltyRoute: typeof LoyaltyRoute
   PartnersRoute: typeof PartnersRoute
   ShopRoute: typeof ShopRoute
+  AccessoriesCategoryRoute: typeof AccessoriesCategoryRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
   AccountSettingsRoute: typeof AccountSettingsRoute
   CollectionsMajlisRoute: typeof CollectionsMajlisRoute
@@ -314,6 +326,7 @@ export interface RootRouteChildren {
   CollectionsTarkibRoute: typeof CollectionsTarkibRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   ProductKeyRoute: typeof ProductKeyRoute
+  AccessoriesIndexRoute: typeof AccessoriesIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
 }
 
@@ -324,13 +337,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/accessories': {
-      id: '/accessories'
-      path: '/accessories'
-      fullPath: '/accessories'
-      preLoaderRoute: typeof AccessoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/age-restricted': {
@@ -417,6 +423,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/accessories/': {
+      id: '/accessories/'
+      path: '/accessories'
+      fullPath: '/accessories/'
+      preLoaderRoute: typeof AccessoriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessories/$category': {
+      id: '/accessories/$category'
+      path: '/accessories/$category'
+      fullPath: '/accessories/$category'
+      preLoaderRoute: typeof AccessoriesCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account/orders': {
       id: '/account/orders'
       path: '/account/orders'
@@ -478,7 +498,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AccessoriesRoute: AccessoriesRoute,
   AgeRestrictedRoute: AgeRestrictedRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
@@ -491,6 +510,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoyaltyRoute: LoyaltyRoute,
   PartnersRoute: PartnersRoute,
   ShopRoute: ShopRoute,
+  AccessoriesCategoryRoute: AccessoriesCategoryRoute,
   AccountOrdersRoute: AccountOrdersRoute,
   AccountSettingsRoute: AccountSettingsRoute,
   CollectionsMajlisRoute: CollectionsMajlisRoute,
@@ -498,6 +518,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsTarkibRoute: CollectionsTarkibRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   ProductKeyRoute: ProductKeyRoute,
+  AccessoriesIndexRoute: AccessoriesIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
 }
 export const routeTree = rootRouteImport
