@@ -126,7 +126,7 @@ CREATE POLICY "Owner can delete own cart items" ON public.cart_items FOR DELETE 
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.cart_items TO authenticated;
 GRANT SELECT ON public.orders, public.order_items TO authenticated;
 
--- Accessories → Mouth Tips (Lion Black/White/Glow, Charlie Ivory/Glow).
+-- Accessories → Mouth Tips (Lion Black/White/Glow, Charlie Ivory/Black/Glow).
 -- ₹85 each; any two are ₹150 (applied by create-order). Price and stock are
 -- managed in Admin → Products & Stock; values set there are left untouched.
 INSERT INTO public.product_prices (sku, is_purchasable) VALUES
@@ -134,6 +134,7 @@ INSERT INTO public.product_prices (sku, is_purchasable) VALUES
   ('accessories-lion-mouth-tip-white', true),
   ('accessories-lion-mouth-tip-glow-in-the-dark', true),
   ('accessories-charlie-mouth-tip-ivory', true),
+  ('accessories-charlie-mouth-tip-black', true),
   ('accessories-charlie-mouth-tip-glow-in-the-dark', true)
 ON CONFLICT (sku) DO NOTHING;
 

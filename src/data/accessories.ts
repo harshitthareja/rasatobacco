@@ -22,6 +22,10 @@ import charliePack from "@/assets/mouthtip-charlie-pack.webp";
 import charlieGlowFront from "@/assets/mouthtip-charlie-glow-front.webp";
 import charlieGlowSide from "@/assets/mouthtip-charlie-glow-side.webp";
 import charlieGlowBack from "@/assets/mouthtip-charlie-glow-back.webp";
+import charlieBlackFront from "@/assets/mouthtip-charlie-black-front.webp";
+import charlieBlackSide from "@/assets/mouthtip-charlie-black-side.webp";
+import charlieBlackBack from "@/assets/mouthtip-charlie-black-back.webp";
+import charlieBlackPack from "@/assets/mouthtip-charlie-black-pack.webp";
 
 export type AccessorySubcategory = { slug: string; name: string; tagline: string };
 
@@ -64,10 +68,11 @@ export const accessories: Accessory[] = [
     notes: "Top-hatted gentleman · Hand-detailed portrait · Tailored coat grip",
     available: true,
     subcategory: "mouth-tips",
-    variants: ["Ivory", "Glow in the Dark"],
+    variants: ["Ivory", "Black", "Glow in the Dark"],
     variantLabel: "Finish",
     gallery: {
       Ivory: [charlieFront, charlieSide, charlieBack, charliePack],
+      Black: [charlieBlackFront, charlieBlackSide, charlieBlackBack, charlieBlackPack],
       "Glow in the Dark": [charlieGlowFront, charlieGlowSide, charlieGlowBack, charliePack],
     },
   },
