@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Image as ImageIcon } from "lucide-react";
 import type { CatalogEntry } from "@/data/catalog";
@@ -13,7 +14,10 @@ export function ProductCard({
   prices: Record<string, ProductPrice>;
   pricesLoading: boolean;
 }) {
-  const { flavour, collection, image, key } = entry;
+  const { flavour, collection, key, variantGalleries } = entry;
+  // The photo follows the finish picked below (e.g. White shows the white tip).
+  const [format, setFormat] = useState<string | null>(null);
+  const image = (format && variantGalleries?.[format]?.[0]) || entry.image;
 
   return (
     <article
@@ -85,7 +89,7 @@ export function ProductCard({
           {pricesLoading ? (
             <div className="w-5 h-5 rounded-full border-2 border-gold/30 border-t-gold animate-spin" />
           ) : (
-            <AddToCartControl entry={entry} prices={prices} compact />
+            <AddToCartControl entry={entry} prices={prices} compact onFormatChange={setFormat} />
           )}
         </div>
       </div>
