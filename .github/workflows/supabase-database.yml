@@ -65,7 +65,7 @@ jobs:
           curl -sS "${auth[@]}" "$api" | jq '{site_url, uri_allow_list, external_google_enabled}'
           if [ "${{ inputs.mode }}" = "setup" ]; then
             current=$(curl -sS "${auth[@]}" "$api" | jq -r '.uri_allow_list // ""')
-            wanted="https://rasatobacco.vercel.app/**,https://*-harshit-tharejas-projects.vercel.app/**,http://localhost:8080/**,http://localhost:5174/**"
+            wanted="https://rasatobacco.com/**,https://admin.rasatobacco.com/**,https://rasatobacco.vercel.app/**,https://*-harshit-tharejas-projects.vercel.app/**,http://localhost:8080/**,http://localhost:5174/**"
             list=$(printf '%s,%s' "$current" "$wanted" | tr ',' '\n' | sed '/^$/d' | sort -u | paste -sd, -)
             echo "Updating redirect allow-list (Site URL left as is unless given)…"
             jq -n --arg list "$list" --arg site "${{ inputs.site_url }}" \

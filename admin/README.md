@@ -11,33 +11,37 @@ caller's role server-side, so this bundle holds no secrets.
 cd admin
 # Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in ../.env
 npm install
-npm run dev            # http://localhost:5174/admin/
+npm run dev            # http://localhost:5174/
 ```
 
 ## Deploy
 
 The repo deploys to Vercel as one project with two services (see `/vercel.json`):
 
-- `app`: the storefront, serving every path except `/admin`.
-- `admin`: this console, served at `/admin/` on the same domain.
+- `app`: the storefront, serving `rasatobacco.com`.
+- `admin`: this console, served on its own subdomain, `admin.rasatobacco.com`.
 
 Set the Vercel project's Framework Preset to **Services** so its two services
-and `/admin/` rewrite are used.
+and host-based rewrite are used, and add `admin.rasatobacco.com` under
+Settings → Domains (DNS: a `CNAME` record `admin` → `cname.vercel-dns.com`).
 
 Both services only talk to Supabase, never to each other. Set `VITE_SUPABASE_URL`
 and `VITE_SUPABASE_PUBLISHABLE_KEY` once in the Vercel project; both services
 read them. Test locally with `vercel dev` from the repo root.
 
-If you use Google sign-in, add `https://<your-domain>/admin/` to Supabase →
+If you use Google sign-in, add `https://admin.rasatobacco.com/**` to Supabase →
 Authentication → URL Configuration → Redirect URLs.
 
 ## Granting admin access
+
+The console first asks for a 4-digit access PIN (set in
+`src/components/PinLock.tsx`), then for an admin account.
 
 Have the person sign up or sign in once, then run this in the Supabase SQL editor:
 
 ```sql
 INSERT INTO public.user_roles (user_id, role)
-SELECT id, 'admin' FROM auth.users WHERE email = 'owner@rasatobacco.com';
+SELECT id, 'admin' FROM auth.users WHERE email = 'asheish@rasatobacco.com';
 ```
 
 Remove access with `DELETE FROM public.user_roles WHERE user_id = '…';`.

@@ -17,6 +17,7 @@ import {
 import { configError, supabase } from "./lib/supabase";
 import { adminData, ApiError } from "./lib/api";
 import { Login } from "./components/Login";
+import { PinLock, isPinUnlocked, lockPin } from "./components/PinLock";
 import { Button, ErrorNote, Loading } from "./components/ui";
 import { Overview } from "./sections/Overview";
 import { Orders } from "./sections/Orders";
@@ -58,6 +59,7 @@ export function App() {
   const [accessError, setAccessError] = useState<string | null>(null);
   const [section, setSection] = useState(currentHash);
   const [navOpen, setNavOpen] = useState(false);
+  const [pinUnlocked, setPinUnlocked] = useState(isPinUnlocked);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_event, s) => {
@@ -93,7 +95,11 @@ export function App() {
     setNavOpen(false);
   }, []);
 
-  const signOut = () => supabase.auth.signOut();
+  const signOut = () => {
+    lockPin();
+    setPinUnlocked(false);
+    return supabase.auth.signOut();
+  };
 
   if (configError) {
     return (
@@ -102,6 +108,7 @@ export function App() {
       </div>
     );
   }
+  if (!pinUnlocked) return <PinLock onUnlock={() => setPinUnlocked(true)} />;
   if (!ready) return <Loading />;
   if (!session) return <Login />;
   if (access === "checking") return <Loading />;

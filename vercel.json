@@ -15,10 +15,10 @@
       "outputDirectory": "dist"
     }
   },
-  "redirects": [{ "source": "/admin", "destination": "/admin/", "permanent": false }],
   "rewrites": [
     {
-      "source": "/admin/(.*)",
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "admin.rasatobacco.com" }],
       "destination": { "service": "admin" }
     },
     {

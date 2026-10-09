@@ -2,16 +2,14 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
-// Served at /admin/ on the same domain as the storefront (Vercel services
-// rewrite /admin/* to this app). Assets are referenced as /admin/assets/…;
-// the build script also copies dist/admin/ to dist/ so the files resolve
-// whether or not the rewrite keeps the /admin prefix.
+// Served at the root of its own subdomain, admin.rasatobacco.com (Vercel
+// services rewrite every request on that host to this app).
 export default defineConfig({
-  base: "/admin/",
+  base: "/",
   // Share the storefront's local Supabase configuration. Deployment values
   // supplied by the host still take precedence over values in this file.
   envDir: "..",
   plugins: [react(), tailwindcss()],
-  build: { outDir: "dist/admin" },
+  build: { outDir: "dist" },
   server: { port: 5174 },
 });
