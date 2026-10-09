@@ -4,26 +4,10 @@ import { Button, ErrorNote, Input } from "./ui";
 // The PIN is a screen in front of the sign-in form. It is checked in the
 // browser, so it hides the console from casual visitors; the account password
 // and the admin role (checked by the edge functions) are what grant access.
+// The unlock lives only in memory, so every page load asks for the PIN again.
 const PIN = "8811";
-const STORAGE_KEY = "rasa-admin-pin";
 const MAX_ATTEMPTS = 5;
 const COOLDOWN_MS = 30_000;
-
-export const isPinUnlocked = () => {
-  try {
-    return sessionStorage.getItem(STORAGE_KEY) === "ok";
-  } catch {
-    return false;
-  }
-};
-
-export const lockPin = () => {
-  try {
-    sessionStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // Storage unavailable; nothing was saved.
-  }
-};
 
 export function PinLock({ onUnlock }: { onUnlock: () => void }) {
   const [pin, setPin] = useState("");
@@ -38,11 +22,6 @@ export function PinLock({ onUnlock }: { onUnlock: () => void }) {
       return;
     }
     if (pin === PIN) {
-      try {
-        sessionStorage.setItem(STORAGE_KEY, "ok");
-      } catch {
-        // Unlock for this page load only.
-      }
       onUnlock();
       return;
     }
