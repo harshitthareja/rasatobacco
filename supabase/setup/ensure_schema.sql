@@ -145,8 +145,35 @@ WHERE sku = 'accessories-charlie-mouth-tip-ivory'
     SELECT 1 FROM public.product_prices WHERE sku = 'accessories-charlie-mouth-tip-white'
   );
 
+-- The Joker mouth tip was briefly listed as two products ("Jester" for its
+-- front, "Arabesque" for its back). Move their carts and the Jester price/stock
+-- rows to the Joker SKUs, then drop the Arabesque rows. No-op once done.
+DO $$
+DECLARE finish text;
+BEGIN
+  FOREACH finish IN ARRAY ARRAY['black', 'grey'] LOOP
+    UPDATE public.cart_items c
+    SET sku = 'accessories-joker-mouth-tip-' || finish
+    WHERE c.sku IN ('accessories-jester-mouth-tip-' || finish, 'accessories-arabesque-mouth-tip-' || finish)
+      AND NOT EXISTS (
+        SELECT 1 FROM public.cart_items d
+        WHERE d.user_id = c.user_id AND d.sku = 'accessories-joker-mouth-tip-' || finish
+      );
+    DELETE FROM public.cart_items
+    WHERE sku IN ('accessories-jester-mouth-tip-' || finish, 'accessories-arabesque-mouth-tip-' || finish);
+    UPDATE public.product_prices
+    SET sku = 'accessories-joker-mouth-tip-' || finish, updated_at = now()
+    WHERE sku = 'accessories-jester-mouth-tip-' || finish
+      AND NOT EXISTS (
+        SELECT 1 FROM public.product_prices WHERE sku = 'accessories-joker-mouth-tip-' || finish
+      );
+    DELETE FROM public.product_prices
+    WHERE sku IN ('accessories-jester-mouth-tip-' || finish, 'accessories-arabesque-mouth-tip-' || finish);
+  END LOOP;
+END $$;
+
 -- Accessories → Mouth Tips (Lion Black/White/Glow, Charlie White/Black/Glow,
--- Arabesque Black/Grey, Jester Black/Grey).
+-- Joker Black/Grey).
 -- ₹85 each; any two are ₹150 (applied by create-order). Price and stock are
 -- managed in Admin → Products & Stock; values set there are left untouched.
 INSERT INTO public.product_prices (sku, is_purchasable) VALUES
@@ -156,10 +183,8 @@ INSERT INTO public.product_prices (sku, is_purchasable) VALUES
   ('accessories-charlie-mouth-tip-white', true),
   ('accessories-charlie-mouth-tip-black', true),
   ('accessories-charlie-mouth-tip-glow-in-the-dark', true),
-  ('accessories-arabesque-mouth-tip-black', true),
-  ('accessories-arabesque-mouth-tip-grey', true),
-  ('accessories-jester-mouth-tip-black', true),
-  ('accessories-jester-mouth-tip-grey', true)
+  ('accessories-joker-mouth-tip-black', true),
+  ('accessories-joker-mouth-tip-grey', true)
 ON CONFLICT (sku) DO NOTHING;
 
 -- First-time launch values only (price still unset): ₹85 and 100 in stock,

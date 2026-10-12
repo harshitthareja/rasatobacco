@@ -26,10 +26,10 @@ import charlieBlackFront from "@/assets/mouthtip-charlie-black-front.webp";
 import charlieBlackSide from "@/assets/mouthtip-charlie-black-side.webp";
 import charlieBlackBack from "@/assets/mouthtip-charlie-black-back.webp";
 import charlieBlackPack from "@/assets/mouthtip-charlie-black-pack.webp";
-import arabesqueBlack from "@/assets/mouthtip-arabesque-black.webp";
-import arabesqueGrey from "@/assets/mouthtip-arabesque-grey.webp";
-import jesterBlack from "@/assets/mouthtip-jester-black.webp";
-import jesterGrey from "@/assets/mouthtip-jester-grey.webp";
+import jokerBlackFront from "@/assets/mouthtip-joker-black-front.webp";
+import jokerBlackBack from "@/assets/mouthtip-joker-black-back.webp";
+import jokerGreyFront from "@/assets/mouthtip-joker-grey-front.webp";
+import jokerGreyBack from "@/assets/mouthtip-joker-grey-back.webp";
 
 export type AccessorySubcategory = { slug: string; name: string; tagline: string };
 
@@ -81,27 +81,15 @@ export const accessories: Accessory[] = [
     },
   },
   {
-    name: "Arabesque Mouth Tip",
-    notes: "Hand-carved scrollwork · Filigree flourishes · Ribbed hose fit",
+    name: "Joker Mouth Tip",
+    notes: "Grinning portrait · Hand-carved scrollwork back · Ribbed hose fit",
     available: true,
     subcategory: "mouth-tips",
     variants: ["Black", "Grey"],
     variantLabel: "Finish",
     gallery: {
-      Black: [arabesqueBlack],
-      Grey: [arabesqueGrey],
-    },
-  },
-  {
-    name: "Jester Mouth Tip",
-    notes: "Grinning jester portrait · Sculpted collar · Ribbed hose fit",
-    available: true,
-    subcategory: "mouth-tips",
-    variants: ["Black", "Grey"],
-    variantLabel: "Finish",
-    gallery: {
-      Black: [jesterBlack],
-      Grey: [jesterGrey],
+      Black: [jokerBlackFront, jokerBlackBack],
+      Grey: [jokerGreyFront, jokerGreyBack],
     },
   },
 ];
