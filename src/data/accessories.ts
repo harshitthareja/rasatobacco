@@ -30,6 +30,10 @@ import charlieBlackFront from "@/assets/mouthtip-charlie-black-front.webp";
 import charlieBlackSide from "@/assets/mouthtip-charlie-black-side.webp";
 import charlieBlackBack from "@/assets/mouthtip-charlie-black-back.webp";
 import charlieBlackPack from "@/assets/mouthtip-charlie-black-pack.webp";
+import charlieGreyFront from "@/assets/mouthtip-charlie-grey-front.webp";
+import charlieGreySide from "@/assets/mouthtip-charlie-grey-side.webp";
+import charlieGreyBack from "@/assets/mouthtip-charlie-grey-back.webp";
+import charlieGreyPack from "@/assets/mouthtip-charlie-grey-pack.webp";
 import jokerBlackFront from "@/assets/mouthtip-joker-black-front.webp";
 import jokerBlackBack from "@/assets/mouthtip-joker-black-back.webp";
 import jokerGreyFront from "@/assets/mouthtip-joker-grey-front.webp";
@@ -86,11 +90,12 @@ export const accessories: Accessory[] = [
     notes: "Top-hatted gentleman · Hand-detailed portrait · Tailored coat grip",
     available: true,
     subcategory: "mouth-tips",
-    variants: ["White", "Black", "Glow in the Dark"],
+    variants: ["White", "Black", "Grey", "Glow in the Dark"],
     variantLabel: "Finish",
     gallery: {
       White: [charlieWhiteFront, charlieWhiteSide, charlieWhiteBack, charlieWhitePack],
       Black: [charlieBlackFront, charlieBlackSide, charlieBlackBack, charlieBlackPack],
+      Grey: [charlieGreyFront, charlieGreySide, charlieGreyBack, charlieGreyPack],
       "Glow in the Dark": [charlieGlowFront, charlieGlowSide, charlieGlowBack, charlieWhitePack],
     },
   },
