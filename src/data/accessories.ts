@@ -30,6 +30,8 @@ import jokerBlackFront from "@/assets/mouthtip-joker-black-front.webp";
 import jokerBlackBack from "@/assets/mouthtip-joker-black-back.webp";
 import jokerGreyFront from "@/assets/mouthtip-joker-grey-front.webp";
 import jokerGreyBack from "@/assets/mouthtip-joker-grey-back.webp";
+import jokerWhiteFront from "@/assets/mouthtip-joker-white-front.webp";
+import jokerWhiteBack from "@/assets/mouthtip-joker-white-back.webp";
 
 export type AccessorySubcategory = {
   slug: string;
@@ -92,11 +94,14 @@ export const accessories: Accessory[] = [
     notes: "Grinning portrait · Hand-carved scrollwork back · Ribbed hose fit",
     available: true,
     subcategory: "mouth-tips",
-    variants: ["Black", "Grey"],
+    variants: ["Black", "Grey", "White", "Glow in the Dark"],
     variantLabel: "Finish",
     gallery: {
       Black: [jokerBlackFront, jokerBlackBack],
       Grey: [jokerGreyFront, jokerGreyBack],
+      White: [jokerWhiteFront, jokerWhiteBack],
+      // No glow-in-the-dark photos yet; shows the white tip until they arrive.
+      "Glow in the Dark": [jokerWhiteFront, jokerWhiteBack],
     },
   },
 ];

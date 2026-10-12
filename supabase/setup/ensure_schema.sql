@@ -173,7 +173,7 @@ BEGIN
 END $$;
 
 -- Accessories → Mouth Tips (Lion Black/White/Glow, Charlie White/Black/Glow,
--- Joker Black/Grey).
+-- Joker Black/Grey/White/Glow).
 -- ₹85 each; any two are ₹150 (applied by create-order). Price and stock are
 -- managed in Admin → Products & Stock; values set there are left untouched.
 INSERT INTO public.product_prices (sku, is_purchasable) VALUES
@@ -184,7 +184,9 @@ INSERT INTO public.product_prices (sku, is_purchasable) VALUES
   ('accessories-charlie-mouth-tip-black', true),
   ('accessories-charlie-mouth-tip-glow-in-the-dark', true),
   ('accessories-joker-mouth-tip-black', true),
-  ('accessories-joker-mouth-tip-grey', true)
+  ('accessories-joker-mouth-tip-grey', true),
+  ('accessories-joker-mouth-tip-white', true),
+  ('accessories-joker-mouth-tip-glow-in-the-dark', true)
 ON CONFLICT (sku) DO NOTHING;
 
 -- First-time launch values only (price still unset): ₹85 and 100 in stock,
