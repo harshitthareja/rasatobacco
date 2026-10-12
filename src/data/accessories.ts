@@ -15,6 +15,10 @@ import lionWhitePack from "@/assets/mouthtip-lion-white-pack.webp";
 import lionGlowFront from "@/assets/mouthtip-lion-glow-front.webp";
 import lionGlowSide from "@/assets/mouthtip-lion-glow-side.webp";
 import lionGlowMane from "@/assets/mouthtip-lion-glow-mane.webp";
+import lionGreyFront from "@/assets/mouthtip-lion-grey-front.webp";
+import lionGreySide from "@/assets/mouthtip-lion-grey-side.webp";
+import lionGreyMane from "@/assets/mouthtip-lion-grey-mane.webp";
+import lionGreyPack from "@/assets/mouthtip-lion-grey-pack.webp";
 import charlieWhiteFront from "@/assets/mouthtip-charlie-white-front.webp";
 import charlieWhiteSide from "@/assets/mouthtip-charlie-white-side.webp";
 import charlieWhiteBack from "@/assets/mouthtip-charlie-white-back.webp";
@@ -68,11 +72,12 @@ export const accessories: Accessory[] = [
     notes: "Hand-finished lion head · Sculpted mane grip · Ribbed hose fit",
     available: true,
     subcategory: "mouth-tips",
-    variants: ["Black", "White", "Glow in the Dark"],
+    variants: ["Black", "White", "Grey", "Glow in the Dark"],
     variantLabel: "Finish",
     gallery: {
       Black: [lionBlackFront, lionBlackSide, lionBlackMane, lionBlackPack],
       White: [lionWhiteFront, lionWhiteSide, lionWhiteMane, lionWhitePack],
+      Grey: [lionGreyFront, lionGreySide, lionGreyMane, lionGreyPack],
       "Glow in the Dark": [lionGlowFront, lionGlowSide, lionGlowMane, lionWhitePack],
     },
   },

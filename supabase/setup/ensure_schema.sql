@@ -172,13 +172,14 @@ BEGIN
   END LOOP;
 END $$;
 
--- Accessories → Mouth Tips (Lion Black/White/Glow, Charlie White/Black/Glow,
+-- Accessories → Mouth Tips (Lion Black/White/Grey/Glow, Charlie White/Black/Glow,
 -- Joker Black/Grey/White/Glow).
 -- ₹85 each; any two are ₹150 (applied by create-order). Price and stock are
 -- managed in Admin → Products & Stock; values set there are left untouched.
 INSERT INTO public.product_prices (sku, is_purchasable) VALUES
   ('accessories-lion-mouth-tip-black', true),
   ('accessories-lion-mouth-tip-white', true),
+  ('accessories-lion-mouth-tip-grey', true),
   ('accessories-lion-mouth-tip-glow-in-the-dark', true),
   ('accessories-charlie-mouth-tip-white', true),
   ('accessories-charlie-mouth-tip-black', true),
