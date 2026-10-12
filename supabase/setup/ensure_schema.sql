@@ -128,16 +128,38 @@ CREATE POLICY "Owner can delete own cart items" ON public.cart_items FOR DELETE 
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.cart_items TO authenticated;
 GRANT SELECT ON public.orders, public.order_items TO authenticated;
 
--- Accessories → Mouth Tips (Lion Black/White/Glow, Charlie Ivory/Black/Glow).
+-- Charlie's "Ivory" finish was renamed "White": move its price/stock row and any
+-- carts holding it to the new SKU (past orders keep the old name). Runs once.
+UPDATE public.cart_items c
+SET sku = 'accessories-charlie-mouth-tip-white'
+WHERE c.sku = 'accessories-charlie-mouth-tip-ivory'
+  AND NOT EXISTS (
+    SELECT 1 FROM public.cart_items d
+    WHERE d.user_id = c.user_id AND d.sku = 'accessories-charlie-mouth-tip-white'
+  );
+DELETE FROM public.cart_items WHERE sku = 'accessories-charlie-mouth-tip-ivory';
+UPDATE public.product_prices
+SET sku = 'accessories-charlie-mouth-tip-white', updated_at = now()
+WHERE sku = 'accessories-charlie-mouth-tip-ivory'
+  AND NOT EXISTS (
+    SELECT 1 FROM public.product_prices WHERE sku = 'accessories-charlie-mouth-tip-white'
+  );
+
+-- Accessories → Mouth Tips (Lion Black/White/Glow, Charlie White/Black/Glow,
+-- Arabesque Black/Grey, Jester Black/Grey).
 -- ₹85 each; any two are ₹150 (applied by create-order). Price and stock are
 -- managed in Admin → Products & Stock; values set there are left untouched.
 INSERT INTO public.product_prices (sku, is_purchasable) VALUES
   ('accessories-lion-mouth-tip-black', true),
   ('accessories-lion-mouth-tip-white', true),
   ('accessories-lion-mouth-tip-glow-in-the-dark', true),
-  ('accessories-charlie-mouth-tip-ivory', true),
+  ('accessories-charlie-mouth-tip-white', true),
   ('accessories-charlie-mouth-tip-black', true),
-  ('accessories-charlie-mouth-tip-glow-in-the-dark', true)
+  ('accessories-charlie-mouth-tip-glow-in-the-dark', true),
+  ('accessories-arabesque-mouth-tip-black', true),
+  ('accessories-arabesque-mouth-tip-grey', true),
+  ('accessories-jester-mouth-tip-black', true),
+  ('accessories-jester-mouth-tip-grey', true)
 ON CONFLICT (sku) DO NOTHING;
 
 -- First-time launch values only (price still unset): ₹85 and 100 in stock,

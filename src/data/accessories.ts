@@ -15,10 +15,10 @@ import lionWhitePack from "@/assets/mouthtip-lion-white-pack.webp";
 import lionGlowFront from "@/assets/mouthtip-lion-glow-front.webp";
 import lionGlowSide from "@/assets/mouthtip-lion-glow-side.webp";
 import lionGlowMane from "@/assets/mouthtip-lion-glow-mane.webp";
-import charlieFront from "@/assets/mouthtip-charlie-front.webp";
-import charlieSide from "@/assets/mouthtip-charlie-side.webp";
-import charlieBack from "@/assets/mouthtip-charlie-back.webp";
-import charliePack from "@/assets/mouthtip-charlie-pack.webp";
+import charlieWhiteFront from "@/assets/mouthtip-charlie-white-front.webp";
+import charlieWhiteSide from "@/assets/mouthtip-charlie-white-side.webp";
+import charlieWhiteBack from "@/assets/mouthtip-charlie-white-back.webp";
+import charlieWhitePack from "@/assets/mouthtip-charlie-white-pack.webp";
 import charlieGlowFront from "@/assets/mouthtip-charlie-glow-front.webp";
 import charlieGlowSide from "@/assets/mouthtip-charlie-glow-side.webp";
 import charlieGlowBack from "@/assets/mouthtip-charlie-glow-back.webp";
@@ -26,6 +26,10 @@ import charlieBlackFront from "@/assets/mouthtip-charlie-black-front.webp";
 import charlieBlackSide from "@/assets/mouthtip-charlie-black-side.webp";
 import charlieBlackBack from "@/assets/mouthtip-charlie-black-back.webp";
 import charlieBlackPack from "@/assets/mouthtip-charlie-black-pack.webp";
+import arabesqueBlack from "@/assets/mouthtip-arabesque-black.webp";
+import arabesqueGrey from "@/assets/mouthtip-arabesque-grey.webp";
+import jesterBlack from "@/assets/mouthtip-jester-black.webp";
+import jesterGrey from "@/assets/mouthtip-jester-grey.webp";
 
 export type AccessorySubcategory = { slug: string; name: string; tagline: string };
 
@@ -68,12 +72,36 @@ export const accessories: Accessory[] = [
     notes: "Top-hatted gentleman · Hand-detailed portrait · Tailored coat grip",
     available: true,
     subcategory: "mouth-tips",
-    variants: ["Ivory", "Black", "Glow in the Dark"],
+    variants: ["White", "Black", "Glow in the Dark"],
     variantLabel: "Finish",
     gallery: {
-      Ivory: [charlieFront, charlieSide, charlieBack, charliePack],
+      White: [charlieWhiteFront, charlieWhiteSide, charlieWhiteBack, charlieWhitePack],
       Black: [charlieBlackFront, charlieBlackSide, charlieBlackBack, charlieBlackPack],
-      "Glow in the Dark": [charlieGlowFront, charlieGlowSide, charlieGlowBack, charliePack],
+      "Glow in the Dark": [charlieGlowFront, charlieGlowSide, charlieGlowBack, charlieWhitePack],
+    },
+  },
+  {
+    name: "Arabesque Mouth Tip",
+    notes: "Hand-carved scrollwork · Filigree flourishes · Ribbed hose fit",
+    available: true,
+    subcategory: "mouth-tips",
+    variants: ["Black", "Grey"],
+    variantLabel: "Finish",
+    gallery: {
+      Black: [arabesqueBlack],
+      Grey: [arabesqueGrey],
+    },
+  },
+  {
+    name: "Jester Mouth Tip",
+    notes: "Grinning jester portrait · Sculpted collar · Ribbed hose fit",
+    available: true,
+    subcategory: "mouth-tips",
+    variants: ["Black", "Grey"],
+    variantLabel: "Finish",
+    gallery: {
+      Black: [jesterBlack],
+      Grey: [jesterGrey],
     },
   },
 ];
