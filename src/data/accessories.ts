@@ -31,7 +31,13 @@ import jokerBlackBack from "@/assets/mouthtip-joker-black-back.webp";
 import jokerGreyFront from "@/assets/mouthtip-joker-grey-front.webp";
 import jokerGreyBack from "@/assets/mouthtip-joker-grey-back.webp";
 
-export type AccessorySubcategory = { slug: string; name: string; tagline: string };
+export type AccessorySubcategory = {
+  slug: string;
+  name: string;
+  tagline: string;
+  /** Tile photo on the Accessories page. */
+  image?: string;
+};
 
 export type Accessory = {
   name: string;
@@ -50,6 +56,7 @@ export const accessorySubcategories: AccessorySubcategory[] = [
     slug: "mouth-tips",
     name: "Mouth Tips",
     tagline: "A personal tip, sculpted to be held.",
+    image: lionWhiteFront,
   },
 ];
 

@@ -57,13 +57,25 @@ function Accessories() {
                 ? ACCESSORY_CATALOG.filter((e) => e.subcategorySlug === sub.slug).length
                 : 0;
               const className =
-                "group bg-background p-10 aspect-square flex flex-col justify-between hover:bg-surface/40 transition-colors duration-700";
+                "group relative overflow-hidden bg-background p-6 sm:p-10 aspect-square flex flex-col justify-between hover:bg-surface/40 transition-colors duration-700";
+              const image = count ? sub?.image : undefined;
               const tile = (
                 <>
-                  <span className="text-[0.6rem] tracking-luxe text-gold/60">
+                  {image && (
+                    <>
+                      <img
+                        src={image}
+                        alt=""
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover opacity-70 transition-all duration-700 group-hover:scale-105 group-hover:opacity-90"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
+                    </>
+                  )}
+                  <span className="relative text-[0.6rem] tracking-luxe text-gold/60">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <div>
+                  <div className="relative">
                     <h3 className="font-serif text-2xl md:text-3xl group-hover:text-gold transition-colors">
                       {g}
                     </h3>
