@@ -3,14 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import rasaLogo from "@/assets/rasa-logo.png";
 import { EmailPasswordAuth } from "@/components/EmailPasswordAuth";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({
-    meta: [
-      { title: "Sign In — RASA" },
-      { property: "og:title", content: "Sign In — RASA" },
-    ],
-  }),
+  head: () =>
+    seo({ title: "Sign In — RASA", description: "Sign in to your RASA account.", path: "/login", noindex: true }),
   component: LoginPage,
 });
 

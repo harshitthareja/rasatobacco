@@ -3,16 +3,35 @@ import { ACCESSORY_CATALOG } from "@/data/catalog";
 import { accessorySubcategories } from "@/data/accessories";
 import { useProductPrices } from "@/hooks/useProductPrices";
 import { ProductCard } from "@/components/shop/ProductCard";
+import { breadcrumbs, seo } from "@/lib/seo";
+import { productListJsonLd } from "@/lib/productSeo";
 
 export const Route = createFileRoute("/accessories/$category")({
   head: ({ params }) => {
     const sub = accessorySubcategories.find((s) => s.slug === params.category);
-    return {
-      meta: [
-        { title: sub ? `${sub.name} — Accessories | RASA` : "Accessories — RASA" },
-        { name: "description", content: sub?.tagline ?? "RASA accessories." },
+    const items = ACCESSORY_CATALOG.filter((e) => e.subcategorySlug === params.category);
+    if (!sub) {
+      return seo({
+        title: "Accessories | RASA",
+        description: "RASA hookah accessories.",
+        path: `/accessories/${params.category}`,
+        noindex: true,
+      });
+    }
+    return seo({
+      title: `Hookah ${sub.name} — ${items.map((e) => e.flavour.name.replace(/ Mouth Tip$/, "")).join(", ")} | RASA`,
+      description: `Hand-sculpted hookah ${sub.name.toLowerCase()} by RASA: ${items.map((e) => e.flavour.name).join(", ")}. ₹85 each or any 2 for ₹150 — order online in India.`,
+      path: `/accessories/${sub.slug}`,
+      image: sub.image,
+      jsonLd: [
+        productListJsonLd(items, `RASA hookah ${sub.name.toLowerCase()}`),
+        breadcrumbs([
+          ["Home", "/"],
+          ["Accessories", "/accessories"],
+          [sub.name, `/accessories/${sub.slug}`],
+        ]),
       ],
-    };
+    });
   },
   component: AccessoryCategory,
 });

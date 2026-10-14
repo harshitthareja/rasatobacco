@@ -18,6 +18,7 @@ import {
   Sparkles,
   Instagram,
 } from "lucide-react";
+import { seo } from "@/lib/seo";
 
 type ContactSearch = {
   product?: string;
@@ -31,22 +32,13 @@ export const Route = createFileRoute("/contact")({
     collection: typeof s.collection === "string" ? s.collection : undefined,
     format: typeof s.format === "string" ? s.format : undefined,
   }),
-  head: () => ({
-    meta: [
-      { title: "Contact — Sales, Distribution & Partnerships | RASA" },
-      {
-        name: "description",
-        content:
-          "Speak with the RASA sales atelier — distribution, hospitality, retail and wholesale enquiries across India and the Gulf.",
-      },
-      { property: "og:title", content: "Contact RASA Sales" },
-      {
-        property: "og:description",
-        content:
-          "Distribution, hospitality, retail and wholesale opportunities with the House of RASA.",
-      },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Contact RASA — Hookah Tobacco Sales & Distribution",
+      description:
+        "Contact RASA for hookah tobacco orders, wholesale, distribution, lounge and retail partnerships across India and the Gulf. Based in Gurugram, Haryana.",
+      path: "/contact",
+    }),
   component: Contact,
 });
 

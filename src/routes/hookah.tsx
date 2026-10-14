@@ -1,23 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/hookah")({
-  head: () => ({
-    meta: [
-      { title: "Hookah — A Showcase of the RASA Collection" },
-      {
-        name: "description",
-        content:
-          "Explore the Classic and Luxury Hookah Collections by RASA. Portable, Medium, and Large configurations — a luxury showcase.",
-      },
-      { property: "og:title", content: "Hookah — RASA" },
-      {
-        property: "og:description",
-        content: "A showcase of the RASA Hookah Collection.",
-      },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Hookah Collection — Classic & Luxury Hookahs | RASA",
+      description:
+        "Explore the Classic and Luxury hookah collections by RASA in portable, medium and large configurations.",
+      path: "/hookah",
+    }),
   component: HookahPage,
 });
 

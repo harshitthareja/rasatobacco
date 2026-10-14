@@ -4,14 +4,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/money";
 import type { Tables } from "@/integrations/supabase/types";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/account/orders")({
-  head: () => ({
-    meta: [
-      { title: "My Orders — RASA" },
-      { name: "description", content: "Track your RASA orders and enquiries." },
-    ],
-  }),
+  head: () =>
+    seo({ title: "My Orders — RASA", description: "Track your RASA orders.", path: "/account/orders", noindex: true }),
   component: OrdersPage,
 });
 

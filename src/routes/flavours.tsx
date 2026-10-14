@@ -6,14 +6,24 @@ import { flavourKey } from "@/data/sku";
 import { productImages } from "@/data/productImages";
 import { ProductHoverPreview } from "@/components/shop/ProductHoverPreview";
 import { partnerWhatsAppUrl } from "@/data/contact";
+import { seo } from "@/lib/seo";
+import { productListJsonLd } from "@/lib/productSeo";
+import { CATALOG } from "@/data/catalog";
 
 export const Route = createFileRoute("/flavours")({
-  head: () => ({
-    meta: [
-      { title: "Hookah Flavours — House of RASA" },
-      { property: "og:title", content: "RASA Hookah Flavours" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Hookah Flavours — Every RASA Shisha Tobacco Flavour | RASA",
+      description:
+        "Explore every RASA hookah flavour — paan, mint, berry, kiwi, grape, lychee, rose and more — across the Majlis, Makhmal and Tarkib shisha tobacco series.",
+      path: "/flavours",
+      jsonLd: [
+        productListJsonLd(
+          CATALOG.filter((e) => e.collection.slug !== "accessories"),
+          "RASA hookah flavours",
+        ),
+      ],
+    }),
   component: FlavoursPage,
 });
 
@@ -47,6 +57,15 @@ function FlavoursPage() {
 
   return (
     <main className="bg-ink text-foreground min-h-screen">
+      <header className="px-6 pt-32 pb-8 text-center">
+        <p className="text-[0.6rem] tracking-luxe uppercase text-gold mb-3">Majlis · Makhmal · Tarkib</p>
+        <h1 className="font-serif text-4xl md:text-5xl">Hookah Flavours</h1>
+        <p className="mt-4 text-sm text-foreground/60 max-w-xl mx-auto leading-relaxed">
+          Every RASA shisha tobacco flavour — from royal paan and fresh mint to kiwi, grape,
+          lychee and white rose — across our three series.
+        </p>
+      </header>
+
       {/* Filters — sticky only on wide screens so they never cover products on phones. */}
       <section className="relative lg:sticky lg:top-20 z-30 bg-ink/95 backdrop-blur-xl border-b border-border/30 px-6 py-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-4">

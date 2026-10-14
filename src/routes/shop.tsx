@@ -5,19 +5,18 @@ import { useProductPrices } from "@/hooks/useProductPrices";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { collections } from "@/data/collections";
 import { partnerWhatsAppUrl } from "@/data/contact";
+import { seo } from "@/lib/seo";
+import { productListJsonLd } from "@/lib/productSeo";
 
 export const Route = createFileRoute("/shop")({
-  head: () => ({
-    meta: [
-      { title: "Shop — House of RASA" },
-      {
-        name: "description",
-        content:
-          "Shop every RASA flavour across Majlis, Makhmal and Tarkib, plus accessories — order online, direct from the house.",
-      },
-      { property: "og:title", content: "Shop — House of RASA" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Shop Hookah Flavours & Shisha Tobacco Online | RASA",
+      description:
+        "Buy premium hookah flavours online in India — Majlis, Makhmal and Tarkib shisha tobacco, plus hand-sculpted hookah mouth tips. Dispatched from Gurugram.",
+      path: "/shop",
+      jsonLd: [productListJsonLd(CATALOG, "RASA hookah flavours and accessories")],
+    }),
   component: ShopPage,
 });
 
@@ -43,6 +42,15 @@ function ShopPage() {
 
   return (
     <main className="min-h-screen bg-ink pt-24 text-foreground">
+      <header className="px-6 pt-10 pb-8 text-center">
+        <p className="text-[0.6rem] tracking-luxe uppercase text-gold mb-3">The House of RASA</p>
+        <h1 className="font-serif text-4xl md:text-5xl">Shop Hookah Flavours &amp; Accessories</h1>
+        <p className="mt-4 text-sm text-foreground/60 max-w-xl mx-auto leading-relaxed">
+          Premium shisha tobacco from the Majlis, Makhmal and Tarkib series, and hand-sculpted
+          hookah mouth tips — order online, dispatched from Gurugram.
+        </p>
+      </header>
+
       {/* Filters — sticky only on wide screens; on phones they wrap to several
           rows and would cover the products, so they scroll away instead. */}
       <section className="relative lg:sticky lg:top-20 z-30 bg-ink/95 backdrop-blur-xl border-b border-border/30 px-6 py-4">

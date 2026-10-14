@@ -2,18 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { CollectionExperience } from "@/components/CollectionExperience";
 import { getCollection } from "@/data/collections";
+import { collectionHead } from "@/lib/productSeo";
 
 const collection = getCollection("makhmal")!;
 
 export const Route = createFileRoute("/collections/makhmal")({
-  head: () => ({
-    meta: [
-      { title: `${collection.name} — ${collection.expression} | RASA` },
-      { name: "description", content: collection.intro },
-      { property: "og:title", content: `${collection.name} — ${collection.expression} | RASA` },
-      { property: "og:description", content: collection.intro },
-    ],
-  }),
+  head: () => collectionHead(collection),
   component: MakhmalPage,
 });
 

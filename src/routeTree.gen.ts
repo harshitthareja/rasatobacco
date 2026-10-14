@@ -22,6 +22,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as LoyaltyRouteImport } from './routes/loyalty'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AccessoriesIndexRouteImport } from './routes/accessories.index'
 import { Route as AccessoriesCategoryRouteImport } from './routes/accessories.$category'
 import { Route as AccountOrdersRouteImport } from './routes/account.orders'
@@ -98,6 +99,11 @@ const ShopRoute = ShopRouteImport.update({
   path: '/shop',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccessoriesIndexRoute = AccessoriesIndexRouteImport.update({
   id: '/accessories/',
   path: '/accessories/',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/loyalty': typeof LoyaltyRoute
   '/partners': typeof PartnersRoute
   '/shop': typeof ShopRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/accessories/$category': typeof AccessoriesCategoryRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/loyalty': typeof LoyaltyRoute
   '/partners': typeof PartnersRoute
   '/shop': typeof ShopRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/accessories/$category': typeof AccessoriesCategoryRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/loyalty': typeof LoyaltyRoute
   '/partners': typeof PartnersRoute
   '/shop': typeof ShopRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/accessories/$category': typeof AccessoriesCategoryRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/loyalty'
     | '/partners'
     | '/shop'
+    | '/sitemap.xml'
     | '/accessories/$category'
     | '/account/orders'
     | '/account/settings'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/loyalty'
     | '/partners'
     | '/shop'
+    | '/sitemap.xml'
     | '/accessories/$category'
     | '/account/orders'
     | '/account/settings'
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/loyalty'
     | '/partners'
     | '/shop'
+    | '/sitemap.xml'
     | '/accessories/$category'
     | '/account/orders'
     | '/account/settings'
@@ -318,6 +330,7 @@ export interface RootRouteChildren {
   LoyaltyRoute: typeof LoyaltyRoute
   PartnersRoute: typeof PartnersRoute
   ShopRoute: typeof ShopRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AccessoriesCategoryRoute: typeof AccessoriesCategoryRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
   AccountSettingsRoute: typeof AccountSettingsRoute
@@ -423,6 +436,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/accessories/': {
       id: '/accessories/'
       path: '/accessories'
@@ -510,6 +530,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoyaltyRoute: LoyaltyRoute,
   PartnersRoute: PartnersRoute,
   ShopRoute: ShopRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   AccessoriesCategoryRoute: AccessoriesCategoryRoute,
   AccountOrdersRoute: AccountOrdersRoute,
   AccountSettingsRoute: AccountSettingsRoute,

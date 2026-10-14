@@ -8,23 +8,16 @@ import { CinematicSmoke } from "@/components/CinematicSmoke";
 import { Reveal, RevealChild, RevealGroup } from "@/components/motion/Reveal";
 import { motion } from "framer-motion";
 import { catalogueWhatsAppUrl, partnerWhatsAppUrl } from "@/data/contact";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/collections/")({
-  head: () => ({
-    meta: [
-      { title: "Series — Three Expressions, One House | RASA" },
-      {
-        name: "description",
-        content:
-          "Discover featured flavours across the three RASA series — Majlis, Makhmal, and Tarkib.",
-      },
-      { property: "og:title", content: "Series — RASA" },
-      {
-        property: "og:description",
-        content: "Majlis, Makhmal, Tarkib — featured flavours from the House of RASA.",
-      },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Hookah Tobacco Series — Majlis, Makhmal & Tarkib | RASA",
+      description:
+        "Three series of premium shisha tobacco from RASA: Majlis for heritage flavours like paan, Makhmal for smooth fruit, and Tarkib for bold modern blends.",
+      path: "/collections",
+    }),
   component: Collections,
 });
 

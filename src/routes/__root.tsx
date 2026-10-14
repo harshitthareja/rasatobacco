@@ -1,5 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, Link, createRootRouteWithContext, useRouter, useRouterState, HeadContent, Scripts } from "@tanstack/react-router";
+import {
+  Outlet,
+  Link,
+  createRootRouteWithContext,
+  useRouter,
+  useRouterState,
+  HeadContent,
+  Scripts,
+} from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -10,6 +18,7 @@ import { SiteFooter } from "../components/SiteFooter";
 import { LeadCaptureModal } from "../components/LeadCaptureModal";
 import { PageTransition } from "../components/PageTransition";
 import { WhatsAppFloat } from "../components/WhatsAppFloat";
+import { organizationJsonLd, websiteJsonLd } from "../lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -70,22 +79,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "RASA — Smoke, Perfected." },
+      { title: "RASA — Premium Hookah Flavours & Shisha Tobacco in India" },
       {
         name: "description",
         content:
-          "A luxury hookah lifestyle house uniting three premium tobacco series, hookah systems, and curated accessories.",
+          "RASA crafts premium hookah flavours and shisha tobacco in India across three series — Majlis, Makhmal and Tarkib — plus hand-sculpted hookah mouth tips. Order online.",
       },
       { name: "author", content: "RASA" },
-      { property: "og:title", content: "RASA — Smoke, Perfected." },
-      {
-        property: "og:description",
-        content:
-          "A luxury hookah lifestyle house uniting three premium tobacco series, hookah systems, and curated accessories.",
-      },
-      { property: "og:type", content: "website" },
+      { name: "theme-color", content: "#141110" },
       { property: "og:site_name", content: "RASA" },
       { name: "twitter:card", content: "summary_large_image" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [organizationJsonLd, websiteJsonLd],
+        }),
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

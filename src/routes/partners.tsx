@@ -3,23 +3,16 @@ import { useEffect, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/partners")({
-  head: () => ({
-    meta: [
-      { title: "Partner — Join the House of RASA" },
-      {
-        name: "description",
-        content:
-          "Distributor, Lounge, and Retail partnerships with RASA across India and the Gulf region.",
-      },
-      { property: "og:title", content: "Partner — RASA" },
-      {
-        property: "og:description",
-        content: "Distributor, Lounge and Retail partnerships with the House of RASA.",
-      },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Become a RASA Partner — Hookah Tobacco Wholesale & Distribution",
+      description:
+        "Partner with RASA as a distributor, hookah lounge or retailer. Wholesale pricing on premium shisha tobacco across India and the Gulf.",
+      path: "/partners",
+    }),
   component: Partners,
 });
 

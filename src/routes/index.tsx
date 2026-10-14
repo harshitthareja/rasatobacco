@@ -8,24 +8,17 @@ import { RevealChild, RevealGroup } from "@/components/motion/Reveal";
 import { AnimatedWordmark } from "@/components/AnimatedWordmark";
 import { SeriesShowcase } from "@/components/SeriesShowcase";
 import { partnerWhatsAppUrl } from "@/data/contact";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "RASA — Smoke, Perfected." },
-      {
-        name: "description",
-        content: "RASA — a luxury hookah lifestyle house. Three series. One discipline. Smoke, perfected.",
-      },
-      { property: "og:title", content: "RASA — Smoke, Perfected." },
-      {
-        property: "og:description",
-        content: "A luxury hookah lifestyle house — Majlis, Makhmal, Tarkib. Smoke, perfected.",
-      },
-      { property: "og:image", content: heroHookah },
-      { name: "twitter:image", content: heroHookah },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "RASA — Premium Hookah Flavours & Shisha Tobacco in India",
+      description:
+        "Discover RASA, a house of premium hookah flavours and shisha tobacco in India. Three series — Majlis, Makhmal and Tarkib — crafted for smooth, rich clouds. Shop online.",
+      path: "/",
+      image: heroHookah,
+    }),
   component: Home,
 });
 
@@ -85,6 +78,7 @@ function Hero() {
           }}
           className="text-center will-change-transform"
         >
+          <h1 className="sr-only">RASA — Premium Hookah Flavours &amp; Shisha Tobacco in India</h1>
           <AnimatedWordmark size="h-[18vw] max-h-[18rem] min-h-[7rem]" halo float shimmer={false} reveal={false} />
 
           <motion.div

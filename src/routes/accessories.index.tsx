@@ -1,23 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ACCESSORY_CATALOG } from "@/data/catalog";
 import { accessorySubcategories } from "@/data/accessories";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/accessories/")({
-  head: () => ({
-    meta: [
-      { title: "Accessories — The Atelier of RASA" },
-      {
-        name: "description",
-        content:
-          "A curated atelier of accessories that complete the RASA ritual. Hand-sculpted mouth tips in Lion, Charlie and Joker designs.",
-      },
-      { property: "og:title", content: "Accessories — RASA" },
-      {
-        property: "og:description",
-        content: "Curated accessories that complete the RASA ritual.",
-      },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Hookah Accessories — Sculpted Mouth Tips | RASA",
+      description:
+        "Hookah accessories from RASA: hand-sculpted hookah mouth tips in Lion, Charlie and Joker designs, in black, white, grey and glow-in-the-dark finishes.",
+      path: "/accessories",
+    }),
   component: Accessories,
 });
 

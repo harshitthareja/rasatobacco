@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account/
+Disallow: /login
+Disallow: /order-confirmation/
+Disallow: /age-restricted
+Disallow: /coming-soon
+
+Sitemap: https://www.rasatobacco.com/sitemap.xml

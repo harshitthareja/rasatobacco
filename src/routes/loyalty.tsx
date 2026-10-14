@@ -3,14 +3,16 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ArrowRight, Star, Gift, Users, Instagram, Trophy, Cake, Copy, Check } from "lucide-react";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/loyalty")({
-  head: () => ({
-    meta: [
-      { title: "Loyalty Program — House of RASA" },
-      { property: "og:title", content: "RASA Loyalty Program" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "RASA Loyalty Program — Rewards on Hookah Flavours",
+      description:
+        "Join the RASA loyalty program and earn points on every hookah flavour and accessory order — tiers, birthday rewards and free accessories.",
+      path: "/loyalty",
+    }),
   component: LoyaltyPage,
 });
 

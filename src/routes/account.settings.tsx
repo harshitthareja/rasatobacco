@@ -2,18 +2,11 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/account/settings")({
-  head: () => ({
-    meta: [
-      { title: "My Account — RASA" },
-      { name: "description", content: "Manage your RASA profile, loyalty tier, and points." },
-      { property: "og:title", content: "My Account — RASA" },
-      { property: "og:description", content: "Manage your RASA profile, loyalty tier, and points." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({ title: "My Account — RASA", description: "Manage your RASA account.", path: "/account/settings", noindex: true }),
   component: SettingsPage,
 });
 

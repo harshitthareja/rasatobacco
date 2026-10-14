@@ -19,26 +19,18 @@ import { CinematicSmoke } from "@/components/CinematicSmoke";
 import { Reveal, RevealChild, RevealGroup } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
 import { AnimatedWordmark } from "@/components/AnimatedWordmark";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/house-of-rasa")({
-  head: () => ({
-    meta: [
-      { title: "The House of RASA — Smoke, Perfected." },
-      {
-        name: "description",
-        content:
-          "The House of RASA is built on craftsmanship, character, consistency, and refinement. Three expressions — Majlis, Makhmal, Tarkib — one house.",
-      },
-      { property: "og:title", content: "The House of RASA" },
-      {
-        property: "og:description",
-        content:
-          "Three expressions, one house. The philosophy behind Smoke, Perfected.",
-      },
-      { property: "og:image", content: houseAtelier },
-      { name: "twitter:image", content: houseAtelier },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "About RASA — The House Behind Premium Hookah Flavours",
+      description:
+        "The House of RASA is built on craftsmanship, character and consistency. Meet the makers of the Majlis, Makhmal and Tarkib hookah tobacco series.",
+      path: "/house-of-rasa",
+      image: houseAtelier,
+      type: "article",
+    }),
   component: HouseOfRasa,
 });
 

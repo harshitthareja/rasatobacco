@@ -5,21 +5,11 @@ import { findCatalogEntry, CATALOG } from "@/data/catalog";
 import { productImageGalleries } from "@/data/productImages";
 import { useProductPrices } from "@/hooks/useProductPrices";
 import { AddToCartControl } from "@/components/shop/AddToCartControl";
+import { loadProductOffer, productHead } from "@/lib/productSeo";
 
 export const Route = createFileRoute("/product/$key")({
-  head: ({ params }) => {
-    const entry = findCatalogEntry(params.key);
-    return {
-      meta: [
-        {
-          title: entry
-            ? `${entry.flavour.name} — ${entry.collection.name} | RASA`
-            : "Product — RASA",
-        },
-        { name: "description", content: entry?.flavour.notes ?? "RASA product." },
-      ],
-    };
-  },
+  loader: ({ params }) => loadProductOffer(params.key).then((offer) => ({ offer })),
+  head: ({ params, loaderData }) => productHead(params.key, loaderData?.offer),
   component: ProductPage,
 });
 
