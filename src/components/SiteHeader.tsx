@@ -5,8 +5,8 @@ import rasaLogo from "@/assets/rasa-logo.png";
 import majlisLogo from "@/assets/majlis-logo.png";
 import makhmalLogo from "@/assets/makhmal-logo.png";
 import tarkibLogo from "@/assets/tarkib-logo.png";
-import { collections } from "@/data/collections";
 import { accessorySubcategories } from "@/data/accessories";
+import { CATALOG } from "@/data/catalog";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 
@@ -667,22 +667,21 @@ function ProductsMega({
 }
 
 type SearchResult = {
+  key: string;
   name: string;
   notes: string;
   collectionName: string;
-  collectionPath: "/collections/majlis" | "/collections/makhmal" | "/collections/tarkib";
   accentVar: string;
 };
 
-const allFlavours: SearchResult[] = collections.flatMap((c) =>
-  c.flavours.map((f) => ({
-    name: f.name,
-    notes: f.notes,
-    collectionName: c.name,
-    collectionPath: c.path,
-    accentVar: c.accentVar,
-  })),
-);
+// Every flavour and accessory, each linking to its product page.
+const searchIndex: SearchResult[] = CATALOG.map((e) => ({
+  key: e.key,
+  name: e.flavour.name,
+  notes: e.flavour.notes,
+  collectionName: e.subcategory ?? e.collection.name,
+  accentVar: e.collection.accentVar,
+}));
 
 function SearchOverlay({ onClose }: { onClose: () => void }) {
   const [q, setQ] = useState("");
@@ -695,7 +694,7 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return [] as SearchResult[];
-    return allFlavours
+    return searchIndex
       .filter(
         (f) =>
           f.name.toLowerCase().includes(term) ||
@@ -725,26 +724,26 @@ function SearchOverlay({ onClose }: { onClose: () => void }) {
             autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search flavours, series, notes…"
+            placeholder="Search flavours, mouth tips, notes…"
             className="w-full bg-transparent border-b border-border/60 focus:border-gold transition-colors py-5 text-xl md:text-3xl font-serif text-center outline-none placeholder:text-muted-foreground/40"
           />
 
           <div className="mt-8">
             {q.trim() === "" ? (
               <p className="text-center text-xs tracking-luxe uppercase text-muted-foreground">
-                Type to filter flavours across all series
+                Type to search flavours and accessories
               </p>
             ) : results.length === 0 ? (
               <p className="text-center text-sm text-foreground/70 font-serif italic">
-                No flavours match “{q}”.
+                Nothing matches “{q}”.
               </p>
             ) : (
               <ul className="grid gap-2">
                 {results.map((r) => (
-                  <li key={`${r.collectionName}-${r.name}`}>
+                  <li key={r.key}>
                     <Link
-                      to="/contact"
-                      search={{ product: r.name, collection: r.collectionName }}
+                      to="/product/$key"
+                      params={{ key: r.key }}
                       onClick={onClose}
                       className="group flex items-center justify-between gap-4 p-4 border border-border/40 hover:border-gold/50 transition-all bg-surface/30 hover:bg-surface/60"
                     >

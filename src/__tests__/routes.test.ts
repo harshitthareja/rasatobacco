@@ -26,6 +26,6 @@ describe("Route modules load without crashing", () => {
     it(`route "${r}" module imports`, async () => {
       const mod = await import(`../routes/${r}.tsx`);
       expect(mod.Route).toBeDefined();
-    });
+    }, 30_000); // cold imports of the larger routes can exceed the 5s default
   }
 });

@@ -38,7 +38,10 @@ export function AddToCartControl({ entry, prices, compact = false, onFormatChang
     return p?.price_cents != null && !!p.is_purchasable;
   };
   const { formats } = entry;
-  const format = chosenFormat ?? formats.find(isReleased) ?? formats[0];
+  // A choice made on another product (e.g. "20g" before opening a mouth tip)
+  // does not apply here.
+  const chosen = chosenFormat && formats.includes(chosenFormat) ? chosenFormat : null;
+  const format = chosen ?? formats.find(isReleased) ?? formats[0];
   const sku = entrySku(entry, format);
   const price = prices[sku];
   const hasPrice = price?.price_cents != null;

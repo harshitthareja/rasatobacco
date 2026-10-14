@@ -6,33 +6,33 @@
  */
 
 import { flavourKey } from "@/data/sku";
-import majlisCommissionerFront from "@/assets/majlis-commissioner-front.png";
-import majlisCommissionerOpen from "@/assets/majlis-commissioner-open.png";
-import majlisCommissionerBack from "@/assets/majlis-commissioner-back.png";
-import majlisCommissionerLid from "@/assets/majlis-commissioner-lid.png";
-import majlisPaanMintCigarFront from "@/assets/majlis-paan-mint-cigar-front.png";
-import majlisPaanMintCigarOpen from "@/assets/majlis-paan-mint-cigar-open.png";
-import majlisPaanRaasFront from "@/assets/majlis-paan-raas-front.png";
+import majlisCommissionerFront from "@/assets/majlis-commissioner-front.webp";
+import majlisCommissionerOpen from "@/assets/majlis-commissioner-open.webp";
+import majlisCommissionerBack from "@/assets/majlis-commissioner-back.webp";
+import majlisCommissionerLid from "@/assets/majlis-commissioner-lid.webp";
+import majlisPaanMintCigarFront from "@/assets/majlis-paan-mint-cigar-front.webp";
+import majlisPaanMintCigarOpen from "@/assets/majlis-paan-mint-cigar-open.webp";
+import majlisPaanRaasFront from "@/assets/majlis-paan-raas-front.webp";
 import majlisPaanRaasTextured from "@/assets/majlis-paan-raas-textured.webp";
-import majlisBrainFreezerFront from "@/assets/majlis-brain-freezer-front.png";
-import majlisBrainFreezerOpen from "@/assets/majlis-brain-freezer-open.png";
-import makhmalKiwiFront from "@/assets/makhmal-kiwi-front.png";
-import makhmalKiwiOpen from "@/assets/makhmal-kiwi.png";
-import makhmalSpringWaterFront from "@/assets/makhmal-spring-water-front.png";
-import makhmalSpringWaterOpen from "@/assets/makhmal-spring-water.png";
-import makhmalGrapeFront from "@/assets/makhmal-grape-front.png";
-import makhmalGrapeOpen from "@/assets/makhmal-grape.png";
+import majlisBrainFreezerFront from "@/assets/majlis-brain-freezer-front.webp";
+import majlisBrainFreezerOpen from "@/assets/majlis-brain-freezer-open.webp";
+import makhmalKiwiFront from "@/assets/makhmal-kiwi-front.webp";
+import makhmalKiwiOpen from "@/assets/makhmal-kiwi.webp";
+import makhmalSpringWaterFront from "@/assets/makhmal-spring-water-front.webp";
+import makhmalSpringWaterOpen from "@/assets/makhmal-spring-water.webp";
+import makhmalGrapeFront from "@/assets/makhmal-grape-front.webp";
+import makhmalGrapeOpen from "@/assets/makhmal-grape.webp";
 import makhmalBack from "@/assets/makhmal-back.webp";
-import tarkibDubaiSpecialFront from "@/assets/tarkib-dubai-special-front.png";
-import tarkibDubaiSpecialOpen from "@/assets/tarkib-dubai-special-open.png";
-import tarkibWhiteRoseFront from "@/assets/tarkib-white-rose-front.png";
-import tarkibWhiteRoseOpen from "@/assets/tarkib-white-rose-open.png";
-import tarkibLycheeBlissFront from "@/assets/tarkib-lychee-bliss-front.png";
-import tarkibLycheeBlissOpen from "@/assets/tarkib-lychee-bliss-open.png";
-import tarkibMarbellaFront from "@/assets/tarkib-marbella-front.png";
-import tarkibMarbellaOpen from "@/assets/tarkib-marbella-open.png";
-import tarkibLid from "@/assets/tarkib-lid.png";
-import tarkibBack from "@/assets/tarkib-back.png";
+import tarkibDubaiSpecialFront from "@/assets/tarkib-dubai-special-front.webp";
+import tarkibDubaiSpecialOpen from "@/assets/tarkib-dubai-special-open.webp";
+import tarkibWhiteRoseFront from "@/assets/tarkib-white-rose-front.webp";
+import tarkibWhiteRoseOpen from "@/assets/tarkib-white-rose-open.webp";
+import tarkibLycheeBlissFront from "@/assets/tarkib-lychee-bliss-front.webp";
+import tarkibLycheeBlissOpen from "@/assets/tarkib-lychee-bliss-open.webp";
+import tarkibMarbellaFront from "@/assets/tarkib-marbella-front.webp";
+import tarkibMarbellaOpen from "@/assets/tarkib-marbella-open.webp";
+import tarkibLid from "@/assets/tarkib-lid.webp";
+import tarkibBack from "@/assets/tarkib-back.webp";
 
 export const productImages: Record<string, string | undefined> = {
   // Majlis

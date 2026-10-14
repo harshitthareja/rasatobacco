@@ -18,6 +18,13 @@ export function skuLabel(sku: string) {
   const parts = sku.split("-");
   if (parts.length < 3) return sku;
   const title = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+  // "accessories-lion-mouth-tip-glow-in-the-dark" → "Accessories · Lion Mouth Tip · Glow In The Dark"
+  // (finishes can be several words, so split on the product type instead).
+  const tip = sku.match(/^accessories-(.+-mouth-tip)-(.+)$/);
+  if (tip) {
+    const words = (s: string) => s.split("-").map(title).join(" ");
+    return `Accessories · ${words(tip[1])} · ${words(tip[2])}`;
+  }
   const format = parts.pop()!.toUpperCase();
   const collection = title(parts.shift()!);
   return `${collection} · ${parts.map(title).join(" ")} · ${format}`;

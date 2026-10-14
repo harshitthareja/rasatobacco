@@ -8,7 +8,7 @@ import houseCraft from "@/assets/house-craft.jpg";
 import bandCopper from "@/assets/band-copper.jpg";
 import bandEarth from "@/assets/band-earth.jpg";
 import aboutAtmosphere from "@/assets/about-atmosphere.jpg";
-import consistencyRasa from "@/assets/consistency-rasa.png";
+import consistencyRasa from "@/assets/consistency-rasa.webp";
 import hookahLuxury from "@/assets/hookah-luxury.jpg";
 import heroSmoke from "@/assets/hero-smoke.jpg";
 import chapterMajlis from "@/assets/chapter-majlis.jpg";

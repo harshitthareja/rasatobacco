@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 
 const mocks = vi.hoisted(() => {
   return {
@@ -79,10 +79,7 @@ describe("useAuth", () => {
 
   it("creates an email account and reports when confirmation is required", async () => {
     const { result } = renderHook(() => useAuth());
-    const response = await result.current.signUpWithPassword(
-      "new@example.com",
-      "password123",
-    );
+    const response = await result.current.signUpWithPassword("new@example.com", "password123");
     expect(mocks.signUp).toHaveBeenCalledWith(
       expect.objectContaining({ email: "new@example.com", password: "password123" }),
     );
@@ -99,5 +96,22 @@ describe("useAuth", () => {
     await result.current.signOut();
     expect(mocks.signOut).toHaveBeenCalledWith({ scope: "local" });
     expect(replaceSpy).toHaveBeenCalledWith("/login");
+  });
+
+  it("shares one auth subscription across many components", async () => {
+    const hooks = Array.from({ length: 5 }, () => renderHook(() => useAuth()));
+    await waitFor(() => expect(hooks[4].result.current.loading).toBe(false));
+    expect(mocks.onAuthStateChange).toHaveBeenCalledTimes(1);
+    expect(mocks.getSession).toHaveBeenCalledTimes(1);
+  });
+
+  it("syncs the users row once per sign-in, not once per component", async () => {
+    const user = { id: "u1", email: "a@b.c", user_metadata: {}, app_metadata: {} };
+    const hooks = Array.from({ length: 5 }, () => renderHook(() => useAuth()));
+    await waitFor(() => expect(hooks[0].result.current.loading).toBe(false));
+    const onChange = mocks.onAuthStateChange.mock.calls[0][0];
+    act(() => onChange("SIGNED_IN", { user }));
+    await waitFor(() => expect(hooks[0].result.current.user).toEqual(user));
+    await waitFor(() => expect(mocks.upsert).toHaveBeenCalledTimes(1));
   });
 });

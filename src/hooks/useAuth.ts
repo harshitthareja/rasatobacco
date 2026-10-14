@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -11,9 +11,7 @@ async function syncUserRow(u: User) {
         id: u.id,
         email: u.email!,
         full_name:
-          (u.user_metadata?.full_name as string) ??
-          (u.user_metadata?.name as string) ??
-          null,
+          (u.user_metadata?.full_name as string) ?? (u.user_metadata?.name as string) ?? null,
         avatar_url: (u.user_metadata?.avatar_url as string) ?? null,
         provider: (u.app_metadata?.provider as string) ?? "google",
         last_sign_in: new Date().toISOString(),
@@ -25,39 +23,67 @@ async function syncUserRow(u: User) {
   }
 }
 
+// One auth subscription shared by every component that calls useAuth().
+// Product grids mount dozens of cart controls, and a subscription each meant
+// dozens of listeners — and a users-row upsert per card on every SIGNED_IN.
+type AuthState = { user: User | null; loading: boolean };
+const INITIAL_AUTH: AuthState = { user: null, loading: true };
+let authState = INITIAL_AUTH;
+const authListeners = new Set<() => void>();
+let stopAuth: (() => void) | null = null;
+
+function setAuthState(next: Partial<AuthState>) {
+  authState = { ...authState, ...next };
+  authListeners.forEach((l) => l());
+}
+
+function startAuth() {
+  let active = true;
+
+  // 1. Subscribe FIRST so we don't miss the initial SIGNED_IN event.
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((event, session) => {
+    if (!active) return;
+    const u = session?.user ?? null;
+    setAuthState({ user: u, loading: false });
+    if (event === "SIGNED_IN" && u) {
+      // Defer to avoid blocking the auth callback.
+      setTimeout(() => void syncUserRow(u), 0);
+    }
+  });
+
+  // 2. Then hydrate current session.
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (!active) return;
+    setAuthState({ user: session?.user ?? null, loading: false });
+  });
+
+  stopAuth = () => {
+    active = false;
+    subscription.unsubscribe();
+  };
+}
+
+function subscribeAuth(listener: () => void) {
+  authListeners.add(listener);
+  if (authListeners.size === 1) startAuth();
+  return () => {
+    authListeners.delete(listener);
+    if (authListeners.size === 0) {
+      stopAuth?.();
+      stopAuth = null;
+      authState = INITIAL_AUTH;
+    }
+  };
+}
+
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-
-    // 1. Subscribe FIRST so we don't miss the initial SIGNED_IN event.
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!mounted) return;
-      const u = session?.user ?? null;
-      setUser(u);
-      setLoading(false);
-      if (event === "SIGNED_IN" && u) {
-        // Defer to avoid blocking the auth callback.
-        setTimeout(() => void syncUserRow(u), 0);
-      }
-    });
-
-    // 2. Then hydrate current session.
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return;
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
+  const { user, loading } = useSyncExternalStore(
+    subscribeAuth,
+    () => authState,
+    () => INITIAL_AUTH,
+  );
 
   const signInWithGoogle = useCallback(async () => {
     try {
@@ -111,7 +137,7 @@ export function useAuth() {
     } catch (e) {
       console.error("signOut error", e);
     }
-    setUser(null);
+    setAuthState({ user: null });
     try {
       sessionStorage.removeItem(RETURN_KEY);
     } catch {

@@ -112,7 +112,12 @@ function ProductPage() {
               {loading ? (
                 <div className="w-6 h-6 rounded-full border-2 border-gold/30 border-t-gold animate-spin" />
               ) : (
-                <AddToCartControl entry={entry} prices={prices} onFormatChange={setFormat} />
+                <AddToCartControl
+                  key={entry.key}
+                  entry={entry}
+                  prices={prices}
+                  onFormatChange={setFormat}
+                />
               )}
             </div>
 
