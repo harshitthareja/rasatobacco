@@ -64,25 +64,26 @@ export const productImages: Record<string, string | undefined> = {
 const majlisBack = majlisCommissionerBack;
 const rasaLid = majlisCommissionerLid;
 
+// Gallery order for every flavour: front, back, textured (open tub), top (lid).
 export const productImageGalleries: Record<string, string[]> = {
-  "majlis-commissioner": [majlisCommissionerFront, majlisCommissionerOpen, majlisBack, rasaLid],
+  "majlis-commissioner": [majlisCommissionerFront, majlisBack, majlisCommissionerOpen, rasaLid],
   "majlis-paan-mint-cigar": [
     majlisPaanMintCigarFront,
-    majlisPaanMintCigarOpen,
     majlisBack,
+    majlisPaanMintCigarOpen,
     rasaLid,
   ],
   // majlis-paan-raas-open.png is a copy of the Paan Mint Cigar tub; left out
   // until the real Paan Raas open photo is added.
   "majlis-paan-raas": [majlisPaanRaasFront, majlisBack, rasaLid],
-  "majlis-brain-freezer": [majlisBrainFreezerFront, majlisBrainFreezerOpen, majlisBack, rasaLid],
+  "majlis-brain-freezer": [majlisBrainFreezerFront, majlisBack, majlisBrainFreezerOpen, rasaLid],
   "makhmal-kiwi": [makhmalKiwiFront, makhmalKiwiOpen, rasaLid],
   "makhmal-spring-water": [makhmalSpringWaterFront, makhmalSpringWaterOpen, rasaLid],
   "makhmal-grape": [makhmalGrapeFront, makhmalGrapeOpen, rasaLid],
-  "tarkib-lychee-bliss": [tarkibLycheeBlissFront, tarkibLycheeBlissOpen, tarkibBack, tarkibLid],
-  "tarkib-white-rose": [tarkibWhiteRoseFront, tarkibWhiteRoseOpen, tarkibBack, tarkibLid],
-  "tarkib-marbella": [tarkibMarbellaFront, tarkibMarbellaOpen, tarkibBack, tarkibLid],
-  "tarkib-dubai-special": [tarkibDubaiSpecialFront, tarkibDubaiSpecialOpen, tarkibBack, tarkibLid],
+  "tarkib-lychee-bliss": [tarkibLycheeBlissFront, tarkibBack, tarkibLycheeBlissOpen, tarkibLid],
+  "tarkib-white-rose": [tarkibWhiteRoseFront, tarkibBack, tarkibWhiteRoseOpen, tarkibLid],
+  "tarkib-marbella": [tarkibMarbellaFront, tarkibBack, tarkibMarbellaOpen, tarkibLid],
+  "tarkib-dubai-special": [tarkibDubaiSpecialFront, tarkibBack, tarkibDubaiSpecialOpen, tarkibLid],
 };
 
 export const productImageKey = flavourKey;
