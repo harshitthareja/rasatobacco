@@ -595,7 +595,7 @@ function ProductsMega({
     },
     {
       title: "Accessories",
-      sub: "Mouth Tips · Bowls · Hoses",
+      sub: "Mouth Tips",
       to: "/accessories" as const,
       search: undefined,
       accent: "#b0a898",

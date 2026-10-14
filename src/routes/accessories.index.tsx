@@ -9,7 +9,7 @@ export const Route = createFileRoute("/accessories/")({
       {
         name: "description",
         content:
-          "A curated atelier of accessories that complete the RASA ritual. Sculpted mouth tips available now; bowls, hoses, heat management and more forthcoming.",
+          "A curated atelier of accessories that complete the RASA ritual. Hand-sculpted mouth tips in Lion, Charlie and Joker designs.",
       },
       { property: "og:title", content: "Accessories — RASA" },
       {
@@ -21,16 +21,13 @@ export const Route = createFileRoute("/accessories/")({
   component: Accessories,
 });
 
-const groups = [
-  "Bowls",
-  "Hoses",
-  "Mouth Tips",
-  "Charcoal Holders",
-  "Heat Management",
-  "Tongs",
-  "Cleaning Tools",
-  "Travel Cases",
-];
+// Only categories with products are listed; new ones appear once stocked.
+const categories = accessorySubcategories
+  .map((sub) => ({
+    sub,
+    count: ACCESSORY_CATALOG.filter((e) => e.subcategorySlug === sub.slug).length,
+  }))
+  .filter((c) => c.count > 0);
 
 function Accessories() {
   return (
@@ -50,62 +47,35 @@ function Accessories() {
 
       <section className="py-28 md:py-36 bg-background">
         <div className="mx-auto max-w-6xl px-6 lg:px-10">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-border/30">
-            {groups.map((g, i) => {
-              const sub = accessorySubcategories.find((s) => s.name === g);
-              const count = sub
-                ? ACCESSORY_CATALOG.filter((e) => e.subcategorySlug === sub.slug).length
-                : 0;
-              const className =
-                "group relative overflow-hidden bg-background p-6 sm:p-10 aspect-square flex flex-col justify-between hover:bg-surface/40 transition-colors duration-700";
-              const image = count ? sub?.image : undefined;
-              const tile = (
-                <>
-                  {image && (
-                    <>
-                      <img
-                        src={image}
-                        alt=""
-                        loading="lazy"
-                        className="absolute inset-0 h-full w-full object-cover opacity-70 transition-all duration-700 group-hover:scale-105 group-hover:opacity-90"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
-                    </>
-                  )}
-                  <span className="relative text-[0.6rem] tracking-luxe text-gold/60">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div className="relative">
-                    <h3 className="font-serif text-2xl md:text-3xl group-hover:text-gold transition-colors">
-                      {g}
-                    </h3>
-                    <p
-                      className={`mt-3 text-[0.6rem] tracking-luxe uppercase ${
-                        count ? "text-gold" : "text-muted-foreground/60"
-                      }`}
-                    >
-                      {count
-                        ? `${count} design${count !== 1 ? "s" : ""} · Shop now`
-                        : "Forthcoming"}
-                    </p>
-                  </div>
-                </>
-              );
-              return sub && count ? (
-                <Link
-                  key={g}
-                  to="/accessories/$category"
-                  params={{ category: sub.slug }}
-                  className={className}
-                >
-                  {tile}
-                </Link>
-              ) : (
-                <div key={g} className={className}>
-                  {tile}
+          <div className="flex flex-wrap justify-center gap-6">
+            {categories.map(({ sub, count }) => (
+              <Link
+                key={sub.slug}
+                to="/accessories/$category"
+                params={{ category: sub.slug }}
+                className="group relative overflow-hidden bg-surface/20 border border-border/30 p-6 sm:p-10 aspect-square w-full max-w-sm flex flex-col justify-end hover:border-gold/40 transition-colors duration-700"
+              >
+                {sub.image && (
+                  <>
+                    <img
+                      src={sub.image}
+                      alt=""
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover opacity-70 transition-all duration-700 group-hover:scale-105 group-hover:opacity-90"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
+                  </>
+                )}
+                <div className="relative">
+                  <h3 className="font-serif text-3xl group-hover:text-gold transition-colors">
+                    {sub.name}
+                  </h3>
+                  <p className="mt-3 text-[0.6rem] tracking-luxe uppercase text-gold">
+                    {count} design{count !== 1 ? "s" : ""} · Shop now
+                  </p>
                 </div>
-              );
-            })}
+              </Link>
+            ))}
           </div>
         </div>
       </section>
