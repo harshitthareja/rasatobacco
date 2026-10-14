@@ -17,8 +17,11 @@ import majlisPaanRaasOpen from "@/assets/majlis-paan-raas-open.png";
 import majlisBrainFreezerFront from "@/assets/majlis-brain-freezer-front.png";
 import majlisBrainFreezerOpen from "@/assets/majlis-brain-freezer-open.png";
 import makhmalKiwiFront from "@/assets/makhmal-kiwi-front.png";
+import makhmalKiwiOpen from "@/assets/makhmal-kiwi.png";
 import makhmalSpringWaterFront from "@/assets/makhmal-spring-water-front.png";
+import makhmalSpringWaterOpen from "@/assets/makhmal-spring-water.png";
 import makhmalGrapeFront from "@/assets/makhmal-grape-front.png";
+import makhmalGrapeOpen from "@/assets/makhmal-grape.png";
 import tarkibDubaiSpecialFront from "@/assets/tarkib-dubai-special-front.png";
 import tarkibDubaiSpecialOpen from "@/assets/tarkib-dubai-special-open.png";
 import tarkibWhiteRoseFront from "@/assets/tarkib-white-rose-front.png";
@@ -56,33 +59,29 @@ export const productImages: Record<string, string | undefined> = {
   "tarkib-dubai-special": tarkibDubaiSpecialFront,
 };
 
+// The Majlis back label and the RASA lid carry no flavour name, so every
+// Majlis flavour shares them (as Tarkib shares its back and lid). Makhmal tubs
+// use the same lid; there is no Makhmal back photo yet.
+const majlisBack = majlisCommissionerBack;
+const rasaLid = majlisCommissionerLid;
+
 export const productImageGalleries: Record<string, string[]> = {
-  "majlis-commissioner": [
-    majlisCommissionerFront,
-    majlisCommissionerOpen,
-    majlisCommissionerBack,
-    majlisCommissionerLid,
+  "majlis-commissioner": [majlisCommissionerFront, majlisCommissionerOpen, majlisBack, rasaLid],
+  "majlis-paan-mint-cigar": [
+    majlisPaanMintCigarFront,
+    majlisPaanMintCigarOpen,
+    majlisBack,
+    rasaLid,
   ],
-  "majlis-paan-mint-cigar": [majlisPaanMintCigarFront, majlisPaanMintCigarOpen],
-  "majlis-paan-raas": [majlisPaanRaasFront, majlisPaanRaasOpen],
-  "majlis-brain-freezer": [majlisBrainFreezerFront, majlisBrainFreezerOpen],
-  "makhmal-kiwi": [makhmalKiwiFront],
-  "makhmal-spring-water": [makhmalSpringWaterFront],
-  "makhmal-grape": [makhmalGrapeFront],
-  "tarkib-lychee-bliss": [
-    tarkibLycheeBlissFront,
-    tarkibLycheeBlissOpen,
-    tarkibBack,
-    tarkibLid,
-  ],
+  "majlis-paan-raas": [majlisPaanRaasFront, majlisPaanRaasOpen, majlisBack, rasaLid],
+  "majlis-brain-freezer": [majlisBrainFreezerFront, majlisBrainFreezerOpen, majlisBack, rasaLid],
+  "makhmal-kiwi": [makhmalKiwiFront, makhmalKiwiOpen, rasaLid],
+  "makhmal-spring-water": [makhmalSpringWaterFront, makhmalSpringWaterOpen, rasaLid],
+  "makhmal-grape": [makhmalGrapeFront, makhmalGrapeOpen, rasaLid],
+  "tarkib-lychee-bliss": [tarkibLycheeBlissFront, tarkibLycheeBlissOpen, tarkibBack, tarkibLid],
   "tarkib-white-rose": [tarkibWhiteRoseFront, tarkibWhiteRoseOpen, tarkibBack, tarkibLid],
   "tarkib-marbella": [tarkibMarbellaFront, tarkibMarbellaOpen, tarkibBack, tarkibLid],
-  "tarkib-dubai-special": [
-    tarkibDubaiSpecialFront,
-    tarkibDubaiSpecialOpen,
-    tarkibBack,
-    tarkibLid,
-  ],
+  "tarkib-dubai-special": [tarkibDubaiSpecialFront, tarkibDubaiSpecialOpen, tarkibBack, tarkibLid],
 };
 
 export const productImageKey = flavourKey;
