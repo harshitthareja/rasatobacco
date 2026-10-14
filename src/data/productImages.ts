@@ -13,6 +13,7 @@ import majlisCommissionerLid from "@/assets/majlis-commissioner-lid.png";
 import majlisPaanMintCigarFront from "@/assets/majlis-paan-mint-cigar-front.png";
 import majlisPaanMintCigarOpen from "@/assets/majlis-paan-mint-cigar-open.png";
 import majlisPaanRaasFront from "@/assets/majlis-paan-raas-front.png";
+import majlisPaanRaasTextured from "@/assets/majlis-paan-raas-textured.webp";
 import majlisBrainFreezerFront from "@/assets/majlis-brain-freezer-front.png";
 import majlisBrainFreezerOpen from "@/assets/majlis-brain-freezer-open.png";
 import makhmalKiwiFront from "@/assets/makhmal-kiwi-front.png";
@@ -21,6 +22,7 @@ import makhmalSpringWaterFront from "@/assets/makhmal-spring-water-front.png";
 import makhmalSpringWaterOpen from "@/assets/makhmal-spring-water.png";
 import makhmalGrapeFront from "@/assets/makhmal-grape-front.png";
 import makhmalGrapeOpen from "@/assets/makhmal-grape.png";
+import makhmalBack from "@/assets/makhmal-back.webp";
 import tarkibDubaiSpecialFront from "@/assets/tarkib-dubai-special-front.png";
 import tarkibDubaiSpecialOpen from "@/assets/tarkib-dubai-special-open.png";
 import tarkibWhiteRoseFront from "@/assets/tarkib-white-rose-front.png";
@@ -59,8 +61,8 @@ export const productImages: Record<string, string | undefined> = {
 };
 
 // The Majlis back label and the RASA lid carry no flavour name, so every
-// Majlis flavour shares them (as Tarkib shares its back and lid). Makhmal tubs
-// use the same lid; there is no Makhmal back photo yet.
+// Majlis flavour shares them (as Tarkib and Makhmal share their own backs).
+// Makhmal tubs use the same RASA lid.
 const majlisBack = majlisCommissionerBack;
 const rasaLid = majlisCommissionerLid;
 
@@ -73,13 +75,11 @@ export const productImageGalleries: Record<string, string[]> = {
     majlisPaanMintCigarOpen,
     rasaLid,
   ],
-  // majlis-paan-raas-open.png is a copy of the Paan Mint Cigar tub; left out
-  // until the real Paan Raas open photo is added.
-  "majlis-paan-raas": [majlisPaanRaasFront, majlisBack, rasaLid],
+  "majlis-paan-raas": [majlisPaanRaasFront, majlisBack, majlisPaanRaasTextured, rasaLid],
   "majlis-brain-freezer": [majlisBrainFreezerFront, majlisBack, majlisBrainFreezerOpen, rasaLid],
-  "makhmal-kiwi": [makhmalKiwiFront, makhmalKiwiOpen, rasaLid],
-  "makhmal-spring-water": [makhmalSpringWaterFront, makhmalSpringWaterOpen, rasaLid],
-  "makhmal-grape": [makhmalGrapeFront, makhmalGrapeOpen, rasaLid],
+  "makhmal-kiwi": [makhmalKiwiFront, makhmalBack, makhmalKiwiOpen, rasaLid],
+  "makhmal-spring-water": [makhmalSpringWaterFront, makhmalBack, makhmalSpringWaterOpen, rasaLid],
+  "makhmal-grape": [makhmalGrapeFront, makhmalBack, makhmalGrapeOpen, rasaLid],
   "tarkib-lychee-bliss": [tarkibLycheeBlissFront, tarkibBack, tarkibLycheeBlissOpen, tarkibLid],
   "tarkib-white-rose": [tarkibWhiteRoseFront, tarkibBack, tarkibWhiteRoseOpen, tarkibLid],
   "tarkib-marbella": [tarkibMarbellaFront, tarkibBack, tarkibMarbellaOpen, tarkibLid],
