@@ -13,7 +13,6 @@ import majlisCommissionerLid from "@/assets/majlis-commissioner-lid.png";
 import majlisPaanMintCigarFront from "@/assets/majlis-paan-mint-cigar-front.png";
 import majlisPaanMintCigarOpen from "@/assets/majlis-paan-mint-cigar-open.png";
 import majlisPaanRaasFront from "@/assets/majlis-paan-raas-front.png";
-import majlisPaanRaasOpen from "@/assets/majlis-paan-raas-open.png";
 import majlisBrainFreezerFront from "@/assets/majlis-brain-freezer-front.png";
 import majlisBrainFreezerOpen from "@/assets/majlis-brain-freezer-open.png";
 import makhmalKiwiFront from "@/assets/makhmal-kiwi-front.png";
@@ -73,7 +72,9 @@ export const productImageGalleries: Record<string, string[]> = {
     majlisBack,
     rasaLid,
   ],
-  "majlis-paan-raas": [majlisPaanRaasFront, majlisPaanRaasOpen, majlisBack, rasaLid],
+  // majlis-paan-raas-open.png is a copy of the Paan Mint Cigar tub; left out
+  // until the real Paan Raas open photo is added.
+  "majlis-paan-raas": [majlisPaanRaasFront, majlisBack, rasaLid],
   "majlis-brain-freezer": [majlisBrainFreezerFront, majlisBrainFreezerOpen, majlisBack, rasaLid],
   "makhmal-kiwi": [makhmalKiwiFront, makhmalKiwiOpen, rasaLid],
   "makhmal-spring-water": [makhmalSpringWaterFront, makhmalSpringWaterOpen, rasaLid],
