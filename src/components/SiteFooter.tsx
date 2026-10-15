@@ -5,13 +5,11 @@ import { Instagram, Mail, Phone, MessageCircle, MapPin, ArrowRight } from "lucid
 import { contactInfo, partnerWhatsAppUrl } from "@/data/contact";
 import { subscribeToNewsletter } from "@/lib/newsletter";
 import { AnimatedWordmark } from "@/components/AnimatedWordmark";
-import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 import { AgeRestrictionPolicyModal } from "@/components/AgeRestrictionPolicyModal";
 import { TermsAndConditionsModal } from "@/components/TermsAndConditionsModal";
 
 
 export function SiteFooter() {
-  const [privacyOpen, setPrivacyOpen] = useState(false);
   const [ageOpen, setAgeOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   return (
@@ -195,12 +193,9 @@ export function SiteFooter() {
         <div className="mt-14 pt-8 border-t border-border/40 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-foreground/65">
           <p>© {new Date().getFullYear()} RASA. All Rights Reserved.</p>
           <div className="flex gap-6 flex-wrap justify-center">
-            <button
-              onClick={() => setPrivacyOpen(true)}
-              className="hover:text-gold transition-colors cursor-pointer"
-            >
+            <Link to="/privacy-policy" className="hover:text-gold transition-colors">
               Privacy Policy
-            </button>
+            </Link>
             <button
               onClick={() => setTermsOpen(true)}
               className="hover:text-gold transition-colors cursor-pointer"
@@ -216,7 +211,6 @@ export function SiteFooter() {
           </div>
         </div>
       </div>
-      <PrivacyPolicyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
       <AgeRestrictionPolicyModal open={ageOpen} onClose={() => setAgeOpen(false)} />
       <TermsAndConditionsModal open={termsOpen} onClose={() => setTermsOpen(false)} />
     </footer>

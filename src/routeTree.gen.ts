@@ -22,6 +22,7 @@ import { Route as HouseOfRasaRouteImport } from './routes/house-of-rasa'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LoyaltyRouteImport } from './routes/loyalty'
 import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AccessoriesIndexRouteImport } from './routes/accessories.index'
@@ -100,6 +101,11 @@ const PartnersRoute = PartnersRouteImport.update({
   path: '/partners',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/loyalty': typeof LoyaltyRoute
   '/partners': typeof PartnersRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/accessories/$category': typeof AccessoriesCategoryRoute
@@ -203,6 +210,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/loyalty': typeof LoyaltyRoute
   '/partners': typeof PartnersRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/accessories/$category': typeof AccessoriesCategoryRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/loyalty': typeof LoyaltyRoute
   '/partners': typeof PartnersRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/accessories/$category': typeof AccessoriesCategoryRoute
@@ -260,6 +269,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/loyalty'
     | '/partners'
+    | '/privacy-policy'
     | '/shop'
     | '/sitemap.xml'
     | '/accessories/$category'
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/loyalty'
     | '/partners'
+    | '/privacy-policy'
     | '/shop'
     | '/sitemap.xml'
     | '/accessories/$category'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/loyalty'
     | '/partners'
+    | '/privacy-policy'
     | '/shop'
     | '/sitemap.xml'
     | '/accessories/$category'
@@ -342,6 +354,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   LoyaltyRoute: typeof LoyaltyRoute
   PartnersRoute: typeof PartnersRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AccessoriesCategoryRoute: typeof AccessoriesCategoryRoute
@@ -449,6 +462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PartnersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shop': {
       id: '/shop'
       path: '/shop'
@@ -550,6 +570,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   LoyaltyRoute: LoyaltyRoute,
   PartnersRoute: PartnersRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AccessoriesCategoryRoute: AccessoriesCategoryRoute,

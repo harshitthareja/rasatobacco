@@ -114,8 +114,11 @@ function LoginPage() {
               )}
 
               <p className="text-[0.6rem] text-foreground/35 leading-relaxed">
-                By continuing, you agree to our Privacy Policy and Terms &
-                Conditions.
+                By continuing, you agree to our{" "}
+                <a href="/privacy-policy" target="_blank" rel="noreferrer" className="underline-offset-2 hover:underline">
+                  Privacy Policy
+                </a>{" "}
+                and Terms &amp; Conditions.
               </p>
             </>
           )}

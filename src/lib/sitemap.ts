@@ -38,6 +38,7 @@ export function sitemapUrls(): Url[] {
     { path: "/loyalty", priority: 0.4, changefreq: "monthly" },
     { path: "/partners", priority: 0.4, changefreq: "monthly" },
     { path: "/contact", priority: 0.4, changefreq: "monthly" },
+    { path: "/privacy-policy", priority: 0.2, changefreq: "monthly" },
   ];
   const products: Url[] = CATALOG.map((e) => ({
     path: `/product/${e.key}`,

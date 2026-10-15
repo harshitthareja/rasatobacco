@@ -131,7 +131,16 @@ export function AuthModal({ open, onClose, reason = "contact" }: Props) {
         </button>
 
         <p className="text-[0.65rem] text-foreground/40 leading-relaxed">
-          By continuing, you agree to our <span className="text-gold/70">Privacy Policy</span> and{" "}
+          By continuing, you agree to our{" "}
+          <a
+            href="/privacy-policy"
+            target="_blank"
+            rel="noreferrer"
+            className="text-gold/70 underline-offset-2 hover:underline"
+          >
+            Privacy Policy
+          </a>{" "}
+          and{" "}
           <span className="text-gold/70">Terms & Conditions</span>.
         </p>
       </div>
