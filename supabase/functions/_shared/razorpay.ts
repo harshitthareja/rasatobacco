@@ -109,7 +109,8 @@ export async function markOrderPaid(db: SupabaseClient, razorpayOrderId: string,
   return order.id as string
 }
 
-/** Reserves stock for a confirmed order and empties the buyer's cart. */
+/** Reserves stock for a confirmed order and removes the ordered items from the
+ *  buyer's cart (items that weren't on sale yet stay there). */
 export async function finalizeOrder(db: SupabaseClient, orderId: string, userId: string) {
   const { data: items } = await db.from('order_items').select('sku, quantity').eq('order_id', orderId)
   for (const item of items ?? []) {
@@ -125,5 +126,8 @@ export async function finalizeOrder(db: SupabaseClient, orderId: string, userId:
         .eq('sku', item.sku)
     }
   }
-  await db.from('cart_items').delete().eq('user_id', userId)
+  const ordered = [...new Set((items ?? []).map((i) => i.sku))]
+  if (ordered.length) {
+    await db.from('cart_items').delete().eq('user_id', userId).in('sku', ordered)
+  }
 }

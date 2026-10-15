@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
@@ -73,7 +73,7 @@ const emptyForm: ShippingForm = {
 function CheckoutPage() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { items, loading: cartLoading, clear } = useCart();
+  const { items, loading: cartLoading, refresh: refreshCart } = useCart();
   const { prices, loading: pricesLoading } = useProductPrices();
   const { settings: shippingSettings, loading: settingsLoading } = useShippingSettings();
   const [form, setForm] = useState<ShippingForm>({
@@ -192,7 +192,7 @@ function CheckoutPage() {
 
       // Cash on delivery: the order is already confirmed server-side.
       if (order.payment_method === "cod" || !order.razorpay_order_id) {
-        await clear();
+        await refreshCart(); // the server removed the ordered items
         navigate({ to: "/order-confirmation/$orderId", params: { orderId: order.order_id } });
         return;
       }
@@ -235,7 +235,7 @@ function CheckoutPage() {
         return;
       }
 
-      await clear();
+      await refreshCart(); // the server removed the ordered items
       navigate({ to: "/order-confirmation/$orderId", params: { orderId: order.order_id } });
     } catch (e) {
       console.error(e);
@@ -540,16 +540,20 @@ function Field({
   required?: boolean;
   error?: string;
 }) {
+  const id = useId();
   return (
     <div>
-      <label className="block text-[0.65rem] tracking-luxe uppercase text-gold/80 mb-2">
+      <label htmlFor={id} className="block text-[0.65rem] tracking-luxe uppercase text-gold/80 mb-2">
         {label}
         {required && <span className="text-gold/60"> *</span>}
       </label>
       <input
+        id={id}
         type={type}
         value={value}
         onChange={onChange}
+        aria-required={required}
+        aria-invalid={!!error}
         className={`w-full bg-transparent border-b ${
           error ? "border-destructive" : "border-border/60"
         } py-3 text-foreground focus:border-gold outline-none transition-colors`}

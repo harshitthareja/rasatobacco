@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { cors, getUser, json, serviceClient } from '../_shared/http.ts'
 import { createRazorpayOrder, finalizeOrder, RazorpayError, razorpayKeyId } from '../_shared/razorpay.ts'
-import { applyPairOffer } from '../_shared/offers.ts'
+import { priceCart } from '../_shared/pricing.ts'
 
 type SkuMeta = { productName?: string; collectionName?: string; format?: string }
 
@@ -49,39 +49,22 @@ serve(async (req) => {
       .select('sku, price_cents, sale_price_cents, sale_ends_at, is_purchasable, stock_quantity')
       .in('sku', cartItems.map((c) => c.sku))
     if (priceErr) throw priceErr
-    const priceMap = new Map((prices ?? []).map((p) => [p.sku, p]))
-
-    let lineItems: { sku: string; quantity: number; unit_price_cents: number; offer?: boolean }[] = []
-
-    for (const item of cartItems) {
-      const p = priceMap.get(item.sku)
-      if (!p || !p.is_purchasable || p.price_cents == null) {
-        return json({ error: `${skuMeta[item.sku]?.productName ?? item.sku} is not available for purchase right now` }, 409)
-      }
-      if (p.stock_quantity < item.quantity) {
-        return json({ error: `Not enough stock for ${skuMeta[item.sku]?.productName ?? item.sku}` }, 409)
-      }
-      const onSale =
-        p.sale_price_cents != null && p.sale_ends_at != null && new Date(p.sale_ends_at).getTime() > Date.now()
-      const unit = onSale ? p.sale_price_cents : p.price_cents
-      lineItems.push({ sku: item.sku, quantity: item.quantity, unit_price_cents: unit })
-    }
-
-    // Any two mouth tips for ₹150: paired tips become their own line at the offer price.
-    lineItems = applyPairOffer(lineItems)
-    const subtotal = lineItems.reduce((sum, li) => sum + li.unit_price_cents * li.quantity, 0)
 
     const { data: settings } = await db
       .from('store_settings')
       .select('shipping_flat_cents, free_shipping_threshold_cents')
       .eq('id', 1)
       .maybeSingle()
-    const threshold = settings?.free_shipping_threshold_cents
-    // Free delivery only when the subtotal is above the threshold.
-    const shippingCharge =
-      threshold != null && subtotal > threshold ? 0 : (settings?.shipping_flat_cents ?? 0)
-    const total = subtotal + shippingCharge
-    if (total < 100) return json({ error: 'Order total must be at least ₹1' }, 400)
+
+    // Shared with the website's integration tests (_shared/pricing.ts).
+    const priced = priceCart(
+      cartItems,
+      prices ?? [],
+      settings ?? null,
+      (sku) => skuMeta[sku]?.productName ?? sku,
+    )
+    if (!priced.ok) return json({ error: priced.error }, priced.status)
+    const { lineItems, subtotal, shippingCharge, total } = priced
 
     // A buyer who dismissed the payment window and retries would otherwise
     // leave a trail of unpaid orders — close out their earlier attempts.
