@@ -20,6 +20,7 @@ export function sitemapUrls(): Url[] {
     { path: "/", priority: 1, changefreq: "weekly" },
     { path: "/shop", priority: 0.9, changefreq: "daily" },
     { path: "/flavours", priority: 0.9, changefreq: "weekly" },
+    { path: "/hookah-tobacco-india", priority: 0.9, changefreq: "weekly" },
     { path: "/collections", priority: 0.8, changefreq: "weekly" },
     ...collections.map((c) => ({
       path: `/collections/${c.slug}`,

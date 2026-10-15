@@ -17,6 +17,7 @@ import { Route as ComingSoonRouteImport } from './routes/coming-soon'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FlavoursRouteImport } from './routes/flavours'
 import { Route as HookahRouteImport } from './routes/hookah'
+import { Route as HookahTobaccoIndiaRouteImport } from './routes/hookah-tobacco-india'
 import { Route as HouseOfRasaRouteImport } from './routes/house-of-rasa'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LoyaltyRouteImport } from './routes/loyalty'
@@ -72,6 +73,11 @@ const FlavoursRoute = FlavoursRouteImport.update({
 const HookahRoute = HookahRouteImport.update({
   id: '/hookah',
   path: '/hookah',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HookahTobaccoIndiaRoute = HookahTobaccoIndiaRouteImport.update({
+  id: '/hookah-tobacco-india',
+  path: '/hookah-tobacco-india',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HouseOfRasaRoute = HouseOfRasaRouteImport.update({
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/flavours': typeof FlavoursRoute
   '/hookah': typeof HookahRoute
+  '/hookah-tobacco-india': typeof HookahTobaccoIndiaRoute
   '/house-of-rasa': typeof HouseOfRasaRoute
   '/login': typeof LoginRoute
   '/loyalty': typeof LoyaltyRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/flavours': typeof FlavoursRoute
   '/hookah': typeof HookahRoute
+  '/hookah-tobacco-india': typeof HookahTobaccoIndiaRoute
   '/house-of-rasa': typeof HouseOfRasaRoute
   '/login': typeof LoginRoute
   '/loyalty': typeof LoyaltyRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/flavours': typeof FlavoursRoute
   '/hookah': typeof HookahRoute
+  '/hookah-tobacco-india': typeof HookahTobaccoIndiaRoute
   '/house-of-rasa': typeof HouseOfRasaRoute
   '/login': typeof LoginRoute
   '/loyalty': typeof LoyaltyRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/flavours'
     | '/hookah'
+    | '/hookah-tobacco-india'
     | '/house-of-rasa'
     | '/login'
     | '/loyalty'
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/flavours'
     | '/hookah'
+    | '/hookah-tobacco-india'
     | '/house-of-rasa'
     | '/login'
     | '/loyalty'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/flavours'
     | '/hookah'
+    | '/hookah-tobacco-india'
     | '/house-of-rasa'
     | '/login'
     | '/loyalty'
@@ -325,6 +337,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FlavoursRoute: typeof FlavoursRoute
   HookahRoute: typeof HookahRoute
+  HookahTobaccoIndiaRoute: typeof HookahTobaccoIndiaRoute
   HouseOfRasaRoute: typeof HouseOfRasaRoute
   LoginRoute: typeof LoginRoute
   LoyaltyRoute: typeof LoyaltyRoute
@@ -399,6 +412,13 @@ declare module '@tanstack/react-router' {
       path: '/hookah'
       fullPath: '/hookah'
       preLoaderRoute: typeof HookahRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hookah-tobacco-india': {
+      id: '/hookah-tobacco-india'
+      path: '/hookah-tobacco-india'
+      fullPath: '/hookah-tobacco-india'
+      preLoaderRoute: typeof HookahTobaccoIndiaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/house-of-rasa': {
@@ -525,6 +545,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FlavoursRoute: FlavoursRoute,
   HookahRoute: HookahRoute,
+  HookahTobaccoIndiaRoute: HookahTobaccoIndiaRoute,
   HouseOfRasaRoute: HouseOfRasaRoute,
   LoginRoute: LoginRoute,
   LoyaltyRoute: LoyaltyRoute,

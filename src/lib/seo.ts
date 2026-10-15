@@ -90,6 +90,9 @@ export const organizationJsonLd = {
   email: contactInfo.email,
   telephone: contactInfo.phoneRaw,
   sameAs: [`https://www.instagram.com/${contactInfo.instagramHandle}`],
+  // Online and wholesale only (no walk-in shop); delivers across India.
+  areaServed: { "@type": "Country", name: "India" },
+  knowsAbout: ["hookah tobacco", "shisha flavours", "hookah accessories"],
   address: {
     "@type": "PostalAddress",
     streetAddress: `${contactInfo.address.line1}, ${contactInfo.address.line2}`,

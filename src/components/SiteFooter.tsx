@@ -57,6 +57,11 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link to="/hookah-tobacco-india" className="hover:text-gold transition-colors">
+                  Hookah Tobacco in India
+                </Link>
+              </li>
+              <li>
                 <Link to="/loyalty" className="hover:text-gold transition-colors">
                   Loyalty
                 </Link>
