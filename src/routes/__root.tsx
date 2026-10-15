@@ -8,7 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -19,6 +19,7 @@ import { LeadCaptureModal } from "../components/LeadCaptureModal";
 import { PageTransition } from "../components/PageTransition";
 import { WhatsAppFloat } from "../components/WhatsAppFloat";
 import { organizationJsonLd, websiteJsonLd } from "../lib/seo";
+import { META_PIXEL_ID, metaPixelScript, trackPageView } from "../lib/metaPixel";
 
 function NotFoundComponent() {
   return (
@@ -120,8 +121,20 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {/* Meta Pixel base code. In the shell (not route head()) so it runs once per
+            visit; route head scripts re-run on every navigation and double-count. */}
+        <script dangerouslySetInnerHTML={{ __html: metaPixelScript }} />
       </head>
       <body>
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            alt=""
+            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+          />
+        </noscript>
         {children}
         <Scripts />
       </body>
@@ -134,6 +147,15 @@ function RootComponent() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isLoginPage = pathname === "/login";
   const isExcluded = isLoginPage || pathname === "/age-restricted";
+
+  // The pixel base code counts the first page; count each in-site navigation after it.
+  const firstPath = useRef(pathname);
+  useEffect(() => {
+    if (pathname !== firstPath.current) {
+      firstPath.current = "";
+      trackPageView();
+    }
+  }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
