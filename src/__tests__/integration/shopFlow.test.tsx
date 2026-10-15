@@ -98,7 +98,10 @@ const cartRows = (fake: ReturnType<typeof createFakeSupabase>) =>
 
 beforeEach(() => {
   holder.fake = null;
+  localStorage.clear();
 });
+
+const guestCart = () => JSON.parse(localStorage.getItem("rasa_guest_cart") ?? "[]");
 
 describe("product → cart", () => {
   it("adds a mouth tip, suggests a second for ₹150, and applies the offer", async () => {
@@ -123,12 +126,30 @@ describe("product → cart", () => {
     await waitFor(() => expect(cartRows(fake)).toEqual({ "accessories-lion-mouth-tip-grey": 1 }));
   });
 
-  it("asks a signed-out shopper to sign in instead of adding to the cart", async () => {
+  it("lets a signed-out shopper add to a guest cart without signing in", async () => {
     const fake = setup({ signedIn: false });
     await renderPage(LionControl);
     fireEvent.click(await screen.findByRole("button", { name: /add to cart/i }));
-    expect(await screen.findByText(/sign in to add items to your cart/i)).toBeInTheDocument();
+    await waitFor(() => expect(guestCart()).toEqual([{ sku: LION_BLACK, quantity: 1 }]));
+    expect(screen.queryByText(/sign in/i)).not.toBeInTheDocument();
+    expect(await screen.findByText("Buy 2 for ₹150")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Add another" }));
+    await waitFor(() => expect(guestCart()).toEqual([{ sku: LION_BLACK, quantity: 2 }]));
     expect(fake.db.cart_items).toHaveLength(0);
+  });
+
+  it("moves the guest cart into the account on sign-in, adding quantities", async () => {
+    localStorage.setItem(
+      "rasa_guest_cart",
+      JSON.stringify([
+        { sku: LION_BLACK, quantity: 1 },
+        { sku: COMMISSIONER_20G, quantity: 2 },
+      ]),
+    );
+    const fake = setup({ cart: [[LION_BLACK, 1]] });
+    await renderPage(LionControl);
+    await waitFor(() => expect(cartRows(fake)).toEqual({ [LION_BLACK]: 2, [COMMISSIONER_20G]: 2 }));
+    expect(localStorage.getItem("rasa_guest_cart")).toBeNull();
   });
 });
 
@@ -149,6 +170,17 @@ describe("cart page", () => {
     expect(within(summary).getByText("₹49")).toBeInTheDocument();
     expect(within(summary).getByText("₹284")).toBeInTheDocument();
     expect(within(summary).getByText(/aren't available to order yet/)).toBeInTheDocument();
+  });
+
+  it("shows a signed-out shopper their guest cart and asks for sign-in only to check out", async () => {
+    localStorage.setItem("rasa_guest_cart", JSON.stringify([{ sku: LION_BLACK, quantity: 2 }]));
+    setup({ signedIn: false });
+    await renderPage(CartRoute.options.component as RouteComponent);
+    const summary = (await screen.findByText("Order Summary")).parentElement!;
+    // 2 tips = ₹150 after the offer, + ₹49 delivery.
+    expect(within(summary).getByText("₹199")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Sign in to Checkout" }));
+    expect(await screen.findByText(/sign in to place your order/i)).toBeInTheDocument();
   });
 
   it("nudges toward a second mouth tip when there is an odd one", async () => {
@@ -233,5 +265,5 @@ describe("checkout → order", () => {
     fireEvent.click(screen.getByRole("button", { name: /place order/i }));
     expect(await screen.findByText("Enter a 10-digit mobile number")).toBeInTheDocument();
     expect(fake.calls).toHaveLength(0);
-  });;
+  });
 });

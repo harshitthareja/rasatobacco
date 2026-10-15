@@ -23,7 +23,8 @@ function CartPage() {
   const { items, loading: cartLoading, setQuantity, removeItem } = useCart();
   const { prices, loading: pricesLoading } = useProductPrices();
   const { settings: shippingSettings } = useShippingSettings();
-  const [authOpen, setAuthOpen] = useState(!authLoading && !user);
+  // Signed-out shoppers have a guest cart; sign-in is only needed to check out.
+  const [authOpen, setAuthOpen] = useState(false);
 
   const loading = authLoading || cartLoading || pricesLoading;
 
@@ -54,22 +55,6 @@ function CartPage() {
   const shippingCents = shippingChargeFor(subtotalCents - offerCents, shippingSettings);
   const totalCents = subtotalCents - offerCents + shippingCents;
   const hasUnpriced = resolved.some((r) => r.price?.price_cents == null || !r.price.is_purchasable);
-
-  if (!authLoading && !user) {
-    return (
-      <main className="bg-ink text-foreground min-h-screen pt-40 pb-24 px-6 text-center">
-        <p className="text-[0.65rem] tracking-luxe uppercase text-gold mb-4">Your Cart</p>
-        <h1 className="font-serif text-4xl mb-6">Sign in to view your cart</h1>
-        <button
-          onClick={() => setAuthOpen(true)}
-          className="inline-flex items-center gap-2 px-6 py-3 border border-gold/50 text-gold text-[0.65rem] tracking-luxe uppercase hover:bg-gold hover:text-ink transition-all duration-300"
-        >
-          Sign In
-        </button>
-        <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} reason="cart" />
-      </main>
-    );
-  }
 
   return (
     <main className="bg-ink text-foreground min-h-screen pt-32 pb-24 px-6">
@@ -222,12 +207,22 @@ function CartPage() {
                 </p>
               )}
 
-              <Link
-                to="/checkout"
-                className="w-full inline-flex items-center justify-center px-6 py-3.5 bg-gold text-primary-foreground text-[0.7rem] tracking-luxe uppercase hover:bg-gold-soft transition-all duration-300"
-              >
-                Proceed to Checkout
-              </Link>
+              {user ? (
+                <Link
+                  to="/checkout"
+                  className="w-full inline-flex items-center justify-center px-6 py-3.5 bg-gold text-primary-foreground text-[0.7rem] tracking-luxe uppercase hover:bg-gold-soft transition-all duration-300"
+                >
+                  Proceed to Checkout
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setAuthOpen(true)}
+                  className="w-full inline-flex items-center justify-center px-6 py-3.5 bg-gold text-primary-foreground text-[0.7rem] tracking-luxe uppercase hover:bg-gold-soft transition-all duration-300"
+                >
+                  Sign in to Checkout
+                </button>
+              )}
               <Link
                 to="/shop"
                 className="w-full inline-flex items-center justify-center mt-3 px-6 py-3 border border-border/40 text-foreground/70 text-[0.65rem] tracking-luxe uppercase hover:border-gold/50 hover:text-gold transition-all duration-300"
@@ -238,6 +233,7 @@ function CartPage() {
           </div>
         )}
       </div>
+      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} reason="checkout" />
     </main>
   );
 }

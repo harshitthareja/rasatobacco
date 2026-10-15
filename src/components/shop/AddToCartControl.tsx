@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Check, Minus, Plus, ShoppingCart } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
-import { AuthModal } from "@/components/AuthModal";
 import { entrySku, type CatalogEntry } from "@/data/catalog";
 import { formatPrice } from "@/lib/money";
 import type { ProductPrice } from "@/hooks/useProductPrices";
@@ -19,12 +17,10 @@ type Props = {
 };
 
 export function AddToCartControl({ entry, prices, compact = false, onFormatChange }: Props) {
-  const { user } = useAuth();
   const { addItem, items: cartItems } = useCart();
   const navigate = useNavigate();
   const [chosenFormat, setFormat] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
-  const [authOpen, setAuthOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [cartError, setCartError] = useState<string | null>(null);
@@ -54,11 +50,9 @@ export function AddToCartControl({ entry, prices, compact = false, onFormatChang
     onFormatChange?.(format);
   }, [format, onFormatChange]);
 
+  // No sign-in needed to add to cart (signed-out shoppers get a guest cart);
+  // checkout asks for it.
   const act = async (buyNow: boolean) => {
-    if (!user) {
-      setAuthOpen(true);
-      return;
-    }
     if (!canBuy) return;
     setBusy(true);
     setCartError(null);
@@ -75,7 +69,7 @@ export function AddToCartControl({ entry, prices, compact = false, onFormatChang
       setCartError(
         e instanceof Error && e.message
           ? `Couldn't add to cart: ${e.message}`
-          : "Couldn't add to cart. Please sign in again and retry.",
+          : "Couldn't add to cart. Please try again.",
       );
     } finally {
       setBusy(false);
@@ -240,7 +234,6 @@ export function AddToCartControl({ entry, prices, compact = false, onFormatChang
         />
       )}
 
-      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} reason="cart" />
     </div>
   );
 }
