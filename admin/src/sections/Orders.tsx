@@ -353,6 +353,12 @@ function OrderCard({
                   <span>Subtotal</span>
                   <span>{formatPrice(order.subtotal_cents, order.currency)}</span>
                 </div>
+                {(order.discount_cents ?? 0) > 0 && (
+                  <div className="flex justify-between text-foreground/60">
+                    <span>Coupon {order.coupon_code}</span>
+                    <span>−{formatPrice(order.discount_cents ?? 0, order.currency)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-foreground/60">
                   <span>Shipping</span>
                   <span>{formatPrice(order.shipping_charge_cents, order.currency)}</span>

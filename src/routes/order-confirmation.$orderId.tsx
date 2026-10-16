@@ -133,6 +133,12 @@ function OrderConfirmationPage() {
               <span className="text-foreground/70">Subtotal</span>
               <span>{formatPrice(order.subtotal_cents, order.currency)}</span>
             </div>
+            {order.discount_cents > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-foreground/70">Coupon {order.coupon_code}</span>
+                <span className="text-gold">−{formatPrice(order.discount_cents, order.currency)}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-foreground/70">Shipping</span>
               <span>

@@ -245,6 +245,48 @@ describe("checkout → order", () => {
     expect(fake.db.product_prices.find((p) => p.sku === LION_BLACK)!.stock_quantity).toBe(98);
   });
 
+  it("greys out RASA15 below ₹249 and says how much more to add", async () => {
+    setup({ cart: [[COMMISSIONER_20G, 2]] });
+    await renderPage(CheckoutRoute.options.component as RouteComponent);
+    const apply = await screen.findByRole("button", { name: "Apply" });
+    expect(apply).toBeDisabled();
+    expect(screen.getByText("RASA15")).toBeInTheDocument();
+    // ₹170 in the cart → ₹79 short of ₹249.
+    expect(screen.getByText("Add ₹79 more to unlock")).toBeInTheDocument();
+  });
+
+  it("applies RASA15 above ₹249 and charges exactly the discounted total", async () => {
+    const fake = setup({ cart: [[COMMISSIONER_20G, 3]] });
+    const router = await renderPage(CheckoutRoute.options.component as RouteComponent);
+    const apply = await screen.findByRole("button", { name: "Apply" });
+    expect(apply).toBeEnabled();
+    fireEvent.click(apply);
+    const summary = screen.getByText("Order Summary").parentElement!;
+    // ₹255 − 15% (₹38.25, rounded to ₹38) = ₹217; over ₹249 so delivery is free.
+    expect(await within(summary).findByText("Coupon RASA15")).toBeInTheDocument();
+    expect(within(summary).getByText("−₹38")).toBeInTheDocument();
+    expect(within(summary).getByText("₹217")).toBeInTheDocument();
+
+    const shownTotal = await fillAndPlace();
+    await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/order-confirmation\//));
+    expect(shownTotal).toBe("₹217");
+    expect(fake.calls[0].body.coupon).toBe("RASA15");
+    expect(fake.db.orders[0]).toMatchObject({
+      total_cents: 21700,
+      discount_cents: 3800,
+      coupon_code: "RASA15",
+    });
+  });
+
+  it("removes an applied coupon", async () => {
+    setup({ cart: [[COMMISSIONER_20G, 3]] });
+    await renderPage(CheckoutRoute.options.component as RouteComponent);
+    fireEvent.click(await screen.findByRole("button", { name: "Apply" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Remove" }));
+    expect(screen.queryByText("Coupon RASA15")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /place order/i }).textContent).toContain("₹255");
+  });
+
   it("shows the server's error when there isn't enough stock", async () => {
     setup({ cart: [[LION_BLACK, 500]] });
     const router = await renderPage(CheckoutRoute.options.component as RouteComponent);

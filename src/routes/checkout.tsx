@@ -16,6 +16,8 @@ import {
 import { AuthModal } from "@/components/AuthModal";
 import { MouthTipOfferNote } from "@/components/shop/MouthTipOffer";
 import { mouthTipCount, pairOfferSavings } from "@/lib/offers";
+import { applyCoupon } from "@/lib/coupons";
+import { CouponPicker } from "@/components/shop/CouponPicker";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -84,6 +86,7 @@ function CheckoutPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof ShippingForm, string>>>({});
   const [stage, setStage] = useState<Stage>("idle");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
+  const [couponCode, setCouponCode] = useState<string | null>(null);
   const placing = stage !== "idle";
   const [placeError, setPlaceError] = useState<string | null>(null);
   const [authOpen, setAuthOpen] = useState(!authLoading && !user);
@@ -114,8 +117,14 @@ function CheckoutPage() {
     })),
   );
   const tipCount = mouthTipCount(purchasableItems);
-  const shippingCents = shippingChargeFor(subtotalCents - offerCents, shippingSettings);
-  const totalCents = subtotalCents - offerCents + shippingCents;
+  const itemsCents = subtotalCents - offerCents;
+  const shippingCents = shippingChargeFor(itemsCents, shippingSettings);
+  // Same coupon rules create-order applies; a coupon the cart no longer
+  // qualifies for simply stops applying.
+  const coupon = couponCode ? applyCoupon(couponCode, itemsCents) : null;
+  const discountCents = coupon?.ok ? coupon.discount : 0;
+  const appliedCoupon = coupon?.ok ? coupon.code : null;
+  const totalCents = itemsCents - discountCents + shippingCents;
 
   const onChange =
     (field: keyof ShippingForm) =>
@@ -182,7 +191,7 @@ function CheckoutPage() {
       const method: PaymentMethod = ONLINE_PAYMENTS_ENABLED ? paymentMethod : "cod";
       const { data: order, error: orderError } = await invokeFunction<CreateOrderResponse>(
         "create-order",
-        { shipping: form, skuMeta, payment_method: method },
+        { shipping: form, skuMeta, payment_method: method, coupon: appliedCoupon },
       );
       if (orderError || !order) {
         setPlaceError(orderError ?? "Could not place your order. Please try again.");
@@ -465,6 +474,12 @@ function CheckoutPage() {
                     <span className="text-gold">−{formatPrice(offerCents, "INR")}</span>
                   </div>
                 )}
+                {discountCents > 0 && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-foreground/70">Coupon {appliedCoupon}</span>
+                    <span className="text-gold">−{formatPrice(discountCents, "INR")}</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-foreground/70">Delivery</span>
                   <span className="text-foreground/80">
@@ -484,6 +499,12 @@ function CheckoutPage() {
                   {formatPrice(shippingSettings.free_shipping_threshold_cents, "INR")}.
                 </p>
               )}
+              <CouponPicker
+                subtotalCents={itemsCents}
+                applied={appliedCoupon}
+                onApply={setCouponCode}
+                onRemove={() => setCouponCode(null)}
+              />
               <MouthTipOfferNote count={tipCount} className="mt-5" />
             </div>
           </div>

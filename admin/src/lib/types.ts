@@ -26,6 +26,9 @@ export type Order = {
   payment_method: "razorpay" | "cod";
   subtotal_cents: number;
   shipping_charge_cents: number;
+  /** Coupon discount on the items (total_cents already includes it). */
+  discount_cents?: number;
+  coupon_code?: string | null;
   total_cents: number | null;
   currency: string;
   shipping_name: string;

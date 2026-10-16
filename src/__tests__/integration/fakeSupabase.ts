@@ -155,6 +155,8 @@ export function createFakeSupabase(seed: {
         free_shipping_threshold_cents: number;
       },
       (sku) => skuMeta[sku]?.productName ?? sku,
+      Date.now(),
+      typeof body.coupon === "string" ? body.coupon : null,
     );
     if (!priced.ok) return { error: priced.error };
     const orderId = `order-${++seq}`;
@@ -163,6 +165,8 @@ export function createFakeSupabase(seed: {
       user_id: userId,
       total_cents: priced.total,
       subtotal_cents: priced.subtotal,
+      discount_cents: priced.discount,
+      coupon_code: priced.couponCode,
     });
     for (const li of priced.lineItems) {
       db.order_items.push({

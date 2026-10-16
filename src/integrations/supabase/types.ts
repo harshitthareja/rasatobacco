@@ -275,6 +275,8 @@ export type Database = {
       }
       orders: {
         Row: {
+          coupon_code: string | null
+          discount_cents: number
           payment_method: string
           payment_status: string
           razorpay_order_id: string | null
@@ -309,6 +311,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          coupon_code?: string | null
+          discount_cents?: number
           payment_method?: string
           payment_status?: string
           razorpay_order_id?: string | null
@@ -343,6 +347,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          coupon_code?: string | null
+          discount_cents?: number
           payment_method?: string
           payment_status?: string
           razorpay_order_id?: string | null
