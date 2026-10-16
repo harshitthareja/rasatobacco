@@ -1,6 +1,7 @@
 // Prices a cart for create-order. Kept free of Deno/Supabase imports so the
 // website's integration tests run this exact code (src/__tests__/integration).
 import { applyPairOffer } from './offers.ts'
+import { applyCoupon } from './coupons.ts'
 
 export type CartRow = { sku: string; quantity: number }
 export type PriceRow = {
@@ -22,6 +23,9 @@ export type PricedCart =
       ok: true
       lineItems: LineItem[]
       subtotal: number
+      /** Coupon discount on the items, in paise (0 without a coupon). */
+      discount: number
+      couponCode: string | null
       shippingCharge: number
       total: number
       /** Cart items that can't be ordered yet; they stay in the cart. */
@@ -35,6 +39,7 @@ export function priceCart(
   settings: StoreSettings,
   nameOf: (sku: string) => string = (sku) => sku,
   now = Date.now(),
+  coupon: string | null = null,
 ): PricedCart {
   if (cart.length === 0) return { ok: false, status: 400, error: 'Your cart is empty' }
   const priceMap = new Map(prices.map((p) => [p.sku, p]))
@@ -69,8 +74,20 @@ export function priceCart(
   const threshold = settings?.free_shipping_threshold_cents
   const shippingCharge =
     threshold != null && subtotal > threshold ? 0 : (settings?.shipping_flat_cents ?? 0)
-  const total = subtotal + shippingCharge
+
+  // A coupon the buyer can't use is an error rather than silently ignored, so
+  // they're never charged more than the total checkout showed them.
+  let discount = 0
+  let couponCode: string | null = null
+  if (coupon && coupon.trim()) {
+    const result = applyCoupon(coupon, subtotal)
+    if (!result.ok) return { ok: false, status: 409, error: result.error }
+    discount = result.discount
+    couponCode = result.code
+  }
+
+  const total = subtotal - discount + shippingCharge
   if (total < 100) return { ok: false, status: 400, error: 'Order total must be at least ₹1' }
 
-  return { ok: true, lineItems, subtotal, shippingCharge, total, skipped }
+  return { ok: true, lineItems, subtotal, discount, couponCode, shippingCharge, total, skipped }
 }

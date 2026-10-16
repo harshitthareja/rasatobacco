@@ -24,6 +24,7 @@ serve(async (req) => {
     const shipping = body.shipping ?? {}
     const skuMeta: Record<string, SkuMeta> = body.skuMeta ?? {}
     const paymentMethod = body.payment_method === 'razorpay' ? 'razorpay' : 'cod'
+    const coupon = typeof body.coupon === 'string' ? body.coupon : null
 
     const required = ['name', 'phone', 'email', 'addressLine1', 'city', 'state', 'postalCode']
     const missing = required.filter((k) => !String(shipping[k] ?? '').trim())
@@ -62,9 +63,11 @@ serve(async (req) => {
       prices ?? [],
       settings ?? null,
       (sku) => skuMeta[sku]?.productName ?? sku,
+      Date.now(),
+      coupon,
     )
     if (!priced.ok) return json({ error: priced.error }, priced.status)
-    const { lineItems, subtotal, shippingCharge, total } = priced
+    const { lineItems, subtotal, discount, couponCode, shippingCharge, total } = priced
 
     // A buyer who dismissed the payment window and retries would otherwise
     // leave a trail of unpaid orders — close out their earlier attempts.
@@ -85,6 +88,9 @@ serve(async (req) => {
         subtotal_cents: subtotal,
         shipping_charge_cents: shippingCharge,
         total_cents: total,
+        // Only written when a coupon is used, so orders keep working even
+        // before the discount columns exist.
+        ...(discount > 0 ? { discount_cents: discount, coupon_code: couponCode } : {}),
         currency: 'INR',
         shipping_name: String(shipping.name).trim(),
         shipping_phone: String(shipping.phone).trim(),
