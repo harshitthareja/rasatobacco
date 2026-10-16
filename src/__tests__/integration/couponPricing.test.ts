@@ -25,15 +25,15 @@ const price = (cart: [string, number][], coupon: string | null) =>
 
 describe("RASA15", () => {
   it("takes 15% off the items, keeping delivery", () => {
-    // 3 × ₹85 = ₹255 → −₹38.25, still above ₹249 so delivery is free.
+    // 3 × ₹85 = ₹255 → 15% is ₹38.25, rounded to ₹38; delivery free above ₹249.
     const r = price([["majlis-commissioner-20g", 3]], "RASA15");
     expect(r).toMatchObject({
       ok: true,
       subtotal: 25500,
-      discount: 3825,
+      discount: 3800,
       couponCode: "RASA15",
       shippingCharge: 0,
-      total: 21675,
+      total: 21700,
     });
   });
 
@@ -58,7 +58,7 @@ describe("RASA15", () => {
   });
 
   it("works at exactly ₹249 and ignores case and spaces", () => {
-    expect(applyCoupon(" rasa15 ", 24900)).toEqual({ ok: true, code: "RASA15", discount: 3735 });
+    expect(applyCoupon(" rasa15 ", 24900)).toEqual({ ok: true, code: "RASA15", discount: 3700 });
   });
 
   it("rejects unknown codes and leaves orders without a coupon unchanged", () => {

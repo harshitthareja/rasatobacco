@@ -37,5 +37,7 @@ export function applyCoupon(code: string, subtotalCents: number): CouponResult {
       error: `${coupon.code} needs a cart of ₹${coupon.minSubtotalCents / 100} or more`,
     }
   }
-  return { ok: true, code: coupon.code, discount: Math.round((subtotalCents * coupon.percent) / 100) }
+  // Rounded to whole rupees so cash-on-delivery totals have no paise.
+  const discount = Math.round((subtotalCents * coupon.percent) / 100 / 100) * 100
+  return { ok: true, code: coupon.code, discount }
 }
